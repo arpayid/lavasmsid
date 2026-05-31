@@ -1,0 +1,47 @@
+# Version Control
+.git
+.github
+
+# Dependencies
+node_modules
+vendor
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode
+.idea
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker (avoid loops)
+.docker/
+
+# Storage (exclude gitkeep)
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/logs/*
+storage/app/public/*
+!storage/framework/cache/.gitignore
+!storage/framework/sessions/.gitignore
+!storage/framework/views/.gitignore
+!storage/logs/.gitignore
+
+# Build artifacts
+public/build
+public/hot
+public/storage
+mix-manifest.json
+
+# Test
+.phpunit.result.cache
+coverage/
+
+# CI
+.php-cs-fixer.cache
