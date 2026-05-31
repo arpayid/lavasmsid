@@ -3,12 +3,21 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
+    ->withProviders([
+        App\Providers\AppServiceProvider::class,
+        App\Providers\ModuleRouteServiceProvider::class,
+    ])
     ->withRouting(
-        web: __DIR__.'/../routes/web.php',
-        api: __DIR__.'/../routes/api.php',
-        commands: __DIR__.'/../routes/console.php',
+        web: __DIR__ . '/../routes/web.php',
+        api: __DIR__ . '/../routes/api.php',
+        commands: __DIR__ . '/../routes/console.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
@@ -19,6 +28,50 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        // Centralized production-safe exception handling can be expanded here.
+        // Authentication exception → redirect to login
+        $exceptions->render(function (AuthenticationException $e, Request $request) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Unauthenticated.'], 401);
+            }
+            return redirect()->guest(route('login'));
+        });
+
+        // Validation exception → return with errors
+        $exceptions->render(function (ValidationException $e, Request $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Validation failed.',
+                    'errors' => $e->errors(),
+                ], 422);
+            }
+            return redirect()->back()->withErrors($e->errors())->withInput();
+        });
+
+        // 404 Not Found
+        $exceptions->render(function (NotFoundHttpException $e, Request $request) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Not found.'], 404);
+            }
+            return response()->view('errors.404', [], 404);
+        });
+
+        // 403 Forbidden
+        $exceptions->render(function (AccessDeniedHttpException $e, Request $request) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Forbidden.'], 403);
+            }
+            return response()->view('errors.403', [], 403);
+        });
+
+        // 500 Internal Server Error (production only)
+        $exceptions->render(function (\Throwable $e, Request $request) {
+            if (config('app.debug')) {
+                return; // Let Laravel handle in debug mode
+            }
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Server error.'], 500);
+            }
+            return response()->view('errors.500', [], 500);
+        });
     })
     ->create();

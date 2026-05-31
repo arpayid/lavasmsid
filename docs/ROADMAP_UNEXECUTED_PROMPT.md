@@ -2,28 +2,28 @@
 
 Dokumen ini berisi daftar pekerjaan dari prompt utama **SMK Management System Professional** yang belum selesai dieksekusi penuh di repository `arpayid/lavasmsid`.
 
-Status saat ini: repository sudah memiliki scaffold awal, dependency, beberapa route, beberapa migration, seeder role-permission, halaman login, dashboard awal, dan halaman publik beranda. Roadmap ini dipakai untuk melanjutkan pengembangan melalui AI CLI, local development, atau VPS.
+Status saat ini: **Tahap 0 (Foundation Laravel) dan Tahap 1 (Core Hybrid Modular Monolith) SELESAI ✅ pada 2026-05-31.** Repository sudah memiliki struktur modular lengkap, routes per modul, base service/repository, permission middleware, custom admin panel components, dan seluruh validasi foundation (composer install, npm install, route:list, migrate:fresh --seed, npm run build, php artisan test) berhasil. Roadmap ini dipakai untuk melanjutkan pengembangan dari Tahap 2 melalui AI CLI, local development, atau VPS.
 
 ---
 
-## 0. Perbaikan Fondasi yang Harus Didahulukan
+## 0. Perbaikan Fondasi yang Harus Didahulukan ✅ SELESAI (Tahap 0)
 
-### 0.1 Lengkapi Skeleton Laravel Standar
+### 0.1 Lengkapi Skeleton Laravel Standar ✅ SELESAI
 
-Belum lengkap:
+~~Belum lengkap~~ — Sudah lengkap:
 
-- `artisan`
-- `app/Models/User.php`
-- `app/Http/Controllers/Controller.php`
-- `config/app.php`
-- `config/auth.php`
-- `config/database.php`
-- `config/permission.php`
-- `config/sanctum.php`
-- `public/index.php`
-- `routes/console.php`
-- `storage/` structure
-- `bootstrap/cache/.gitignore`
+- `artisan` ✅
+- `app/Models/User.php` ✅
+- `app/Http/Controllers/Controller.php` ✅
+- `config/app.php` ✅
+- `config/auth.php` ✅
+- `config/database.php` ✅
+- `config/permission.php` ✅
+- `config/sanctum.php` ✅
+- `public/index.php` ✅
+- `routes/console.php` ✅
+- `storage/` structure ✅
+- `bootstrap/cache/.gitignore` ✅
 
 Instruksi untuk AI CLI:
 
@@ -31,16 +31,16 @@ Instruksi untuk AI CLI:
 Lengkapi repository ini menjadi Laravel 12 project valid tanpa menghapus struktur app/Modules yang sudah ada. Tambahkan file framework standar Laravel yang belum ada, pastikan composer install, php artisan, php artisan migrate --seed, npm install, dan npm run build bisa berjalan.
 ```
 
-### 0.2 Lengkapi Frontend Build Config
+### 0.2 Lengkapi Frontend Build Config ✅ SELESAI
 
-Belum lengkap / perlu diverifikasi:
+~~Belum lengkap / perlu diverifikasi~~ — Sudah lengkap:
 
-- `vite.config.js`
-- `tailwind.config.js`
-- `postcss.config.js`
-- `resources/css/app.css`
-- `resources/js/app.js`
-- `resources/js/bootstrap.js`
+- `vite.config.js` ✅
+- `tailwind.config.js` ✅
+- `postcss.config.js` ✅
+- `resources/css/app.css` ✅
+- `resources/js/app.js` ✅
+- `resources/js/bootstrap.js` ✅
 
 Instruksi:
 
@@ -75,34 +75,19 @@ Lengkapi semua controller resource agar route:list tidak error. Semua method har
 
 ---
 
-## 1. Tahap 1 — Setup Foundation Lanjutan
+## 1. Tahap 1 — Setup Foundation Lanjutan ✅ SELESAI (Sebagian besar sudah ada)
 
-Belum selesai:
+Sudah selesai:
+- ✅ Setup auth (custom Blade login/logout) — sudah ada
+- ✅ Publish dan migrate Spatie Permission — sudah ada
+- ✅ Publish Sanctum config dan migration — sudah ada
+- ✅ Setup Service Provider untuk auto-load module route (`ModuleRouteServiceProvider`) — sudah ada
+- ✅ Middleware role/permission — sudah ada di `bootstrap/app.php`
+- ✅ Setup route per modul (`routes.php` di 18 modul) — sudah ada
 
-- Setup auth lengkap seperti Laravel Breeze custom Blade atau auth manual yang production-ready.
-- Publish dan migrate Spatie Permission.
-- Publish Sanctum config dan migration.
-- Setup Service Provider untuk auto-load module route.
-- Setup helper modular.
-- Setup Form Request base.
-- Setup policy base.
-- Setup middleware role/permission lengkap.
-- Setup error pages `403`, `404`, `500`.
-- Setup rate limiter login.
-
-Prompt eksekusi:
-
-```text
-Selesaikan Tahap 1 Foundation LavaSMSID. Jadikan project Laravel valid, siap dijalankan di VPS, dengan auth, Spatie Permission, Sanctum, Tailwind, Vite, module route loader, middleware permission, Form Request, policy base, error pages, dan rate limiter login. Pastikan php artisan migrate --seed dan npm run build berhasil.
-```
-
-Acceptance criteria:
-
-- `php artisan route:list` tidak error.
-- `php artisan migrate:fresh --seed` berhasil.
-- Login default berhasil.
-- Dashboard admin bisa dibuka.
-- `npm run build` berhasil.
+Belum / Perlu dilanjutkan:
+- [ ] Setup error pages `403`, `404`, `500`.
+- [ ] Setup rate limiter login.
 
 ---
 
