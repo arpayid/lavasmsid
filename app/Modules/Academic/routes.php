@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Modules\Academic\Controllers\AcademicYearController;
 use App\Modules\Academic\Controllers\AttendanceController;
 use App\Modules\Academic\Controllers\ClassroomController;
@@ -10,6 +9,7 @@ use App\Modules\Academic\Controllers\GradeController;
 use App\Modules\Academic\Controllers\ScheduleController;
 use App\Modules\Academic\Controllers\SemesterController;
 use App\Modules\Academic\Controllers\SubjectController;
+use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])
     ->prefix('admin')

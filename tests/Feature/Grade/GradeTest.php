@@ -11,6 +11,6 @@ test('grade calculates final result correctly', function () {
 });
 
 test('grade with zero scores returns zero', function () {
-    $grade = new Grade();
+    $grade = new Grade;
     expect($grade->calculateFinalResult())->toBe(0.0);
 });

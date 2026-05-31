@@ -2,21 +2,24 @@
 
 namespace App\Modules\UserManagement\Services;
 
+use App\Core\Shared\DataTableQuery;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class RoleService
 {
     /**
      * Query DataTable dengan search, filter, pagination.
      */
-    public function queryDataTable(\Illuminate\Http\Request $request): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    public function queryDataTable(Request $request): LengthAwarePaginator
     {
         $query = Role::withCount('users');
 
-        return \App\Core\Shared\DataTableQuery::make($query)
+        return DataTableQuery::make($query)
             ->search(['name'], $request->input('search'))
             ->orderBy('name', 'asc')
             ->paginate($request->input('per_page', 15));
@@ -69,6 +72,7 @@ class RoleService
 
         return DB::transaction(function () use ($role) {
             $role->syncPermissions([]);
+
             return $role->delete();
         });
     }
@@ -88,6 +92,7 @@ class RoleService
     {
         return Permission::orderBy('name')->get()->groupBy(function ($permission) {
             $parts = explode('.', $permission->name);
+
             return $parts[0] ?? 'general';
         });
     }

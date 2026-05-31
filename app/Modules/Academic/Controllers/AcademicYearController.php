@@ -15,7 +15,7 @@ class AcademicYearController extends Controller
         $query = AcademicYear::query();
 
         if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%');
+            $query->where('name', 'like', '%'.$request->search.'%');
         }
 
         $academicYears = $query->orderByDesc('start_date')->paginate(15);

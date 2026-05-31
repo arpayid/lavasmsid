@@ -15,7 +15,7 @@ class PaymentCategoryController extends Controller
         $query = PaymentCategory::query();
 
         if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%');
+            $query->where('name', 'like', '%'.$request->search.'%');
         }
 
         $categories = $query->orderBy('name')->paginate(15);

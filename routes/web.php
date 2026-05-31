@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-
 // Public website routes
 require __DIR__.'/public.php';
 

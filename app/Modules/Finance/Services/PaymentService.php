@@ -2,24 +2,26 @@
 
 namespace App\Modules\Finance\Services;
 
-use App\Modules\Finance\Models\{Invoice, Payment};
+use App\Modules\Finance\Models\Invoice;
+use App\Modules\Finance\Models\Payment;
 use Illuminate\Support\Facades\DB;
 
 class PaymentService
 {
     public function generateReceiptNumber(): string
     {
-        $prefix = 'REC-' . date('Ym') . '-';
-        $lastPayment = Payment::where('receipt_number', 'like', $prefix . '%')
+        $prefix = 'REC-'.date('Ym').'-';
+        $lastPayment = Payment::where('receipt_number', 'like', $prefix.'%')
             ->orderBy('receipt_number', 'desc')
             ->first();
 
-        if (!$lastPayment) {
-            return $prefix . '0001';
+        if (! $lastPayment) {
+            return $prefix.'0001';
         }
 
         $sequence = (int) substr($lastPayment->receipt_number, -4);
-        return $prefix . str_pad($sequence + 1, 4, '0', STR_PAD_LEFT);
+
+        return $prefix.str_pad($sequence + 1, 4, '0', STR_PAD_LEFT);
     }
 
     public function recordPayment(array $data, ?int $verifierId = null): Payment

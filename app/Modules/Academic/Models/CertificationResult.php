@@ -2,6 +2,7 @@
 
 namespace App\Modules\Academic\Models;
 
+use App\Modules\Student\Models\Student;
 use Illuminate\Database\Eloquent\Model;
 
 class CertificationResult extends Model
@@ -27,6 +28,6 @@ class CertificationResult extends Model
 
     public function student()
     {
-        return $this->belongsTo(\App\Modules\Student\Models\Student::class);
+        return $this->belongsTo(Student::class);
     }
 }

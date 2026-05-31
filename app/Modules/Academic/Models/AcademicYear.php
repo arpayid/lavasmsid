@@ -3,7 +3,6 @@
 namespace App\Modules\Academic\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AcademicYear extends Model
 {

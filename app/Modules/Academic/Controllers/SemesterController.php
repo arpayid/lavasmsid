@@ -3,8 +3,8 @@
 namespace App\Modules\Academic\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Academic\Models\Semester;
 use App\Modules\Academic\Models\AcademicYear;
+use App\Modules\Academic\Models\Semester;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -16,7 +16,7 @@ class SemesterController extends Controller
         $query = Semester::with('academicYear');
 
         if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%');
+            $query->where('name', 'like', '%'.$request->search.'%');
         }
 
         $semesters = $query->orderByDesc('id')->paginate(15);

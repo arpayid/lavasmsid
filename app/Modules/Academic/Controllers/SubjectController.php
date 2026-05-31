@@ -3,8 +3,8 @@
 namespace App\Modules\Academic\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Academic\Models\Subject;
 use App\Modules\Academic\Models\Department;
+use App\Modules\Academic\Models\Subject;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -16,7 +16,7 @@ class SubjectController extends Controller
         $query = Subject::with('department');
 
         if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%');
+            $query->where('name', 'like', '%'.$request->search.'%');
         }
 
         $subjects = $query->orderBy('name')->paginate(15);
@@ -64,7 +64,7 @@ class SubjectController extends Controller
     {
         $validated = $request->validate([
             'department_id' => ['nullable', 'exists:departments,id'],
-            'code' => ['required', 'string', 'unique:subjects,code,' . $subject->id],
+            'code' => ['required', 'string', 'unique:subjects,code,'.$subject->id],
             'name' => ['required', 'string', 'max:255'],
             'type' => ['nullable', 'string', 'in:general,productive,vocational'],
         ]);

@@ -3,9 +3,9 @@
 namespace App\Modules\UserManagement\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\UserManagement\Services\RoleService;
 use App\Modules\UserManagement\Requests\StoreRoleRequest;
 use App\Modules\UserManagement\Requests\UpdateRoleRequest;
+use App\Modules\UserManagement\Services\RoleService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -47,7 +47,7 @@ class RoleController extends Controller
     {
         $role = $this->roleService->findByName($name);
 
-        if (!$role) {
+        if (! $role) {
             abort(404);
         }
 

@@ -2,6 +2,8 @@
 
 namespace App\Modules\Alumni\Models;
 
+use App\Modules\Academic\Models\Department;
+use App\Modules\Student\Models\Student;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -9,8 +11,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Alumni extends Model
 {
     const STATUS_UNEMPLOYED = 'unemployed';
+
     const STATUS_WORKING = 'working';
+
     const STATUS_STUDYING = 'studying';
+
     const STATUS_ENTREPRENEUR = 'entrepreneur';
 
     protected $table = 'alumni';
@@ -33,16 +38,16 @@ class Alumni extends Model
 
     public function student(): BelongsTo
     {
-        return $this->belongsTo(\App\Modules\Student\Models\Student::class);
+        return $this->belongsTo(Student::class);
     }
 
     public function department(): BelongsTo
     {
-        return $this->belongsTo(\App\Modules\Academic\Models\Department::class);
+        return $this->belongsTo(Department::class);
     }
 
     public function applications(): HasMany
     {
-        return $this->hasMany(\App\Modules\Alumni\Models\JobApplication::class);
+        return $this->hasMany(JobApplication::class);
     }
 }

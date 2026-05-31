@@ -2,7 +2,10 @@
 
 namespace App\Core\Shared;
 
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 
 class DataTableQuery
 {
@@ -62,17 +65,17 @@ class DataTableQuery
         return $this;
     }
 
-    public function paginate(int $perPage = 15): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    public function paginate(int $perPage = 15): LengthAwarePaginator
     {
         return $this->query->paginate($perPage);
     }
 
-    public function get(): \Illuminate\Database\Eloquent\Collection
+    public function get(): Collection
     {
         return $this->query->get();
     }
 
-    public function first(): ?\Illuminate\Database\Eloquent\Model
+    public function first(): ?Model
     {
         return $this->query->first();
     }

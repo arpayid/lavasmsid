@@ -3,16 +3,19 @@
 namespace App\Modules\Report\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Academic\Models\Attendance;
+use App\Modules\Academic\Models\Classroom;
+use App\Modules\Academic\Models\Department;
+use App\Modules\Academic\Models\Grade;
+use App\Modules\Academic\Models\Semester;
+use App\Modules\Academic\Models\Subject;
+use App\Modules\Alumni\Models\Alumni;
+use App\Modules\Finance\Models\Invoice;
+use App\Modules\Finance\Models\PaymentCategory;
+use App\Modules\Internship\Models\Internship;
+use App\Modules\PPDB\Models\PpdbRegistration;
 use App\Modules\Student\Models\Student;
 use App\Modules\Teacher\Models\Teacher;
-use App\Modules\Academic\Models\{Department, Classroom, Subject};
-use App\Modules\Academic\Models\Attendance;
-use App\Modules\Academic\Models\Grade;
-use App\Modules\Finance\Models\Invoice;
-use App\Modules\PPDB\Models\PpdbRegistration;
-use App\Modules\Internship\Models\Internship;
-use App\Modules\Alumni\Models\Alumni;
-use App\Modules\Finance\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -32,6 +35,7 @@ class ReportController extends Controller
             ['key' => 'internship', 'name' => 'Laporan PKL', 'icon' => '🏭'],
             ['key' => 'alumni', 'name' => 'Laporan Alumni', 'icon' => '🎓'],
         ];
+
         return view('modules.reports.index', compact('reportTypes'));
     }
 
@@ -39,9 +43,15 @@ class ReportController extends Controller
     {
         $query = Student::with(['department', 'classroom'])->orderBy('name');
 
-        if ($request->filled('department_id')) $query->where('department_id', $request->department_id);
-        if ($request->filled('classroom_id')) $query->where('classroom_id', $request->classroom_id);
-        if ($request->filled('status')) $query->where('status', $request->status);
+        if ($request->filled('department_id')) {
+            $query->where('department_id', $request->department_id);
+        }
+        if ($request->filled('classroom_id')) {
+            $query->where('classroom_id', $request->classroom_id);
+        }
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
 
         $students = $query->get();
         $departments = Department::orderBy('name')->get();
@@ -53,20 +63,25 @@ class ReportController extends Controller
     public function classrooms(Request $request): View
     {
         $classrooms = Classroom::with(['department'])->orderBy('name')->get();
+
         return view('modules.reports.classrooms', compact('classrooms'));
     }
 
     public function departments(Request $request): View
     {
         $departments = Department::withCount(['students', 'classrooms'])->orderBy('name')->get();
+
         return view('modules.reports.departments', compact('departments'));
     }
 
     public function teachers(Request $request): View
     {
         $query = Teacher::orderBy('name');
-        if ($request->filled('status')) $query->where('status', $request->status);
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
         $teachers = $query->get();
+
         return view('modules.reports.teachers', compact('teachers'));
     }
 
@@ -74,10 +89,18 @@ class ReportController extends Controller
     {
         $query = Attendance::with(['student', 'classroom']);
 
-        if ($request->filled('classroom_id')) $query->where('classroom_id', $request->classroom_id);
-        if ($request->filled('date_from')) $query->whereDate('attendance_date', '>=', $request->date_from);
-        if ($request->filled('date_to')) $query->whereDate('attendance_date', '<=', $request->date_to);
-        if ($request->filled('status')) $query->where('status', $request->status);
+        if ($request->filled('classroom_id')) {
+            $query->where('classroom_id', $request->classroom_id);
+        }
+        if ($request->filled('date_from')) {
+            $query->whereDate('attendance_date', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $query->whereDate('attendance_date', '<=', $request->date_to);
+        }
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
 
         $attendances = $query->orderByDesc('attendance_date')->get();
 
@@ -99,12 +122,16 @@ class ReportController extends Controller
     {
         $query = Grade::with(['student', 'subject', 'semester']);
 
-        if ($request->filled('semester_id')) $query->where('semester_id', $request->semester_id);
-        if ($request->filled('subject_id')) $query->where('subject_id', $request->subject_id);
+        if ($request->filled('semester_id')) {
+            $query->where('semester_id', $request->semester_id);
+        }
+        if ($request->filled('subject_id')) {
+            $query->where('subject_id', $request->subject_id);
+        }
 
         $grades = $query->get();
 
-        $semesters = \App\Modules\Academic\Models\Semester::with('academicYear')->orderByDesc('id')->get();
+        $semesters = Semester::with('academicYear')->orderByDesc('id')->get();
         $subjects = Subject::orderBy('name')->get();
 
         return view('modules.reports.grades', compact('grades', 'semesters', 'subjects'));
@@ -114,8 +141,12 @@ class ReportController extends Controller
     {
         $query = Invoice::with(['student', 'paymentCategory']);
 
-        if ($request->filled('status')) $query->where('status', $request->status);
-        if ($request->filled('category_id')) $query->where('payment_category_id', $request->category_id);
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        if ($request->filled('category_id')) {
+            $query->where('payment_category_id', $request->category_id);
+        }
 
         $invoices = $query->get();
 
@@ -126,7 +157,7 @@ class ReportController extends Controller
             'total_unpaid' => Invoice::where('status', 'unpaid')->sum('amount') - Invoice::where('status', 'unpaid')->sum('paid_amount'),
         ];
 
-        $categories = \App\Modules\Finance\Models\PaymentCategory::orderBy('name')->get();
+        $categories = PaymentCategory::orderBy('name')->get();
 
         return view('modules.reports.finance', compact('invoices', 'categories', 'summary'));
     }
@@ -134,7 +165,9 @@ class ReportController extends Controller
     public function ppdb(Request $request): View
     {
         $query = PpdbRegistration::with('department')->orderByDesc('created_at');
-        if ($request->filled('status')) $query->where('status', $request->status);
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
         $registrations = $query->get();
 
         $summary = [
@@ -151,7 +184,9 @@ class ReportController extends Controller
     public function internship(Request $request): View
     {
         $query = Internship::with(['student', 'industryPartner'])->orderByDesc('start_date');
-        if ($request->filled('status')) $query->where('status', $request->status);
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
         $internships = $query->get();
 
         $summary = [
@@ -167,8 +202,12 @@ class ReportController extends Controller
     public function alumni(Request $request): View
     {
         $query = Alumni::with('department')->orderByDesc('graduation_year');
-        if ($request->filled('status')) $query->where('status', $request->status);
-        if ($request->filled('department_id')) $query->where('department_id', $request->department_id);
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        if ($request->filled('department_id')) {
+            $query->where('department_id', $request->department_id);
+        }
         $alumni = $query->get();
 
         $departments = Department::orderBy('name')->get();

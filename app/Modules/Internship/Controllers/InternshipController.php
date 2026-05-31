@@ -3,8 +3,8 @@
 namespace App\Modules\Internship\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Internship\Models\Internship;
 use App\Modules\IndustryPartner\Models\IndustryPartner;
+use App\Modules\Internship\Models\Internship;
 use App\Modules\Student\Models\Student;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

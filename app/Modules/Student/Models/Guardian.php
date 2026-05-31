@@ -18,6 +18,6 @@ class Guardian extends Model
 
     public function student()
     {
-        return $this->belongsTo(\App\Modules\Student\Models\Student::class);
+        return $this->belongsTo(Student::class);
     }
 }

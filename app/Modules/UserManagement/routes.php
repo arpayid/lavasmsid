@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Modules\UserManagement\Controllers\UserController;
 use App\Modules\UserManagement\Controllers\RoleController;
+use App\Modules\UserManagement\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])
     ->prefix('admin/user-management')

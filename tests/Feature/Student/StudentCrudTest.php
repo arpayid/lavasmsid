@@ -26,7 +26,7 @@ test('guest cannot access student list', function () {
 
 test('student model can be created with valid data', function () {
     $student = Student::create([
-        'nis' => 'NIS' . time(),
+        'nis' => 'NIS'.time(),
         'name' => 'Budi Santoso',
         'gender' => 'L',
         'status' => 'active',

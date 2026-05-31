@@ -1,5 +1,10 @@
 <?php
 
+use App\Models\User;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
+
 return [
 
     'models' => [
@@ -8,13 +13,13 @@ return [
          * When using the "HasPermissions" trait from this package, we need to know which
          * Eloquent model should be used to retrieve your permissions.
          */
-        'permission' => Spatie\Permission\Models\Permission::class,
+        'permission' => Permission::class,
 
         /*
          * When using the "HasRoles" trait from this package, we need to know which
          * Eloquent model should be used to retrieve your roles.
          */
-        'role' => Spatie\Permission\Models\Role::class,
+        'role' => Role::class,
 
     ],
 
@@ -53,10 +58,10 @@ return [
 
         'store' => 'default',
 
-        'model_key' => App\Models\User::class,
+        'model_key' => User::class,
 
         'permissions' => [
-            Spatie\Permission\PermissionRegistrar::class,
+            PermissionRegistrar::class,
         ],
     ],
 

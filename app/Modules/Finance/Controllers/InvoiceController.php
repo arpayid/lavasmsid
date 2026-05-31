@@ -3,10 +3,11 @@
 namespace App\Modules\Finance\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Finance\Models\{Invoice, PaymentCategory};
+use App\Modules\Academic\Models\Classroom;
+use App\Modules\Finance\Models\Invoice;
+use App\Modules\Finance\Models\PaymentCategory;
 use App\Modules\Finance\Services\InvoiceService;
 use App\Modules\Student\Models\Student;
-use App\Modules\Academic\Models\Classroom;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;

@@ -3,7 +3,9 @@
 namespace App\Modules\Academic\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Academic\Models\{Schedule, Classroom, Subject};
+use App\Modules\Academic\Models\Classroom;
+use App\Modules\Academic\Models\Schedule;
+use App\Modules\Academic\Models\Subject;
 use App\Modules\Academic\Services\ScheduleService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

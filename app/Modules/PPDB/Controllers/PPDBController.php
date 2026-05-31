@@ -3,9 +3,9 @@
 namespace App\Modules\PPDB\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Academic\Models\Department;
 use App\Modules\PPDB\Models\PpdbRegistration;
 use App\Modules\PPDB\Services\PpdbService;
-use App\Modules\Academic\Models\Department;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;

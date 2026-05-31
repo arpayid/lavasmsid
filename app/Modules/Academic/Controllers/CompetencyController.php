@@ -16,7 +16,7 @@ class CompetencyController extends Controller
         $query = Competency::with('department');
 
         if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%');
+            $query->where('name', 'like', '%'.$request->search.'%');
         }
 
         $competencies = $query->orderBy('name')->paginate(15);
@@ -63,7 +63,7 @@ class CompetencyController extends Controller
     {
         $validated = $request->validate([
             'department_id' => ['required', 'exists:departments,id'],
-            'code' => ['required', 'string', 'unique:competencies,code,' . $competency->id],
+            'code' => ['required', 'string', 'unique:competencies,code,'.$competency->id],
             'name' => ['required', 'string', 'max:255'],
         ]);
 

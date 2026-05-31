@@ -13,12 +13,18 @@ class NewsController extends Controller
     public function index(Request $request): View
     {
         $query = News::query();
-        if ($request->filled('search')) $query->where('title', 'like', '%' . $request->search . '%');
+        if ($request->filled('search')) {
+            $query->where('title', 'like', '%'.$request->search.'%');
+        }
         $news = $query->orderByDesc('created_at')->paginate(15);
+
         return view('modules.website.cms.news.index', compact('news'));
     }
 
-    public function create(): View { return view('modules.website.cms.news.create'); }
+    public function create(): View
+    {
+        return view('modules.website.cms.news.create');
+    }
 
     public function store(Request $request): RedirectResponse
     {
@@ -30,12 +36,18 @@ class NewsController extends Controller
             'is_published' => ['nullable', 'boolean'],
         ]);
         $validated['is_published'] = $request->boolean('is_published');
-        if ($request->hasFile('image')) $validated['image_path'] = $request->file('image')->store('news', 'public');
+        if ($request->hasFile('image')) {
+            $validated['image_path'] = $request->file('image')->store('news', 'public');
+        }
         News::create($validated);
+
         return redirect()->route('admin.website.news.index')->with('success', 'Berita berhasil ditambahkan.');
     }
 
-    public function edit(News $news): View { return view('modules.website.cms.news.edit', compact('news')); }
+    public function edit(News $news): View
+    {
+        return view('modules.website.cms.news.edit', compact('news'));
+    }
 
     public function update(Request $request, News $news): RedirectResponse
     {
@@ -47,14 +59,18 @@ class NewsController extends Controller
             'is_published' => ['nullable', 'boolean'],
         ]);
         $validated['is_published'] = $request->boolean('is_published');
-        if ($request->hasFile('image')) $validated['image_path'] = $request->file('image')->store('news', 'public');
+        if ($request->hasFile('image')) {
+            $validated['image_path'] = $request->file('image')->store('news', 'public');
+        }
         $news->update($validated);
+
         return redirect()->route('admin.website.news.index')->with('success', 'Berita berhasil diperbarui.');
     }
 
     public function destroy(News $news): RedirectResponse
     {
         $news->delete();
+
         return redirect()->route('admin.website.news.index')->with('success', 'Berita berhasil dihapus.');
     }
 }

@@ -3,7 +3,8 @@
 namespace App\Modules\Finance\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Finance\Models\{Invoice, Payment};
+use App\Modules\Finance\Models\Invoice;
+use App\Modules\Finance\Models\Payment;
 use App\Modules\Finance\Services\PaymentService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -88,7 +89,7 @@ class PaymentController extends Controller
 
     public function verify(Payment $payment): RedirectResponse
     {
-        if (!auth()->user()->can('finance.verify')) {
+        if (! auth()->user()->can('finance.verify')) {
             abort(403);
         }
 

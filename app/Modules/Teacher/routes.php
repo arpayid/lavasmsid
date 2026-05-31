@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Modules\Teacher\Controllers\TeacherController;
+use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])
     ->prefix('admin')

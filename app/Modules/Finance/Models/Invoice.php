@@ -2,6 +2,7 @@
 
 namespace App\Modules\Finance\Models;
 
+use App\Modules\Student\Models\Student;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -9,7 +10,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Invoice extends Model
 {
     const STATUS_UNPAID = 'unpaid';
+
     const STATUS_PARTIAL = 'partial';
+
     const STATUS_PAID = 'paid';
 
     protected $fillable = [
@@ -30,7 +33,7 @@ class Invoice extends Model
 
     public function student(): BelongsTo
     {
-        return $this->belongsTo(\App\Modules\Student\Models\Student::class);
+        return $this->belongsTo(Student::class);
     }
 
     public function paymentCategory(): BelongsTo

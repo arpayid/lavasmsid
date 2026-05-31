@@ -2,14 +2,20 @@
 
 namespace App\Modules\Internship\Models;
 
+use App\Models\User;
+use App\Modules\IndustryPartner\Models\IndustryPartner;
+use App\Modules\Student\Models\Student;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Internship extends Model
 {
     const STATUS_PLANNED = 'planned';
+
     const STATUS_ONGOING = 'ongoing';
+
     const STATUS_COMPLETED = 'completed';
+
     const STATUS_CANCELLED = 'cancelled';
 
     protected $fillable = [
@@ -31,16 +37,16 @@ class Internship extends Model
 
     public function student(): BelongsTo
     {
-        return $this->belongsTo(\App\Modules\Student\Models\Student::class);
+        return $this->belongsTo(Student::class);
     }
 
     public function industryPartner(): BelongsTo
     {
-        return $this->belongsTo(\App\Modules\IndustryPartner\Models\IndustryPartner::class);
+        return $this->belongsTo(IndustryPartner::class);
     }
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(\App\Models\User::class, 'teacher_id');
+        return $this->belongsTo(User::class, 'teacher_id');
     }
 }

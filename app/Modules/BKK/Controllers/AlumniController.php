@@ -3,10 +3,8 @@
 namespace App\Modules\BKK\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Alumni\Models\Alumni;
-use App\Modules\Alumni\Models\JobVacancy;
-use App\Modules\Alumni\Models\JobApplication;
 use App\Modules\Academic\Models\Department;
+use App\Modules\Alumni\Models\Alumni;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -52,7 +50,7 @@ class AlumniController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'nis' => ['nullable', 'string', 'max:50'],
             'department_id' => ['nullable', 'exists:departments,id'],
-            'graduation_year' => ['required', 'integer', 'min:2000', 'max:' . date('Y')],
+            'graduation_year' => ['required', 'integer', 'min:2000', 'max:'.date('Y')],
             'status' => ['required', 'in:unemployed,working,studying,entrepreneur'],
             'company_name' => ['nullable', 'string', 'max:255'],
             'job_title' => ['nullable', 'string', 'max:255'],
@@ -82,7 +80,7 @@ class AlumniController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'nis' => ['nullable', 'string', 'max:50'],
             'department_id' => ['nullable', 'exists:departments,id'],
-            'graduation_year' => ['required', 'integer', 'min:2000', 'max:' . date('Y')],
+            'graduation_year' => ['required', 'integer', 'min:2000', 'max:'.date('Y')],
             'status' => ['required', 'in:unemployed,working,studying,entrepreneur'],
             'company_name' => ['nullable', 'string', 'max:255'],
             'job_title' => ['nullable', 'string', 'max:255'],

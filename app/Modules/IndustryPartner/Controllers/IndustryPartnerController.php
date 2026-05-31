@@ -15,7 +15,7 @@ class IndustryPartnerController extends Controller
         $query = IndustryPartner::query();
 
         if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%');
+            $query->where('name', 'like', '%'.$request->search.'%');
         }
 
         $partners = $query->orderBy('name')->paginate(15);

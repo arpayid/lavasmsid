@@ -3,9 +3,9 @@
 namespace App\Modules\UserManagement\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\UserManagement\Services\UserService;
 use App\Modules\UserManagement\Requests\StoreUserRequest;
 use App\Modules\UserManagement\Requests\UpdateUserRequest;
+use App\Modules\UserManagement\Services\UserService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -47,7 +47,7 @@ class UserController extends Controller
     {
         $user = $this->userService->findWithRelations($id);
 
-        if (!$user) {
+        if (! $user) {
             abort(404);
         }
 
@@ -60,7 +60,7 @@ class UserController extends Controller
     {
         $user = $this->userService->findWithRelations($id);
 
-        if (!$user) {
+        if (! $user) {
             abort(404);
         }
 

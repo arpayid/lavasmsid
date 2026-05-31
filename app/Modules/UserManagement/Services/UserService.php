@@ -2,8 +2,9 @@
 
 namespace App\Modules\UserManagement\Services;
 
-use App\Models\User;
 use App\Core\Shared\DataTableQuery;
+use App\Models\User;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +16,7 @@ class UserService
     /**
      * Query DataTable dengan search, filter, pagination.
      */
-    public function queryDataTable(Request $request): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    public function queryDataTable(Request $request): LengthAwarePaginator
     {
         $query = User::with(['roles']);
 
@@ -52,7 +53,7 @@ class UserService
         return DB::transaction(function () use ($id, $data) {
             $user = User::findOrFail($id);
 
-            if (!empty($data['password'])) {
+            if (! empty($data['password'])) {
                 $data['password'] = Hash::make($data['password']);
             } else {
                 unset($data['password']);
@@ -78,6 +79,7 @@ class UserService
 
         return DB::transaction(function () use ($user) {
             $user->syncRoles([]);
+
             return $user->delete();
         });
     }

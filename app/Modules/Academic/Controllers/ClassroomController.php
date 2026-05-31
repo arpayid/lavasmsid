@@ -16,7 +16,7 @@ class ClassroomController extends Controller
         $query = Classroom::with('department');
 
         if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%');
+            $query->where('name', 'like', '%'.$request->search.'%');
         }
 
         $classrooms = $query->orderBy('name')->paginate(15);

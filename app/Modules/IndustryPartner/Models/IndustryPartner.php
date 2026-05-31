@@ -2,6 +2,7 @@
 
 namespace App\Modules\IndustryPartner\Models;
 
+use App\Modules\Internship\Models\Internship;
 use Illuminate\Database\Eloquent\Model;
 
 class IndustryPartner extends Model
@@ -16,6 +17,6 @@ class IndustryPartner extends Model
 
     public function internships()
     {
-        return $this->hasMany(\App\Modules\Internship\Models\Internship::class);
+        return $this->hasMany(Internship::class);
     }
 }

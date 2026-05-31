@@ -3,7 +3,9 @@
 namespace App\Modules\Communication\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Modules\Communication\Models\Announcement;
+use App\Modules\Communication\Models\Notification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -13,12 +15,18 @@ class AnnouncementController extends Controller
     public function index(Request $request): View
     {
         $query = Announcement::with('creator')->orderByDesc('created_at');
-        if ($request->filled('target')) $query->where('target', $request->target);
+        if ($request->filled('target')) {
+            $query->where('target', $request->target);
+        }
         $announcements = $query->paginate(15);
+
         return view('modules.communication.announcements.index', compact('announcements'));
     }
 
-    public function create(): View { return view('modules.communication.announcements.create'); }
+    public function create(): View
+    {
+        return view('modules.communication.announcements.create');
+    }
 
     public function store(Request $request): RedirectResponse
     {
@@ -58,7 +66,7 @@ class AnnouncementController extends Controller
             'is_published' => ['nullable', 'boolean'],
         ]);
         $validated['is_published'] = $request->boolean('is_published', true);
-        if ($validated['is_published'] && !$announcement->is_published) {
+        if ($validated['is_published'] && ! $announcement->is_published) {
             $validated['published_at'] = now();
         }
         $announcement->update($validated);
@@ -70,6 +78,7 @@ class AnnouncementController extends Controller
     public function destroy(Announcement $announcement): RedirectResponse
     {
         $announcement->delete();
+
         return redirect()->route('admin.communication.announcements.index')
             ->with('success', 'Pengumuman berhasil dihapus.');
     }
@@ -77,14 +86,14 @@ class AnnouncementController extends Controller
     protected function notifyUsers(Announcement $announcement): void
     {
         $target = $announcement->target;
-        $users = \App\Models\User::query();
+        $users = User::query();
         if ($target !== 'all') {
             $users->whereHas('roles', function ($q) use ($target) {
                 $q->where('name', $target);
             });
         }
         $users->get()->each(function ($user) use ($announcement) {
-            \App\Modules\Communication\Models\Notification::create([
+            Notification::create([
                 'user_id' => $user->id,
                 'type' => 'announcement',
                 'title' => 'Pengumuman Baru',

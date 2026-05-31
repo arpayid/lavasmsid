@@ -3,7 +3,8 @@
 namespace App\Modules\Academic\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Academic\Models\{Attendance, Classroom};
+use App\Modules\Academic\Models\Attendance;
+use App\Modules\Academic\Models\Classroom;
 use App\Modules\Academic\Services\AttendanceService;
 use App\Modules\Student\Models\Student;
 use Illuminate\Http\RedirectResponse;

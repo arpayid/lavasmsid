@@ -44,7 +44,7 @@ class Schedule extends Model
             ->where(function ($q) {
                 $q->where(function ($q2) {
                     $q2->where('start_time', '<', $this->end_time)
-                       ->where('end_time', '>', $this->start_time);
+                        ->where('end_time', '>', $this->start_time);
                 });
             });
 
@@ -56,7 +56,7 @@ class Schedule extends Model
      */
     public function hasTeacherConflict(): bool
     {
-        if (!$this->teacher_id) {
+        if (! $this->teacher_id) {
             return false;
         }
 
@@ -66,7 +66,7 @@ class Schedule extends Model
             ->where(function ($q) {
                 $q->where(function ($q2) {
                     $q2->where('start_time', '<', $this->end_time)
-                       ->where('end_time', '>', $this->start_time);
+                        ->where('end_time', '>', $this->start_time);
                 });
             });
 
@@ -78,7 +78,7 @@ class Schedule extends Model
      */
     public function hasRoomConflict(): bool
     {
-        if (!$this->room) {
+        if (! $this->room) {
             return false;
         }
 
@@ -88,7 +88,7 @@ class Schedule extends Model
             ->where(function ($q) {
                 $q->where(function ($q2) {
                     $q2->where('start_time', '<', $this->end_time)
-                       ->where('end_time', '>', $this->start_time);
+                        ->where('end_time', '>', $this->start_time);
                 });
             });
 

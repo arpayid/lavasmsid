@@ -2,13 +2,16 @@
 
 namespace App\Modules\Finance\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Payment extends Model
 {
     const STATUS_PENDING = 'pending';
+
     const STATUS_VERIFIED = 'verified';
+
     const STATUS_REJECTED = 'rejected';
 
     protected $fillable = [
@@ -33,6 +36,6 @@ class Payment extends Model
 
     public function verifier(): BelongsTo
     {
-        return $this->belongsTo(\App\Models\User::class, 'verified_by');
+        return $this->belongsTo(User::class, 'verified_by');
     }
 }

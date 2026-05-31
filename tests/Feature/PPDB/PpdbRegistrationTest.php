@@ -1,13 +1,14 @@
 <?php
 
 use App\Modules\PPDB\Models\PpdbRegistration;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
 test('ppdb registration can be created', function () {
     $registration = PpdbRegistration::create([
-        'registration_number' => 'PPDB-TEST-' . time(),
+        'registration_number' => 'PPDB-TEST-'.time(),
         'candidate_name' => 'Siswa Baru',
         'status' => 'submitted',
     ]);
@@ -16,5 +17,5 @@ test('ppdb registration can be created', function () {
 
 test('ppdb registration number is unique', function () {
     PpdbRegistration::create(['registration_number' => 'PPDB-UNIQUE-001', 'candidate_name' => 'A', 'status' => 'submitted']);
-    expect(fn() => PpdbRegistration::create(['registration_number' => 'PPDB-UNIQUE-001', 'candidate_name' => 'B', 'status' => 'submitted']))->toThrow(Illuminate\Database\QueryException::class);
+    expect(fn () => PpdbRegistration::create(['registration_number' => 'PPDB-UNIQUE-001', 'candidate_name' => 'B', 'status' => 'submitted']))->toThrow(QueryException::class);
 });

@@ -2,6 +2,7 @@
 
 namespace App\Modules\Alumni\Models;
 
+use App\Modules\IndustryPartner\Models\IndustryPartner;
 use Illuminate\Database\Eloquent\Model;
 
 class JobVacancy extends Model
@@ -23,7 +24,7 @@ class JobVacancy extends Model
 
     public function industryPartner()
     {
-        return $this->belongsTo(\App\Modules\IndustryPartner\Models\IndustryPartner::class);
+        return $this->belongsTo(IndustryPartner::class);
     }
 
     public function applications()

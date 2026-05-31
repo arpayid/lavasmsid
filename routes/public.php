@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Modules\Website\Controllers\PublicHomeController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', [PublicHomeController::class, 'index'])->name('public.home');
 Route::view('/profil', 'public.profile')->name('public.profile');

@@ -2,6 +2,7 @@
 
 namespace App\Modules\Academic\Models;
 
+use App\Modules\Student\Models\Student;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -28,7 +29,7 @@ class Grade extends Model
 
     public function student(): BelongsTo
     {
-        return $this->belongsTo(\App\Modules\Student\Models\Student::class);
+        return $this->belongsTo(Student::class);
     }
 
     public function subject(): BelongsTo

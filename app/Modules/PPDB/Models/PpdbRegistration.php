@@ -2,13 +2,17 @@
 
 namespace App\Modules\PPDB\Models;
 
+use App\Modules\Academic\Models\Department;
 use Illuminate\Database\Eloquent\Model;
 
 class PpdbRegistration extends Model
 {
     const STATUS_SUBMITTED = 'submitted';
+
     const STATUS_VERIFIED = 'verified';
+
     const STATUS_ACCEPTED = 'accepted';
+
     const STATUS_REJECTED = 'rejected';
 
     protected $fillable = [
@@ -35,6 +39,6 @@ class PpdbRegistration extends Model
 
     public function department()
     {
-        return $this->belongsTo(\App\Modules\Academic\Models\Department::class);
+        return $this->belongsTo(Department::class);
     }
 }

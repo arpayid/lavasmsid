@@ -4,7 +4,6 @@ namespace App\Modules\BKK\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Alumni\Models\JobVacancy;
-use App\Modules\Alumni\Models\JobApplication;
 use App\Modules\IndustryPartner\Models\IndustryPartner;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

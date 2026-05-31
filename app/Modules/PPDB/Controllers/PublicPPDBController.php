@@ -3,9 +3,9 @@
 namespace App\Modules\PPDB\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Academic\Models\Department;
 use App\Modules\PPDB\Models\PpdbRegistration;
 use App\Modules\PPDB\Services\PpdbService;
-use App\Modules\Academic\Models\Department;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -40,7 +40,7 @@ class PublicPPDBController extends Controller
         $registration = $this->ppdbService->register($validated);
 
         return redirect()->route('public.ppdb.status', $registration->registration_number)
-            ->with('success', 'Pendaftaran berhasil! Simpan nomor pendaftaran Anda: ' . $registration->registration_number);
+            ->with('success', 'Pendaftaran berhasil! Simpan nomor pendaftaran Anda: '.$registration->registration_number);
     }
 
     public function status(string $number): View

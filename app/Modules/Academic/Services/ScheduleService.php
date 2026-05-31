@@ -17,7 +17,7 @@ class ScheduleService
 
             $conflicts = $this->detectConflicts($schedule);
 
-            if (!empty($conflicts)) {
+            if (! empty($conflicts)) {
                 throw new \InvalidArgumentException(implode(', ', $conflicts));
             }
 
@@ -37,7 +37,7 @@ class ScheduleService
 
             $conflicts = $this->detectConflicts($schedule);
 
-            if (!empty($conflicts)) {
+            if (! empty($conflicts)) {
                 throw new \InvalidArgumentException(implode(', ', $conflicts));
             }
 

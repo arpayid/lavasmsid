@@ -2,6 +2,7 @@
 
 namespace App\Modules\Academic\Models\TeachingFactory;
 
+use App\Modules\Academic\Models\Department;
 use Illuminate\Database\Eloquent\Model;
 
 class TeachingFactoryProject extends Model
@@ -25,7 +26,7 @@ class TeachingFactoryProject extends Model
 
     public function department()
     {
-        return $this->belongsTo(\App\Modules\Academic\Models\Department::class);
+        return $this->belongsTo(Department::class);
     }
 
     public function product()

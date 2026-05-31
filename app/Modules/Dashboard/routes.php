@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Modules\Dashboard\Controllers\DashboardController;
 use App\Modules\Dashboard\Controllers\ProfileController;
 use App\Modules\Dashboard\Controllers\SettingsController;
+use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])
     ->prefix('admin')

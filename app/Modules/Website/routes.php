@@ -1,8 +1,8 @@
 <?php
 
 use App\Modules\Website\Controllers\Admin\CmsController;
-use App\Modules\Website\Controllers\Admin\NewsController;
 use App\Modules\Website\Controllers\Admin\GalleryController;
+use App\Modules\Website\Controllers\Admin\NewsController;
 use App\Modules\Website\Controllers\PublicWebsiteController;
 use Illuminate\Support\Facades\Route;
 

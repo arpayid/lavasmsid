@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
@@ -32,7 +33,7 @@ class ProfileController extends Controller
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email,'.$user->id],
             'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
         ]);
 
@@ -59,8 +60,8 @@ class ProfileController extends Controller
 
         $user = Auth::user();
 
-        if (!Hash::check($validated['current_password'], $user->password)) {
-            throw \Illuminate\Validation\ValidationException::withMessages([
+        if (! Hash::check($validated['current_password'], $user->password)) {
+            throw ValidationException::withMessages([
                 'current_password' => ['Password saat ini tidak sesuai.'],
             ]);
         }

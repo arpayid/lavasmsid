@@ -4,7 +4,6 @@ namespace App\Modules\Dashboard\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\View\View;
-use App\Models\User;
 
 class DashboardController extends Controller
 {
