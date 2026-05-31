@@ -3,9 +3,6 @@
 namespace App\Modules\Dashboard\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Student\Models\Student;
-use App\Modules\Teacher\Models\Teacher;
-use App\Modules\Academic\Models\Department;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
@@ -14,9 +11,9 @@ class DashboardController extends Controller
     {
         return view('admin.dashboard', [
             'stats' => [
-                'students' => Student::count(),
-                'teachers' => Teacher::count(),
-                'departments' => Department::count(),
+                'students' => 0,
+                'teachers' => 0,
+                'departments' => 0,
                 'ppdb' => 0,
                 'payments_today' => 0,
                 'attendance_today' => 0,
