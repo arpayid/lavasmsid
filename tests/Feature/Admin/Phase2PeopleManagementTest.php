@@ -103,3 +103,32 @@ test('teacher_subject assignment works when subject exists', function () {
     $teacher->subjects()->attach($subject->id, ['classroom_id' => null, 'academic_year_id' => null, 'semester_id' => null]);
     $this->assertDatabaseHas('teacher_subjects', ['teacher_id' => $teacher->id, 'subject_id' => $subject->id]);
 });
+
+test('creating teacher with subject assignment stores teacher_subjects', function () {
+    $subject = Subject::create(['code' => 'MATH1', 'name' => 'Math Test']);
+    $response = $this->actingAs($this->admin)->post(route('admin.teachers.store'), [
+        'name' => 'Subject Teacher',
+        'status' => 'active',
+        'subjects' => [['subject_id' => $subject->id, 'classroom_id' => null, 'academic_year_id' => null, 'semester_id' => null]],
+    ]);
+    $response->assertRedirect();
+    $teacher = Teacher::where('name', 'Subject Teacher')->first();
+    $this->assertTrue($teacher->subjects->contains($subject));
+});
+
+test('updating teacher subject assignment changes teacher_subjects', function () {
+    $teacher = Teacher::create(['name' => 'Update Test', 'status' => 'active']);
+    $subject1 = Subject::create(['code' => 'SUB1', 'name' => 'Subject 1']);
+    $subject2 = Subject::create(['code' => 'SUB2', 'name' => 'Subject 2']);
+    $teacher->subjects()->attach($subject1->id);
+
+    $response = $this->actingAs($this->admin)->put(route('admin.teachers.update', $teacher), [
+        'name' => 'Updated Teacher',
+        'status' => 'active',
+        'subjects' => [['subject_id' => $subject2->id, 'classroom_id' => null, 'academic_year_id' => null, 'semester_id' => null]],
+    ]);
+    $response->assertRedirect();
+    $teacher->refresh();
+    $this->assertFalse($teacher->subjects->contains($subject1));
+    $this->assertTrue($teacher->subjects->contains($subject2));
+});

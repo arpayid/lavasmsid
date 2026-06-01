@@ -11,18 +11,27 @@ class TeacherService
     public function create(array $data): Teacher
     {
         return DB::transaction(function () use ($data) {
+            $subjects = $data['subjects'] ?? [];
+            unset($data['subjects']);
+
             if (isset($data['photo'])) {
                 $data['photo_path'] = $data['photo']->store('teachers', 'public');
                 unset($data['photo']);
             }
 
-            return Teacher::create($data);
+            $teacher = Teacher::create($data);
+            $this->syncSubjects($teacher, $subjects);
+
+            return $teacher;
         });
     }
 
     public function update(Teacher $teacher, array $data): Teacher
     {
         return DB::transaction(function () use ($teacher, $data) {
+            $subjects = $data['subjects'] ?? [];
+            unset($data['subjects']);
+
             if (isset($data['photo'])) {
                 if ($teacher->photo_path) {
                     Storage::disk('public')->delete($teacher->photo_path);
@@ -30,7 +39,9 @@ class TeacherService
                 $data['photo_path'] = $data['photo']->store('teachers', 'public');
                 unset($data['photo']);
             }
+
             $teacher->update($data);
+            $this->syncSubjects($teacher, $subjects);
 
             return $teacher;
         });
@@ -45,5 +56,30 @@ class TeacherService
 
             return $teacher->delete();
         });
+    }
+
+    /**
+     * Sync teacher subjects pivot.
+     * $subjects = [['subject_id' => 1, 'classroom_id' => null, ...], ...]
+     */
+    protected function syncSubjects(Teacher $teacher, array $subjects): void
+    {
+        if (empty($subjects)) {
+            $teacher->subjects()->detach();
+
+            return;
+        }
+
+        $syncData = [];
+        foreach ($subjects as $item) {
+            $sid = $item['subject_id'];
+            $syncData[$sid] = [
+                'classroom_id' => $item['classroom_id'] ?? null,
+                'academic_year_id' => $item['academic_year_id'] ?? null,
+                'semester_id' => $item['semester_id'] ?? null,
+            ];
+        }
+
+        $teacher->subjects()->sync($syncData);
     }
 }

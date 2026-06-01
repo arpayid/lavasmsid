@@ -3,6 +3,9 @@
 namespace App\Modules\Teacher\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Academic\Models\AcademicYear;
+use App\Modules\Academic\Models\Classroom;
+use App\Modules\Academic\Models\Semester;
 use App\Modules\Academic\Models\Subject;
 use App\Modules\Teacher\Models\Teacher;
 use App\Modules\Teacher\Requests\StoreTeacherRequest;
@@ -38,7 +41,7 @@ class TeacherController extends Controller
 
     public function create(): View
     {
-        return view('modules.teacher.create');
+        return view('modules.teacher.create', $this->sharedData());
     }
 
     public function store(StoreTeacherRequest $request): RedirectResponse
@@ -50,17 +53,14 @@ class TeacherController extends Controller
 
     public function show(Teacher $teacher): View
     {
-        $teacher->load(['subjects']);
+        $teacher->load(['subjects.classroom', 'subjects.semester']);
 
         return view('modules.teacher.show', compact('teacher'));
     }
 
     public function edit(Teacher $teacher): View
     {
-        return view('modules.teacher.edit', [
-            'teacher' => $teacher,
-            'subjects' => Subject::orderBy('name')->get(),
-        ]);
+        return view('modules.teacher.edit', array_merge($this->sharedData(), ['teacher' => $teacher]));
     }
 
     public function update(UpdateTeacherRequest $request, Teacher $teacher): RedirectResponse
@@ -75,5 +75,15 @@ class TeacherController extends Controller
         $this->service->delete($teacher);
 
         return redirect()->route('admin.teachers.index')->with('success', 'Guru berhasil dihapus.');
+    }
+
+    protected function sharedData(): array
+    {
+        return [
+            'subjects' => Subject::orderBy('name')->get(),
+            'classrooms' => Classroom::orderBy('name')->get(),
+            'academicYears' => AcademicYear::orderByDesc('start_date')->get(),
+            'semesters' => Semester::orderByDesc('id')->get(),
+        ];
     }
 }

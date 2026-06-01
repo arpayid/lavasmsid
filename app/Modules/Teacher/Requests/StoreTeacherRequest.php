@@ -27,6 +27,11 @@ class StoreTeacherRequest extends FormRequest
             'certification_number' => ['nullable', 'string', 'max:50'],
             'status' => ['required', 'in:active,inactive'],
             'photo' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
+            'subjects' => ['nullable', 'array'],
+            'subjects.*.subject_id' => ['required', 'exists:subjects,id'],
+            'subjects.*.classroom_id' => ['nullable', 'exists:classrooms,id'],
+            'subjects.*.academic_year_id' => ['nullable', 'exists:academic_years,id'],
+            'subjects.*.semester_id' => ['nullable', 'exists:semesters,id'],
         ];
     }
 }

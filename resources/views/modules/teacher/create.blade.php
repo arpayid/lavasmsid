@@ -1,5 +1,5 @@
 <x-admin-layout heading="Tambah Guru">
-    <form method="POST" action="{{ route('admin.teachers.store') }}" enctype="multipart/form-data" class="max-w-2xl rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+    <form method="POST" action="{{ route('admin.teachers.store') }}" enctype="multipart/form-data" class="max-w-3xl rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
         @csrf
         <x-admin.form-input name="name" label="Nama Lengkap" :value="old('name')" required />
         <div class="grid gap-4 md:grid-cols-2">
@@ -20,9 +20,71 @@
         </div>
         <x-admin.form-select name="status" label="Status" :options="['active' => 'Aktif', 'inactive' => 'Nonaktif']" :value="old('status', 'active')" />
         <x-admin.form-input name="photo" label="Foto" type="file" accept="image/jpeg,image/png,image/webp" />
+
+        {{-- Subject Assignment --}}
+        <div class="mt-6 border-t border-slate-200 pt-6">
+            <h3 class="mb-4 text-lg font-semibold text-slate-900">Mata Pelajaran yang Diajar</h3>
+            <div id="subjectRows" class="space-y-3">
+                <div class="subject-row grid gap-3 md:grid-cols-3">
+                    <select name="subjects[0][subject_id]" class="rounded-lg border border-slate-300 px-3 py-2 text-sm">
+                        <option value="">-- Pilih Mapel --</option>
+                        @foreach($subjects as $s) <option value="{{ $s->id }}">{{ $s->name }}</option> @endforeach
+                    </select>
+                    <select name="subjects[0][classroom_id]" class="rounded-lg border border-slate-300 px-3 py-2 text-sm">
+                        <option value="">-- Kelas (opsional) --</option>
+                        @foreach($classrooms as $c) <option value="{{ $c->id }}">{{ $c->name }}</option> @endforeach
+                    </select>
+                    <div class="flex gap-2">
+                        <select name="subjects[0][academic_year_id]" class="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm">
+                            <option value="">Tahun Ajaran</option>
+                            @foreach($academicYears as $ay) <option value="{{ $ay->id }}">{{ $ay->name }}</option> @endforeach
+                        </select>
+                        <select name="subjects[0][semester_id]" class="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm">
+                            <option value="">Semester</option>
+                            @foreach($semesters as $sm) <option value="{{ $sm->id }}">{{ $sm->name }}</option> @endforeach
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <button type="button" onclick="addSubjectRow()" class="mt-3 text-sm text-primary-600 hover:underline">+ Tambah Mapel</button>
+        </div>
+
         <div class="mt-6 flex gap-3">
             <button type="submit" class="rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white">Simpan</button>
             <a href="{{ route('admin.teachers.index') }}" class="rounded-lg border bg-white px-4 py-2.5 text-sm font-medium text-slate-700">Batal</a>
         </div>
     </form>
+
+    @push('scripts')
+    <script>
+        let subjectIndex = 1;
+        function addSubjectRow() {
+            const container = document.getElementById('subjectRows');
+            const row = document.createElement('div');
+            row.className = 'subject-row grid gap-3 md:grid-cols-3';
+            row.innerHTML = `
+                <select name="subjects[${subjectIndex}][subject_id]" class="rounded-lg border border-slate-300 px-3 py-2 text-sm">
+                    <option value="">-- Pilih Mapel --</option>
+                    @foreach($subjects as $s) <option value="{{ $s->id }}">{{ $s->name }}</option> @endforeach
+                </select>
+                <select name="subjects[${subjectIndex}][classroom_id]" class="rounded-lg border border-slate-300 px-3 py-2 text-sm">
+                    <option value="">-- Kelas (opsional) --</option>
+                    @foreach($classrooms as $c) <option value="{{ $c->id }}">{{ $c->name }}</option> @endforeach
+                </select>
+                <div class="flex gap-2">
+                    <select name="subjects[${subjectIndex}][academic_year_id]" class="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm">
+                        <option value="">Tahun Ajaran</option>
+                        @foreach($academicYears as $ay) <option value="{{ $ay->id }}">{{ $ay->name }}</option> @endforeach
+                    </select>
+                    <select name="subjects[${subjectIndex}][semester_id]" class="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm">
+                        <option value="">Semester</option>
+                        @foreach($semesters as $sm) <option value="{{ $sm->id }}">{{ $sm->name }}</option> @endforeach
+                    </select>
+                </div>
+            `;
+            container.appendChild(row);
+            subjectIndex++;
+        }
+    </script>
+    @endpush
 </x-admin-layout>
