@@ -24,9 +24,13 @@ class RolePermissionSeeder extends Seeder
             // Academic
             'academic.view', 'academic.create', 'academic.update', 'academic.delete',
             // Student
-            'student.view',
+            'student.view', 'student.create', 'student.update', 'student.delete', 'student.import', 'student.export',
             // Teacher
-            'teacher.view',
+            'teacher.view', 'teacher.create', 'teacher.update', 'teacher.delete', 'teacher.import', 'teacher.export',
+            // Staff
+            'staff.view', 'staff.create', 'staff.update', 'staff.delete', 'staff.import', 'staff.export',
+            // Guardian
+            'guardian.view', 'guardian.create', 'guardian.update', 'guardian.delete',
             // Attendance
             'attendance.view', 'attendance.create', 'attendance.update', 'attendance.delete',
             // Grade
@@ -62,16 +66,16 @@ class RolePermissionSeeder extends Seeder
         // Define roles and sync permissions
         $rolePermissions = [
             'Super Admin' => $permissions,
-            'Admin Sekolah' => ['student.view', 'teacher.view', 'academic.view', 'attendance.view', 'grade.view', 'report.view', 'website.view'],
+            'Admin Sekolah' => ['student.view', 'student.create', 'student.update', 'student.delete', 'teacher.view', 'teacher.create', 'teacher.update', 'teacher.delete', 'staff.view', 'staff.create', 'staff.update', 'staff.delete', 'guardian.view', 'guardian.create', 'guardian.update', 'guardian.delete', 'academic.view', 'attendance.view', 'grade.view', 'report.view', 'website.view'],
             'Kepala Sekolah' => ['report.view', 'report.export', 'academic.view', 'attendance.view', 'grade.view', 'student.view', 'teacher.view'],
             'Waka Kurikulum' => ['academic.view', 'schedule.view', 'grade.view', 'grade.create', 'grade.update'],
             'Waka Kesiswaan' => ['student.view', 'attendance.view'],
-            'Guru' => ['attendance.view', 'attendance.create', 'grade.view', 'grade.create', 'grade.update', 'student.view'],
-            'Wali Kelas' => ['attendance.view', 'grade.view', 'student.view', 'report.view'],
+            'Guru' => ['attendance.view', 'attendance.create', 'grade.view', 'grade.create', 'grade.update', 'student.view', 'guardian.view'],
+            'Wali Kelas' => ['attendance.view', 'grade.view', 'student.view', 'guardian.view', 'report.view'],
             'Siswa' => ['grade.view', 'attendance.view'],
             'Orang Tua / Wali' => ['attendance.view', 'grade.view'],
             'Bendahara' => ['finance.view', 'finance.create', 'finance.update', 'finance.verify', 'finance.export', 'finance.print'],
-            'Staff TU' => ['student.view', 'teacher.view', 'academic.view', 'report.view'],
+            'Staff TU' => ['student.view', 'student.create', 'student.update', 'teacher.view', 'staff.view', 'guardian.view', 'academic.view', 'report.view'],
             'Panitia PPDB' => ['ppdb.view', 'ppdb.verify', 'ppdb.approve', 'ppdb.export', 'ppdb.print'],
             'Pembimbing PKL' => ['internship.view', 'internship.create', 'internship.update'],
             'Admin BKK' => ['alumni.view', 'alumni.create', 'alumni.update', 'alumni.export', 'bkk.view', 'bkk.create', 'bkk.update', 'bkk.export'],
