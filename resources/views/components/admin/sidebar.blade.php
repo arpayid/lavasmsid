@@ -102,6 +102,22 @@
         </div>
         @endif
 
+        @if(auth()->user()->can('finance.view'))
+        <div class="mt-3">
+            <button @click="openGroup = openGroup === 'finance' ? '' : 'finance'" class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-xs font-semibold uppercase tracking-wider text-slate-500 transition hover:text-slate-300">
+                <span x-show="!sidebarCollapsed" x-collapse>Keuangan</span>
+                <svg class="h-4 w-4 shrink-0 transition-transform" :class="openGroup === 'finance' ? 'rotate-90' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </button>
+            <div x-show="openGroup === 'finance'" x-collapse>
+                <a href="{{ route('admin.finance.dashboard') }}" class="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-800 {{ $activeRoute('admin.finance.dashboard') }}"><span x-show="!sidebarCollapsed" x-collapse>Dashboard</span></a>
+                <a href="{{ route('admin.finance.invoices.index') }}" class="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-800 {{ $activeRoute('admin.finance.invoices.*') }}"><span x-show="!sidebarCollapsed" x-collapse>Tagihan</span></a>
+                <a href="{{ route('admin.finance.payments.index') }}" class="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-800 {{ $activeRoute('admin.finance.payments.*') }}"><span x-show="!sidebarCollapsed" x-collapse>Pembayaran</span></a>
+                <a href="{{ route('admin.finance.categories.index') }}" class="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-800 {{ $activeRoute('admin.finance.categories.*') }}"><span x-show="!sidebarCollapsed" x-collapse>Kategori</span></a>
+                <a href="{{ route('admin.finance.reports.index') }}" class="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-800 {{ $activeRoute('admin.finance.reports.*') }}"><span x-show="!sidebarCollapsed" x-collapse>Laporan</span></a>
+            </div>
+        </div>
+        @endif
+
         @if(auth()->user()->can('user.view') || auth()->user()->can('role.view') || auth()->user()->hasRole('Super Admin'))
         <div class="mt-3">
             <button @click="openGroup = openGroup === 'users' ? '' : 'users'" class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-xs font-semibold uppercase tracking-wider text-slate-500 transition hover:text-slate-300">
@@ -126,23 +142,6 @@
                 <span x-show="!sidebarCollapsed" x-collapse>Pengaturan</span>
             </a>
         </div>
-        @endif
-
-        <div class="my-3 border-t border-slate-800"></div>
-        <p class="px-3 text-[10px] uppercase tracking-wider text-slate-600" x-show="!sidebarCollapsed" x-collapse>Coming Soon</p>
-
-        @if(auth()->user()->can('finance.view'))
-        <a href="{{ Route::has('admin.finance.dashboard') ? route('admin.finance.dashboard') : '#' }}" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-slate-500 transition hover:bg-slate-800">
-            <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5"/></svg>
-            <span x-show="!sidebarCollapsed" x-collapse>Keuangan</span>
-        </a>
-        @endif
-
-        @if(auth()->user()->can('report.view'))
-        <a href="{{ Route::has('admin.reports.index') ? route('admin.reports.index') : '#' }}" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-slate-500 transition hover:bg-slate-800">
-            <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6"/></svg>
-            <span x-show="!sidebarCollapsed" x-collapse>Laporan</span>
-        </a>
         @endif
     </nav>
 

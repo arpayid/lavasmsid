@@ -3,60 +3,49 @@
 namespace App\Modules\Finance\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Finance\Models\Invoice;
-use App\Modules\Finance\Models\Payment;
-use App\Modules\Finance\Services\PaymentService;
+use App\Models\Invoice;
+use App\Models\Payment;
+use App\Services\PaymentService;
+use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class PaymentController extends Controller
 {
     public function __construct(protected PaymentService $paymentService) {}
 
-    public function dashboard(): View
-    {
-        // Simple dashboard stats
-        $stats = [
-            'total_income' => Payment::where('status', Payment::STATUS_VERIFIED)->sum('amount'),
-            'income_today' => Payment::where('status', Payment::STATUS_VERIFIED)->whereDate('paid_at', today())->sum('amount'),
-            'unpaid_invoices' => Invoice::where('status', '!=', Invoice::STATUS_PAID)->count(),
-            'pending_verifications' => Payment::where('status', Payment::STATUS_PENDING)->count(),
-        ];
-
-        $recentPayments = Payment::with(['invoice.student', 'invoice.paymentCategory'])
-            ->orderByDesc('created_at')
-            ->take(5)
-            ->get();
-
-        return view('modules.finance.dashboard', compact('stats', 'recentPayments'));
-    }
-
     public function index(Request $request): View
     {
+        if (Gate::denies('finance.view')) {
+            abort(403);
+        }
+
         $query = Payment::with(['invoice.student', 'invoice.paymentCategory', 'verifier']);
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
-        if ($request->filled('date')) {
-            $query->whereDate('paid_at', $request->date);
-        }
 
-        $payments = $query->orderByDesc('created_at')->paginate(20);
+        $payments = $query->latest()->paginate(15);
 
         return view('modules.finance.payments.index', compact('payments'));
     }
 
     public function create(Request $request): View
     {
+        if (Gate::denies('finance.create')) {
+            abort(403);
+        }
+
         $invoice = null;
         if ($request->filled('invoice_id')) {
             $invoice = Invoice::with(['student', 'paymentCategory'])->find($request->invoice_id);
         }
 
         $invoices = Invoice::with(['student', 'paymentCategory'])
-            ->where('status', '!=', Invoice::STATUS_PAID)
+            ->where('status', '!=', 'paid')
             ->orderByDesc('created_at')
             ->get();
 
@@ -65,36 +54,70 @@ class PaymentController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'invoice_id' => ['required', 'exists:invoices,id'],
-            'amount' => ['required', 'numeric', 'min:1'],
-            'paid_at' => ['required', 'date'],
-            'method' => ['required', 'in:cash,transfer,qris'],
-        ]);
-
-        $invoice = Invoice::findOrFail($validated['invoice_id']);
-        if ($validated['amount'] > $invoice->getRemainingAmount()) {
-            return back()->with('error', 'Jumlah pembayaran melebihi sisa tagihan.')->withInput();
+        if (Gate::denies('finance.create')) {
+            abort(403);
         }
 
-        $verifierId = auth()->user()->hasRole('Super Admin') || auth()->user()->can('finance.verify')
-            ? auth()->id()
-            : null;
+        $validated = $request->validate([
+            'invoice_id' => 'required|exists:invoices,id',
+            'amount' => 'required|numeric|min:1',
+            'paid_at' => 'required|date',
+            'method' => 'required|string|max:50',
+            'receipt_number' => 'nullable|string|unique:payments,receipt_number',
+        ]);
 
-        $this->paymentService->recordPayment($validated, $verifierId);
+        try {
+            // Auto-verify if user has permission
+            $verifierId = Gate::allows('finance.verify') ? auth()->id() : null;
 
-        return redirect()->route('admin.finance.invoices.show', $invoice)
-            ->with('success', 'Pembayaran berhasil dicatat.');
+            $payment = $this->paymentService->recordPayment($validated, $verifierId);
+
+            return redirect()->route('admin.finance.invoices.show', $payment->invoice_id)
+                ->with('success', $payment->status === 'verified' ? 'Pembayaran berhasil dicatat dan diverifikasi.' : 'Pembayaran berhasil dicatat dan menunggu verifikasi.');
+        } catch (Exception $e) {
+            return back()->with('error', $e->getMessage())->withInput();
+        }
+    }
+
+    public function show(Payment $payment): View
+    {
+        if (Gate::denies('finance.view')) {
+            abort(403);
+        }
+
+        $payment->load(['invoice.student', 'invoice.paymentCategory', 'verifier']);
+
+        return view('modules.finance.payments.show', compact('payment'));
     }
 
     public function verify(Payment $payment): RedirectResponse
     {
-        if (! auth()->user()->can('finance.verify')) {
+        if (Gate::denies('finance.verify')) {
             abort(403);
         }
 
-        $this->paymentService->verifyPayment($payment->id, auth()->id());
+        try {
+            $this->paymentService->verifyPayment($payment->id, auth()->id());
 
-        return back()->with('success', 'Pembayaran berhasil diverifikasi.');
+            return back()->with('success', 'Pembayaran berhasil diverifikasi.');
+        } catch (Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
+    public function destroy(Payment $payment): RedirectResponse
+    {
+        if (Gate::denies('finance.update')) {
+            abort(403);
+        }
+
+        if ($payment->status === 'verified') {
+            return back()->with('error', 'Pembayaran yang sudah diverifikasi tidak dapat dihapus.');
+        }
+
+        $payment->delete();
+
+        return redirect()->route('admin.finance.payments.index')
+            ->with('success', 'Pembayaran pending berhasil dihapus.');
     }
 }

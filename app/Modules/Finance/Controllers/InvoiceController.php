@@ -3,96 +3,122 @@
 namespace App\Modules\Finance\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Academic\Models\Classroom;
-use App\Modules\Finance\Models\Invoice;
-use App\Modules\Finance\Models\PaymentCategory;
-use App\Modules\Finance\Services\InvoiceService;
-use App\Modules\Student\Models\Student;
+use App\Models\Invoice;
+use App\Models\PaymentCategory;
+use App\Models\Student;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class InvoiceController extends Controller
 {
-    public function __construct(protected InvoiceService $invoiceService) {}
-
     public function index(Request $request): View
     {
+        if (Gate::denies('finance.view')) {
+            abort(403);
+        }
+
         $query = Invoice::with(['student', 'paymentCategory']);
 
-        if ($request->filled('student_id')) {
-            $query->where('student_id', $request->student_id);
+        if ($request->filled('search')) {
+            $query->where('invoice_number', 'like', '%'.$request->search.'%')
+                ->orWhereHas('student', function ($q) use ($request) {
+                    $q->where('name', 'like', '%'.$request->search.'%');
+                });
         }
+
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
-        if ($request->filled('category_id')) {
-            $query->where('payment_category_id', $request->category_id);
-        }
 
-        $invoices = $query->orderByDesc('created_at')->paginate(20);
-        $categories = PaymentCategory::orderBy('name')->get();
-        $classrooms = Classroom::orderBy('name')->get();
+        $invoices = $query->latest()->paginate(15);
 
-        return view('modules.finance.invoices.index', compact('invoices', 'categories', 'classrooms'));
+        return view('modules.finance.invoices.index', compact('invoices'));
     }
 
     public function create(): View
     {
-        return view('modules.finance.invoices.create', [
-            'categories' => PaymentCategory::orderBy('name')->get(),
-            'students' => Student::orderBy('name')->get(),
-            'classrooms' => Classroom::orderBy('name')->get(),
-        ]);
+        if (Gate::denies('finance.create')) {
+            abort(403);
+        }
+
+        $students = Student::orderBy('name')->get();
+        $categories = PaymentCategory::orderBy('name')->get();
+
+        return view('modules.finance.invoices.create', compact('students', 'categories'));
     }
 
     public function store(Request $request): RedirectResponse
     {
+        if (Gate::denies('finance.create')) {
+            abort(403);
+        }
+
         $validated = $request->validate([
-            'payment_category_id' => ['required', 'exists:payment_categories,id'],
-            'amount' => ['required', 'numeric', 'min:1'],
-            'due_date' => ['nullable', 'date'],
-            'target_type' => ['required', 'in:student,classroom,all'],
-            'student_id' => ['required_if:target_type,student', 'nullable', 'exists:students,id'],
-            'classroom_id' => ['required_if:target_type,classroom', 'nullable', 'exists:classrooms,id'],
+            'student_id' => 'required|exists:students,id',
+            'payment_category_id' => 'required|exists:payment_categories,id',
+            'amount' => 'required|numeric|min:1',
+            'due_date' => 'nullable|date',
+            'invoice_number' => 'nullable|string|unique:invoices,invoice_number',
         ]);
 
-        $data = [
-            'payment_category_id' => $validated['payment_category_id'],
-            'amount' => $validated['amount'],
-            'due_date' => $validated['due_date'],
-        ];
-
-        $studentIds = [];
-        if ($validated['target_type'] === 'student') {
-            $studentIds = [$validated['student_id']];
-        } elseif ($validated['target_type'] === 'classroom') {
-            $studentIds = Student::where('classroom_id', $validated['classroom_id'])->pluck('id')->toArray();
-        } else {
-            $studentIds = Student::pluck('id')->toArray();
-        }
-
-        if (empty($studentIds)) {
-            return back()->with('error', 'Tidak ada siswa yang ditemukan untuk target ini.')->withInput();
-        }
-
-        $count = $this->invoiceService->bulkCreateInvoices($studentIds, $data);
+        Invoice::create($validated);
 
         return redirect()->route('admin.finance.invoices.index')
-            ->with('success', "Berhasil membuat $count tagihan.");
+            ->with('success', 'Tagihan berhasil dibuat.');
     }
 
     public function show(Invoice $invoice): View
     {
-        $invoice->load(['student', 'paymentCategory', 'payments.verifier']);
+        if (Gate::denies('finance.view')) {
+            abort(403);
+        }
+
+        $invoice->load(['student', 'paymentCategory']);
 
         return view('modules.finance.invoices.show', compact('invoice'));
     }
 
+    public function edit(Invoice $invoice): View
+    {
+        if (Gate::denies('finance.update')) {
+            abort(403);
+        }
+
+        $students = Student::orderBy('name')->get();
+        $categories = PaymentCategory::orderBy('name')->get();
+
+        return view('modules.finance.invoices.edit', compact('invoice', 'students', 'categories'));
+    }
+
+    public function update(Request $request, Invoice $invoice): RedirectResponse
+    {
+        if (Gate::denies('finance.update')) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'student_id' => 'required|exists:students,id',
+            'payment_category_id' => 'required|exists:payment_categories,id',
+            'amount' => 'required|numeric|min:1',
+            'due_date' => 'nullable|date',
+        ]);
+
+        $invoice->update($validated);
+
+        return redirect()->route('admin.finance.invoices.index')
+            ->with('success', 'Tagihan berhasil diperbarui.');
+    }
+
     public function destroy(Invoice $invoice): RedirectResponse
     {
+        if (Gate::denies('finance.update')) {
+            abort(403);
+        }
+
         if ($invoice->paid_amount > 0) {
-            return back()->with('error', 'Tagihan yang sudah ada pembayaran tidak dapat dihapus.');
+            return back()->with('error', 'Tagihan yang sudah memiliki pembayaran tidak dapat dihapus.');
         }
 
         $invoice->delete();

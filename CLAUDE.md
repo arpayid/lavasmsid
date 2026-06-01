@@ -1,112 +1,135 @@
-# LavaSMSID Claude Instructions
+# CLAUDE.md
 
-Project: LavaSMSID — SMK Management System Professional
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Architecture
+## High-Level Architecture
 
-Hybrid Modular Monolith Laravel.
+LavaSMSID employs a **Hybrid Modular Monolith Laravel** architecture. This means the entire application resides within a single Laravel project, with features modularized by business domain. Laravel serves as the core for the public website, custom admin panel, multi-role dashboards, internal APIs, reports, queues, caches, and file uploads.
 
-Laravel is the single application core for:
+**Key Architectural Principles:**
+-   **Core Modules**: Global logic resides in `app/Core` (Auth, Dashboard, Settings, Audit, Notification, Shared base classes).
+-   **Business Modules**: Domain-specific features are organized in `app/Modules` (e.g., `Academic`, `Student`, `Finance`, `PPDB`).
+-   **Thin Controllers**: Controllers primarily handle requests, delegate business logic to Services/Actions, and return responses.
+-   **Service Layer**: Contains core business logic, orchestrates repositories/models, handles database transactions, and manages queues/events. New services should be created in `app/Services/` or `app/Modules/{ModuleName}/Services/`.
+-   **Repository Layer**: Encapsulates complex queries, search, filter, sorting, and pagination logic.
+-   **Action Classes**: Handle specific use cases (e.g., `ConvertPpdbToStudentAction`).
+-   **Form Requests**: Used for input validation and light authorization.
+-   **Policies & Spatie Permission**: Essential for robust authorization, protecting sensitive data, and ensuring role-based access control.
+-   **Frontend**: Built with Blade, TailwindCSS, Vite, Alpine.js, and Chart.js. No separate frontend project at this stage.
+-   **Database**: Single primary database, with tables organized by domain.
 
-- Public website
-- Custom admin panel
-- Multi-role dashboard
-- Internal API
-- Reports
-- Queue
-- Cache
-- File upload
-- Notifications
+## Common Commands
 
-## Admin Panel
+**Development:**
+-   **Install dependencies**:
+    ```bash
+    composer install
+    npm install
+    ```
+-   **Generate application key**:
+    ```bash
+    php artisan key:generate
+    ```
+-   **Run migrations and seeders (fresh database)**:
+    ```bash
+    php artisan migrate:fresh --seed
+    ```
+-   **List all routes**:
+    ```bash
+    php artisan route:list
+    ```
+-   **Run Vite development server**:
+    ```bash
+    npm run dev
+    ```
+-   **Build frontend assets for production**:
+    ```bash
+    npm run build
+    ```
+-   **Run tests**:
+    ```bash
+    php artisan test
+    ```
+-   **Run a single test file/case**:
+    ```bash
+    php artisan test --filter "YourTestClass"
+    php artisan test "tests/Feature/YourFeatureTest.php"
+    ```
+-   **Lint code with Laravel Pint**:
+    ```bash
+    vendor/bin/pint
+    ```
+-   **Start local development server**:
+    ```bash
+    php artisan serve --host=0.0.0.0 --port=8000
+    ```
 
-Use Custom Laravel Blade + TailwindCSS + Alpine.js.
+**Production (VPS):**
+-   **Install dependencies (production)**:
+    ```bash
+    composer install --no-dev --optimize-autoloader
+    npm ci
+    npm run build
+    ```
+-   **Run migrations (production)**:
+    ```bash
+    php artisan migrate --force
+    ```
+-   **Link storage**:
+    ```bash
+    php artisan storage:link
+    ```
+-   **Cache configurations**:
+    ```bash
+    php artisan config:cache
+    php artisan route:cache
+    php artisan view:cache
+    ```
+-   **Restart queue workers**:
+    ```bash
+    php artisan queue:restart
+    ```
 
-Do not use Filament as the main admin panel.
+## Important Documentation
 
-## Main Documentation
-
-Always read:
-
-- README.md
-- docs/HYBRID_MODULAR_MONOLITH.md
-- docs/MONOLITH_PLAN.md
-- docs/EXECUTION_ROADMAP_FULL.md
-- docs/ROADMAP_UNEXECUTED_PROMPT.md
-
-## Required Skills
-
-Use relevant skills from:
-
-- .claude/skills/laravel-hybrid-modular-monolith
-- .claude/skills/custom-admin-panel
-- .claude/skills/module-crud-generator
-- .claude/skills/database-migration-seeder
-- .claude/skills/security-production-auditor
-- .claude/skills/testing-engineer
-- .claude/skills/vps-deployment-engineer
+Always refer to these files for detailed information:
+-   `README.md`
+-   `docs/HYBRID_MODULAR_MONOLITH.md`
+-   `docs/MONOLITH_PLAN.md`
+-   `docs/EXECUTION_ROADMAP_FULL.md`
+-   `docs/ROADMAP_UNEXECUTED_PROMPT.md`
 
 ## Global Rules
 
-- Start from docs/EXECUTION_ROADMAP_FULL.md.
-- Work stage by stage.
-- Do not delete existing files without clear reason.
-- Keep controllers thin.
-- Put business logic in Service or Action.
-- Put complex queries in Repository.
-- Use Form Request for validation.
-- Use Policy and Spatie Permission for authorization.
-- Use custom Blade admin panel, not Filament.
-- Every menu must have route, controller, view, and permission.
-- Every admin route must use auth and permission middleware.
-- Every upload must validate MIME and size.
-- Sensitive data must be protected by policy.
-- Important actions must be logged to audit log.
+-   Start development from `docs/EXECUTION_ROADMAP_FULL.md` and proceed stage by stage.
+-   Do not delete existing files without a clear reason.
+-   Keep controllers thin; business logic belongs in Service or Action classes.
+-   Complex queries belong in Repository classes.
+-   Use Form Requests for input validation.
+-   Implement authorization using Policies and Spatie Permission.
+-   All admin routes must use `auth` and `permission` middleware.
+-   All file uploads require MIME and size validation.
+-   Sensitive data must be protected by policies.
+-   Important actions must be logged to an audit log.
+-   Data that needs to be preserved should use soft deletes.
+-   Every menu item must have a corresponding route, controller, view, and permission.
+-   Ensure all tests pass (`php artisan test`) and frontend assets build successfully (`npm run build`) after major changes.
 
-## Required Validation
+## New Files Added for Finance Module (Phase 5)
 
-After every major stage, run:
+-   `app/Services/FinanceService.php`: Handles aggregated finance data retrieval for the dashboard.
+-   `app/Modules/Finance/Controllers/FinanceController.php`: Controller for the finance dashboard and potentially other finance-related actions.
+-   `resources/views/modules/finance/dashboard.blade.php`: Blade view for the finance dashboard display.
+-   `routes/admin.php` (or `routes/finance.php`): Definition for the finance dashboard route (`admin.finance.dashboard`).
+-   `tests/Feature/Admin/Phase5FinanceTest.php`: Feature tests for finance dashboard access.
 
-```bash
-composer install
-npm install
-php artisan route:list
-php artisan migrate:fresh --seed
-npm run build
-php artisan test
-```
+## Custom Skills
 
-## Reporting Format
-
-After each stage, report:
-
-```text
-TAHAP SELESAI: <stage name>
-
-File dibuat:
-- ...
-
-File diubah:
-- ...
-
-Command dijalankan:
-- ...
-
-Hasil validasi:
-- ...
-
-Potensi error:
-- ...
-
-Cara testing manual:
-- ...
-
-Langkah berikutnya:
-- ...
-```
-
-## First Task
-
-Begin from Tahap 0 — Validasi Foundation Laravel.
-
-Do not continue to the next stage until Tahap 0 is valid.
+Utilize the custom skills located in `.claude/skills/` for specialized tasks:
+-   `laravel-hybrid-modular-monolith`
+-   `custom-admin-panel`
+-   `module-crud-generator`
+-   `database-migration-seeder`
+-   `security-production-auditor`
+-   `testing-engineer`
+-   `vps-deployment-engineer`
