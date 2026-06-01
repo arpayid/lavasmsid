@@ -8,7 +8,10 @@ use Illuminate\Support\Facades\Hash;
 uses(RefreshDatabase::class);
 
 test('guest can view login page', function () {
-    $this->get(route('login'))->assertOk();
+    $response = $this->get(route('login'));
+    $response->assertOk();
+    $response->assertDontSee('Default:');
+    $response->assertDontSee('admin@lavasmsid.local');
 });
 
 test('user can login successfully', function () {

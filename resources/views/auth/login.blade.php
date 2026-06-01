@@ -13,10 +13,10 @@
             <h2 class="text-2xl font-black">Masuk Portal</h2>
             <p class="mt-1 text-sm text-slate-500">Gunakan akun yang dibuat dari seeder.</p>
             @error('email')<div class="mt-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">{{ $message }}</div>@enderror
-            <label class="mt-6 block text-sm font-semibold">Email</label><input name="email" type="email" value="{{ old('email', 'admin@lavasmsid.local') }}" class="mt-2 w-full rounded-xl border-slate-300" required autofocus>
+            <label class="mt-6 block text-sm font-semibold">Email</label><input name="email" type="email" value=\"{{ old('email') }}\" class="mt-2 w-full rounded-xl border-slate-300" required autofocus>
             <label class="mt-4 block text-sm font-semibold">Password</label><input name="password" type="password" class="mt-2 w-full rounded-xl border-slate-300" required>
             <button class="mt-6 w-full rounded-xl bg-indigo-600 px-4 py-3 font-bold text-white">Login</button>
-            <p class="mt-4 text-xs text-slate-500">Default: admin@lavasmsid.local / password</p>
+            <p class="mt-4 text-xs text-slate-500">Silakan masukkan kredensial Anda.</p>
         </form>
     </section>
 </div>

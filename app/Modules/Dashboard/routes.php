@@ -17,6 +17,6 @@ Route::middleware(['auth'])
         Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 
         // Settings
-        Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
-        Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
+        Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index')->middleware('permission:settings.view');
+        Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update')->middleware('permission:settings.update');
     });

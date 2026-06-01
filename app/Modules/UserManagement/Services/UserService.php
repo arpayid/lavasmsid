@@ -43,10 +43,10 @@ class UserService
     {
         return DB::transaction(function () use ($id, $data) {
             $user = User::findOrFail($id);
-            $authUser = request()->user();
+            $authUser = auth()->user();
 
             // Prevent non-super-admin from modifying Super Admin
-            if ($user->hasRole('Super Admin') && ! $authUser->hasRole('Super Admin')) {
+            if ($user->hasRole('Super Admin') && ! $authUser?->hasRole('Super Admin')) {
                 abort(403, 'Only Super Admin can modify Super Admin users.');
             }
 
@@ -69,7 +69,7 @@ class UserService
 
     public function delete(int $id): bool
     {
-        $authUser = request()->user();
+        $authUser = auth()->user();
 
         // Prevent self-deletion
         if ($authUser && $authUser->id === $id) {
