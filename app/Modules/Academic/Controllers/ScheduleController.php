@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Modules\Academic\Models\Classroom;
 use App\Modules\Academic\Models\Schedule;
 use App\Modules\Academic\Models\Subject;
+use App\Modules\Academic\Requests\StoreScheduleRequest;
+use App\Modules\Academic\Requests\UpdateScheduleRequest;
 use App\Modules\Academic\Services\ScheduleService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -13,30 +15,33 @@ use Illuminate\View\View;
 
 class ScheduleController extends Controller
 {
-    public function __construct(protected ScheduleService $scheduleService) {}
+    public function __construct(protected ScheduleService $service) {}
 
     public function index(Request $request): View
     {
-        $query = Schedule::with(['classroom.department', 'subject']);
-
+        $query = Schedule::with(['classroom', 'subject', 'teacher', 'semester']);
         if ($request->filled('classroom_id')) {
             $query->where('classroom_id', $request->classroom_id);
+        }
+        if ($request->filled('teacher_id')) {
+            $query->where('teacher_id', $request->teacher_id);
+        }
+        if ($request->filled('subject_id')) {
+            $query->where('subject_id', $request->subject_id);
         }
         if ($request->filled('day')) {
             $query->where('day', $request->day);
         }
-
-        $schedules = $query->orderByRaw("FIELD(day, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu')")
-            ->orderBy('start_time')
-            ->paginate(20);
-
-        $classrooms = Classroom::with('department')->orderBy('name')->get();
-        $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+        if ($request->filled('semester_id')) {
+            $query->where('semester_id', $request->semester_id);
+        }
+        $schedules = $query->orderBy('day')->orderBy('start_time')->paginate(20);
 
         return view('modules.academic.schedules.index', [
             'schedules' => $schedules,
-            'classrooms' => $classrooms,
-            'days' => $days,
+            'classrooms' => Classroom::orderBy('name')->get(),
+            'subjects' => Subject::orderBy('name')->get(),
+            'days' => ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'],
         ]);
     }
 
@@ -45,30 +50,18 @@ class ScheduleController extends Controller
         return view('modules.academic.schedules.create', [
             'classrooms' => Classroom::orderBy('name')->get(),
             'subjects' => Subject::orderBy('name')->get(),
-            'days' => ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreScheduleRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'classroom_id' => ['required', 'exists:classrooms,id'],
-            'subject_id' => ['required', 'exists:subjects,id'],
-            'teacher_id' => ['nullable', 'exists:users,id'],
-            'day' => ['required', 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu'],
-            'start_time' => ['required', 'date_format:H:i'],
-            'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
-            'room' => ['nullable', 'string', 'max:100'],
-        ]);
-
-        try {
-            $this->scheduleService->create($validated);
-
-            return redirect()->route('admin.schedules.index')
-                ->with('success', 'Jadwal berhasil ditambahkan.');
-        } catch (\InvalidArgumentException $e) {
-            return back()->withErrors(['conflict' => $e->getMessage()])->withInput();
+        $data = $request->validated();
+        if ($conflicts = $this->service->detectConflicts($data)) {
+            return back()->withErrors(['conflict' => implode(', ', $conflicts)])->withInput();
         }
+        $this->service->create($data);
+
+        return redirect()->route('admin.schedules.index')->with('success', 'Jadwal berhasil ditambahkan.');
     }
 
     public function edit(Schedule $schedule): View
@@ -77,37 +70,24 @@ class ScheduleController extends Controller
             'schedule' => $schedule,
             'classrooms' => Classroom::orderBy('name')->get(),
             'subjects' => Subject::orderBy('name')->get(),
-            'days' => ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
         ]);
     }
 
-    public function update(Request $request, Schedule $schedule): RedirectResponse
+    public function update(UpdateScheduleRequest $request, Schedule $schedule): RedirectResponse
     {
-        $validated = $request->validate([
-            'classroom_id' => ['required', 'exists:classrooms,id'],
-            'subject_id' => ['required', 'exists:subjects,id'],
-            'teacher_id' => ['nullable', 'exists:users,id'],
-            'day' => ['required', 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu'],
-            'start_time' => ['required', 'date_format:H:i'],
-            'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
-            'room' => ['nullable', 'string', 'max:100'],
-        ]);
-
-        try {
-            $this->scheduleService->update($schedule, $validated);
-
-            return redirect()->route('admin.schedules.index')
-                ->with('success', 'Jadwal berhasil diperbarui.');
-        } catch (\InvalidArgumentException $e) {
-            return back()->withErrors(['conflict' => $e->getMessage()])->withInput();
+        $data = $request->validated();
+        if ($conflicts = $this->service->detectConflicts($data, $schedule->id)) {
+            return back()->withErrors(['conflict' => implode(', ', $conflicts)])->withInput();
         }
+        $this->service->update($schedule, $data);
+
+        return redirect()->route('admin.schedules.index')->with('success', 'Jadwal berhasil diperbarui.');
     }
 
     public function destroy(Schedule $schedule): RedirectResponse
     {
-        $schedule->delete();
+        $this->service->delete($schedule);
 
-        return redirect()->route('admin.schedules.index')
-            ->with('success', 'Jadwal berhasil dihapus.');
+        return redirect()->route('admin.schedules.index')->with('success', 'Jadwal berhasil dihapus.');
     }
 }

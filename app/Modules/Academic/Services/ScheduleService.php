@@ -7,118 +7,66 @@ use Illuminate\Support\Facades\DB;
 
 class ScheduleService
 {
-    /**
-     * Create schedule with conflict detection.
-     */
     public function create(array $data): Schedule
     {
-        return DB::transaction(function () use ($data) {
-            $schedule = new Schedule($data);
-
-            $conflicts = $this->detectConflicts($schedule);
-
-            if (! empty($conflicts)) {
-                throw new \InvalidArgumentException(implode(', ', $conflicts));
-            }
-
-            $schedule->save();
-
-            return $schedule;
-        });
+        return DB::transaction(fn () => Schedule::create($data));
     }
 
-    /**
-     * Update schedule with conflict detection.
-     */
     public function update(Schedule $schedule, array $data): Schedule
     {
         return DB::transaction(function () use ($schedule, $data) {
-            $schedule->fill($data);
-
-            $conflicts = $this->detectConflicts($schedule);
-
-            if (! empty($conflicts)) {
-                throw new \InvalidArgumentException(implode(', ', $conflicts));
-            }
-
-            $schedule->save();
+            $schedule->update($data);
 
             return $schedule;
         });
     }
 
+    public function delete(Schedule $schedule): bool
+    {
+        return $schedule->delete();
+    }
+
     /**
-     * Detect all types of conflicts.
+     * Detect schedule conflicts.
+     * Returns array of conflict messages, empty if no conflicts.
      */
-    public function detectConflicts(Schedule $schedule): array
+    public function detectConflicts(array $data, ?int $excludeId = null): array
     {
         $conflicts = [];
+        $baseQuery = Schedule::where('day', $data['day'])
+            ->where(function ($q) use ($data) {
+                $q->where(function ($q2) use ($data) {
+                    $q2->where('start_time', '<', $data['end_time'])
+                        ->where('end_time', '>', $data['start_time']);
+                });
+            });
+
+        if ($excludeId) {
+            $baseQuery->where('id', '!=', $excludeId);
+        }
 
         // Classroom conflict
-        $classroomConflict = Schedule::where('classroom_id', $schedule->classroom_id)
-            ->where('day', $schedule->day)
-            ->where('id', '!=', $schedule->id ?? 0)
-            ->whereTime('start_time', '<', $schedule->end_time)
-            ->whereTime('end_time', '>', $schedule->start_time)
-            ->exists();
-
+        $classroomConflict = (clone $baseQuery)->where('classroom_id', $data['classroom_id'])->exists();
         if ($classroomConflict) {
-            $conflicts[] = 'Jadwal bentrok dengan kelas lain di kelas yang sama';
+            $conflicts[] = 'Kelas sudah memiliki jadwal pada waktu yang sama';
         }
 
         // Teacher conflict
-        if ($schedule->teacher_id) {
-            $teacherConflict = Schedule::where('teacher_id', $schedule->teacher_id)
-                ->where('day', $schedule->day)
-                ->where('id', '!=', $schedule->id ?? 0)
-                ->whereTime('start_time', '<', $schedule->end_time)
-                ->whereTime('end_time', '>', $schedule->start_time)
-                ->exists();
-
+        if (! empty($data['teacher_id'])) {
+            $teacherConflict = (clone $baseQuery)->where('teacher_id', $data['teacher_id'])->exists();
             if ($teacherConflict) {
-                $conflicts[] = 'Jadwal bentrok dengan guru lain';
+                $conflicts[] = 'Guru sudah mengajar pada waktu yang sama';
             }
         }
 
         // Room conflict
-        if ($schedule->room) {
-            $roomConflict = Schedule::where('room', $schedule->room)
-                ->where('day', $schedule->day)
-                ->where('id', '!=', $schedule->id ?? 0)
-                ->whereTime('start_time', '<', $schedule->end_time)
-                ->whereTime('end_time', '>', $schedule->start_time)
-                ->exists();
-
+        if (! empty($data['room'])) {
+            $roomConflict = (clone $baseQuery)->where('room', $data['room'])->exists();
             if ($roomConflict) {
-                $conflicts[] = 'Jadwal bentrok di ruang yang sama';
+                $conflicts[] = 'Ruangan sudah digunakan pada waktu yang sama';
             }
         }
 
         return $conflicts;
-    }
-
-    /**
-     * Get schedules by classroom and day.
-     */
-    public function getByClassroomAndDay(int $classroomId, string $day)
-    {
-        return Schedule::with(['subject', 'classroom'])
-            ->where('classroom_id', $classroomId)
-            ->where('day', $day)
-            ->orderBy('start_time')
-            ->get();
-    }
-
-    /**
-     * Get weekly schedule for a classroom.
-     */
-    public function getWeeklySchedule(int $classroomId)
-    {
-        return Schedule::with(['subject', 'classroom'])
-            ->where('classroom_id', $classroomId)
-            ->orderByRaw("FIELD(day, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu')")
-            ->orderBy('start_time')
-            ->get()
-            ->groupBy('day');
     }
 }
