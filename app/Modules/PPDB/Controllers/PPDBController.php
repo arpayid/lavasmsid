@@ -68,7 +68,7 @@ class PPDBController extends Controller
     public function convert(PpdbRegistration $ppdb): RedirectResponse
     {
         if ($ppdb->status !== PpdbRegistration::STATUS_ACCEPTED) {
-            return back()->with('error', 'Hanya pendaftar berstatus diterima yang bisa dikonversi.');
+            return back()->withErrors(['status' => 'Hanya pendaftar berstatus diterima yang bisa dikonversi.']);
         }
 
         $studentId = $this->ppdbService->convertToStudent($ppdb);
