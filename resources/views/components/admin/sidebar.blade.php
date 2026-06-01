@@ -82,6 +82,33 @@
                     <a href="{{ route('admin.classrooms.index') }}" class="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm transition hover:bg-slate-800 {{ $activeRoute('admin.classrooms.*') }}"><span x-show="!sidebarCollapsed" x-collapse>Kelas</span></a>
                     <a href="{{ route('admin.subjects.index') }}" class="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm transition hover:bg-slate-800 {{ $activeRoute('admin.subjects.*') }}"><span x-show="!sidebarCollapsed" x-collapse>Mata Pelajaran</span></a>
                 </div>
+                {{-- Academic Operation sub-group --}}
+                @if(auth()->user()->can('schedule.view') || auth()->user()->can('attendance.view') || auth()->user()->can('grade.view') || auth()->user()->can('report.view') || auth()->user()->can('academic.view'))
+                <button @click="openGroup = openGroup === 'ops' ? '' : 'ops'" class="flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs font-medium text-slate-400 transition hover:text-slate-200">
+                    <span x-show="!sidebarCollapsed" x-collapse>Operasional</span>
+                    <svg class="h-3 w-3 shrink-0 transition-transform" :class="openGroup === 'ops' ? 'rotate-90' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </button>
+                <div x-show="openGroup === 'ops'" x-collapse class="ml-4 border-l border-slate-700 pl-2 space-y-1">
+                    @if(auth()->user()->can('schedule.view'))
+                    <a href="{{ route('admin.schedules.index') }}" class="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm transition hover:bg-slate-800 {{ $activeRoute('admin.schedules.*') }}"><span x-show="!sidebarCollapsed" x-collapse>Jadwal Pelajaran</span></a>
+                    @endif
+                    @if(auth()->user()->can('attendance.view'))
+                    <a href="{{ route('admin.attendances.index') }}" class="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm transition hover:bg-slate-800 {{ $activeRoute('admin.attendances.*') }}"><span x-show="!sidebarCollapsed" x-collapse>Absensi</span></a>
+                    @endif
+                    @if(auth()->user()->can('attendance.view'))
+                    <a href="{{ route('admin.attendances.recap') }}" class="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm transition hover:bg-slate-800 {{ $activeRoute('admin.attendances.recap*') }}"><span x-show="!sidebarCollapsed" x-collapse>Rekap Absensi</span></a>
+                    @endif
+                    @if(auth()->user()->can('grade.view'))
+                    <a href="{{ route('admin.grades.index') }}" class="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm transition hover:bg-slate-800 {{ $activeRoute('admin.grades.*') }}"><span x-show="!sidebarCollapsed" x-collapse>Nilai</span></a>
+                    @endif
+                    @if(auth()->user()->can('report.view'))
+                    <a href="{{ route('admin.report-cards.index') }}" class="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm transition hover:bg-slate-800 {{ $activeRoute('admin.report-cards.*') }}"><span x-show="!sidebarCollapsed" x-collapse>Rapor</span></a>
+                    @endif
+                    @if(auth()->user()->can('academic.view'))
+                    <a href="{{ route('admin.academic-events.index') }}" class="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm transition hover:bg-slate-800 {{ $activeRoute('admin.academic-events.*') }}"><span x-show="!sidebarCollapsed" x-collapse>Kalender Akademik</span></a>
+                    @endif
+                </div>
+                @endif
                 @endif
             </div>
         </div>
