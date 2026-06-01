@@ -8,6 +8,9 @@ Route::middleware(['auth'])
     ->prefix('admin/user-management')
     ->name('admin.user-management.')
     ->group(function () {
+        // Index redirect → users list
+        Route::get('/', fn () => redirect()->route('admin.user-management.users.index'))->name('index');
+
         // Users CRUD with per-action permissions
         Route::get('/users', [UserController::class, 'index'])->name('users.index')->middleware('permission:user.view');
         Route::get('/users/create', [UserController::class, 'create'])->name('users.create')->middleware('permission:user.create');
