@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\SchoolSetting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class SettingsController extends Controller
@@ -19,6 +20,7 @@ class SettingsController extends Controller
             'schoolEmail' => $setting?->school_email ?? '',
             'schoolPhone' => $setting?->school_phone ?? '',
             'schoolAddress' => $setting?->school_address ?? '',
+            'logoPath' => $setting?->logo_path ?? '',
         ]);
     }
 
@@ -29,14 +31,21 @@ class SettingsController extends Controller
             'school_email' => ['nullable', 'email', 'max:255'],
             'school_phone' => ['nullable', 'string', 'max:50'],
             'school_address' => ['nullable', 'string', 'max:500'],
-            'logo' => ['nullable', 'image', 'max:2048'],
+            'logo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
         ]);
 
         $setting = SchoolSetting::firstOrCreateDefault();
 
         if ($request->hasFile('logo')) {
+            // Delete old logo if exists
+            if ($setting->logo_path && Storage::disk('public')->exists($setting->logo_path)) {
+                Storage::disk('public')->delete($setting->logo_path);
+            }
+
             $validated['logo_path'] = $request->file('logo')->store('settings', 'public');
         }
+
+        unset($validated['logo']);
 
         $setting->update($validated);
 

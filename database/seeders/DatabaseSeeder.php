@@ -45,5 +45,8 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Schema::enableForeignKeyConstraints();
+
+        // Seed default school settings
+        $this->call(SettingsSeeder::class);
     }
 }
