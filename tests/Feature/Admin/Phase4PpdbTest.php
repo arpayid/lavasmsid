@@ -110,6 +110,24 @@ test('rejected applicant cannot be converted', function () {
     $this->actingAs($this->admin)->post(route('admin.ppdb.registrations.convert', $registration))->assertSessionHasErrors();
 });
 
+test('panitia ppdb role can convert applicants', function () {
+    $committee = Role::firstOrCreate(['name' => 'Panitia PPDB', 'guard_name' => 'web']);
+    $committee->givePermissionTo(['ppdb.view', 'ppdb.verify', 'ppdb.approve', 'ppdb.convert']);
+
+    expect($committee->hasPermissionTo('ppdb.convert'))->toBeTrue();
+});
+
+test('ppdb sidebar item is visible for ppdb viewers', function () {
+    $role = Role::firstOrCreate(['name' => 'Panitia PPDB', 'guard_name' => 'web']);
+    $role->givePermissionTo('ppdb.view');
+    $this->user->assignRole($role);
+
+    $this->actingAs($this->user)
+        ->get(route('admin.ppdb.dashboard'))
+        ->assertOk()
+        ->assertSee('PPDB');
+});
+
 test('phase 4 ppdb routes exist', function () {
     foreach ([
         'admin.ppdb.dashboard',
