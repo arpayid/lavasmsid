@@ -18,7 +18,7 @@ Route::middleware(['auth'])
     ->name('admin.')
     ->group(function () {
         // === Academic Year ===
-        Route::resource('academic-years', AcademicYearController::class)->except(['show'])->middleware('permission:academic.view');
+        Route::get('academic-years', [AcademicYearController::class, 'index'])->name('academic-years.index')->middleware('permission:academic.view');
         Route::get('academic-years/create', [AcademicYearController::class, 'create'])->name('academic-years.create')->middleware('permission:academic.create');
         Route::post('academic-years', [AcademicYearController::class, 'store'])->name('academic-years.store')->middleware('permission:academic.create');
         Route::get('academic-years/{academic_year}', [AcademicYearController::class, 'show'])->name('academic-years.show')->middleware('permission:academic.view');
@@ -35,9 +35,10 @@ Route::middleware(['auth'])
         Route::delete('semesters/{semester}', [SemesterController::class, 'destroy'])->name('semesters.destroy')->middleware('permission:academic.delete');
 
         // === Department ===
-        Route::resource('departments', DepartmentController::class)->except(['show'])->middleware('permission:academic.view');
+        Route::get('departments', [DepartmentController::class, 'index'])->name('departments.index')->middleware('permission:academic.view');
         Route::get('departments/create', [DepartmentController::class, 'create'])->name('departments.create')->middleware('permission:academic.create');
         Route::post('departments', [DepartmentController::class, 'store'])->name('departments.store')->middleware('permission:academic.create');
+        Route::get('departments/{department}', [DepartmentController::class, 'show'])->name('departments.show')->middleware('permission:academic.view');
         Route::get('departments/{department}/edit', [DepartmentController::class, 'edit'])->name('departments.edit')->middleware('permission:academic.update');
         Route::put('departments/{department}', [DepartmentController::class, 'update'])->name('departments.update')->middleware('permission:academic.update');
         Route::delete('departments/{department}', [DepartmentController::class, 'destroy'])->name('departments.destroy')->middleware('permission:academic.delete');
@@ -79,6 +80,7 @@ Route::middleware(['auth'])
         Route::get('attendances/create', [AttendanceController::class, 'create'])->name('attendances.create')->middleware('permission:attendance.create');
         Route::post('attendances', [AttendanceController::class, 'store'])->name('attendances.store')->middleware('permission:attendance.create');
         Route::get('attendances/recap', [AttendanceController::class, 'recap'])->name('attendances.recap')->middleware('permission:attendance.view');
+        Route::get('attendances/export', [AttendanceController::class, 'export'])->name('attendances.export')->middleware('permission:attendance.export');
         Route::delete('attendances/{attendance}', [AttendanceController::class, 'destroy'])->name('attendances.destroy')->middleware('permission:attendance.delete');
 
         // === Grade ===
