@@ -5,12 +5,17 @@ namespace App\Modules\Academic\Controllers;
 use App\Http\Controllers\Controller;
 use App\Modules\Academic\Models\Competency;
 use App\Modules\Academic\Models\Department;
+use App\Modules\Academic\Requests\StoreCompetencyRequest;
+use App\Modules\Academic\Requests\UpdateCompetencyRequest;
+use App\Modules\Academic\Services\CompetencyService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class CompetencyController extends Controller
 {
+    public function __construct(protected CompetencyService $service) {}
+
     public function index(Request $request): View
     {
         $query = Competency::with('department');
@@ -21,29 +26,19 @@ class CompetencyController extends Controller
 
         $competencies = $query->orderBy('name')->paginate(15);
 
-        return view('modules.academic.competencies.index', [
-            'competencies' => $competencies,
-        ]);
+        return view('modules.academic.competencies.index', compact('competencies'));
     }
 
     public function create(): View
     {
-        $departments = Department::where('is_active', true)->orderBy('name')->get();
+        $departments = Department::orderBy('name')->get();
 
-        return view('modules.academic.competencies.create', [
-            'departments' => $departments,
-        ]);
+        return view('modules.academic.competencies.create', compact('departments'));
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreCompetencyRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'department_id' => ['required', 'exists:departments,id'],
-            'code' => ['required', 'string', 'unique:competencies,code'],
-            'name' => ['required', 'string', 'max:255'],
-        ]);
-
-        Competency::create($validated);
+        $this->service->create($request->validated());
 
         return redirect()->route('admin.competencies.index')
             ->with('success', 'Kompetensi berhasil ditambahkan.');
@@ -51,23 +46,14 @@ class CompetencyController extends Controller
 
     public function edit(Competency $competency): View
     {
-        $departments = Department::where('is_active', true)->orderBy('name')->get();
+        $departments = Department::orderBy('name')->get();
 
-        return view('modules.academic.competencies.edit', [
-            'competency' => $competency,
-            'departments' => $departments,
-        ]);
+        return view('modules.academic.competencies.edit', compact('competency', 'departments'));
     }
 
-    public function update(Request $request, Competency $competency): RedirectResponse
+    public function update(UpdateCompetencyRequest $request, Competency $competency): RedirectResponse
     {
-        $validated = $request->validate([
-            'department_id' => ['required', 'exists:departments,id'],
-            'code' => ['required', 'string', 'unique:competencies,code,'.$competency->id],
-            'name' => ['required', 'string', 'max:255'],
-        ]);
-
-        $competency->update($validated);
+        $this->service->update($competency, $request->validated());
 
         return redirect()->route('admin.competencies.index')
             ->with('success', 'Kompetensi berhasil diperbarui.');
@@ -75,7 +61,7 @@ class CompetencyController extends Controller
 
     public function destroy(Competency $competency): RedirectResponse
     {
-        $competency->delete();
+        $this->service->delete($competency);
 
         return redirect()->route('admin.competencies.index')
             ->with('success', 'Kompetensi berhasil dihapus.');

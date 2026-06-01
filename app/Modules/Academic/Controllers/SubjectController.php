@@ -5,12 +5,17 @@ namespace App\Modules\Academic\Controllers;
 use App\Http\Controllers\Controller;
 use App\Modules\Academic\Models\Department;
 use App\Modules\Academic\Models\Subject;
+use App\Modules\Academic\Requests\StoreSubjectRequest;
+use App\Modules\Academic\Requests\UpdateSubjectRequest;
+use App\Modules\Academic\Services\SubjectService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class SubjectController extends Controller
 {
+    public function __construct(protected SubjectService $service) {}
+
     public function index(Request $request): View
     {
         $query = Subject::with('department');
@@ -21,30 +26,19 @@ class SubjectController extends Controller
 
         $subjects = $query->orderBy('name')->paginate(15);
 
-        return view('modules.academic.subjects.index', [
-            'subjects' => $subjects,
-        ]);
+        return view('modules.academic.subjects.index', compact('subjects'));
     }
 
     public function create(): View
     {
-        $departments = Department::where('is_active', true)->orderBy('name')->get();
+        $departments = Department::orderBy('name')->get();
 
-        return view('modules.academic.subjects.create', [
-            'departments' => $departments,
-        ]);
+        return view('modules.academic.subjects.create', compact('departments'));
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreSubjectRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'department_id' => ['nullable', 'exists:departments,id'],
-            'code' => ['required', 'string', 'unique:subjects,code'],
-            'name' => ['required', 'string', 'max:255'],
-            'type' => ['nullable', 'string', 'in:general,productive,vocational'],
-        ]);
-
-        Subject::create($validated);
+        $this->service->create($request->validated());
 
         return redirect()->route('admin.subjects.index')
             ->with('success', 'Mata pelajaran berhasil ditambahkan.');
@@ -52,24 +46,14 @@ class SubjectController extends Controller
 
     public function edit(Subject $subject): View
     {
-        $departments = Department::where('is_active', true)->orderBy('name')->get();
+        $departments = Department::orderBy('name')->get();
 
-        return view('modules.academic.subjects.edit', [
-            'subject' => $subject,
-            'departments' => $departments,
-        ]);
+        return view('modules.academic.subjects.edit', compact('subject', 'departments'));
     }
 
-    public function update(Request $request, Subject $subject): RedirectResponse
+    public function update(UpdateSubjectRequest $request, Subject $subject): RedirectResponse
     {
-        $validated = $request->validate([
-            'department_id' => ['nullable', 'exists:departments,id'],
-            'code' => ['required', 'string', 'unique:subjects,code,'.$subject->id],
-            'name' => ['required', 'string', 'max:255'],
-            'type' => ['nullable', 'string', 'in:general,productive,vocational'],
-        ]);
-
-        $subject->update($validated);
+        $this->service->update($subject, $request->validated());
 
         return redirect()->route('admin.subjects.index')
             ->with('success', 'Mata pelajaran berhasil diperbarui.');
@@ -77,7 +61,7 @@ class SubjectController extends Controller
 
     public function destroy(Subject $subject): RedirectResponse
     {
-        $subject->delete();
+        $this->service->delete($subject);
 
         return redirect()->route('admin.subjects.index')
             ->with('success', 'Mata pelajaran berhasil dihapus.');

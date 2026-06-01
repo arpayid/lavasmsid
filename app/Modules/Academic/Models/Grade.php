@@ -42,10 +42,6 @@ class Grade extends Model
         return $this->belongsTo(Semester::class);
     }
 
-    /**
-     * Calculate final result from scores.
-     * Default formula: (assignment + midterm + final + practice) / 4
-     */
     public function calculateFinalResult(): float
     {
         $scores = array_filter([

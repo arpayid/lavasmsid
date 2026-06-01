@@ -32,8 +32,14 @@ Route::middleware(['auth'])
         Route::put('semesters/{semester}', [SemesterController::class, 'update'])->name('semesters.update')->middleware('permission:academic.update');
         Route::delete('semesters/{semester}', [SemesterController::class, 'destroy'])->name('semesters.destroy')->middleware('permission:academic.delete');
 
-        // === Department (only index — controller not full CRUD yet) ===
+        // === Department (full CRUD) ===
         Route::get('departments', [DepartmentController::class, 'index'])->name('departments.index')->middleware('permission:academic.view');
+        Route::get('departments/create', [DepartmentController::class, 'create'])->name('departments.create')->middleware('permission:academic.create');
+        Route::post('departments', [DepartmentController::class, 'store'])->name('departments.store')->middleware('permission:academic.create');
+        Route::get('departments/{department}', [DepartmentController::class, 'show'])->name('departments.show')->middleware('permission:academic.view');
+        Route::get('departments/{department}/edit', [DepartmentController::class, 'edit'])->name('departments.edit')->middleware('permission:academic.update');
+        Route::put('departments/{department}', [DepartmentController::class, 'update'])->name('departments.update')->middleware('permission:academic.update');
+        Route::delete('departments/{department}', [DepartmentController::class, 'destroy'])->name('departments.destroy')->middleware('permission:academic.delete');
 
         // === Competency (full CRUD without show) ===
         Route::get('competencies', [CompetencyController::class, 'index'])->name('competencies.index')->middleware('permission:academic.view');
