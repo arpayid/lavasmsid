@@ -13,19 +13,28 @@ class AttendanceService
         return DB::transaction(function () use ($data) {
             $count = 0;
             $attendanceDate = Carbon::parse($data['attendance_date'])->startOfDay();
+            $attendanceDateString = $attendanceDate->toDateString();
 
             foreach ($data['records'] as $record) {
-                Attendance::updateOrCreate(
-                    [
-                        'student_id' => $record['student_id'],
-                        'attendance_date' => $attendanceDate,
-                    ],
-                    [
-                        'classroom_id' => $data['classroom_id'],
-                        'status' => $record['status'],
-                        'note' => $record['note'] ?? null,
-                    ]
-                );
+                $attendance = Attendance::query()
+                    ->where('student_id', $record['student_id'])
+                    ->whereDate('attendance_date', $attendanceDateString)
+                    ->first();
+
+                $payload = [
+                    'student_id' => $record['student_id'],
+                    'attendance_date' => $attendanceDate,
+                    'classroom_id' => $data['classroom_id'],
+                    'status' => $record['status'],
+                    'note' => $record['note'] ?? null,
+                ];
+
+                if ($attendance) {
+                    $attendance->update($payload);
+                } else {
+                    Attendance::create($payload);
+                }
+
                 $count++;
             }
 
