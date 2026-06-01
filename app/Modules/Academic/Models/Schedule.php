@@ -2,25 +2,18 @@
 
 namespace App\Modules\Academic\Models;
 
+use App\Modules\Teacher\Models\Teacher;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Schedule extends Model
 {
-    protected $fillable = [
-        'classroom_id',
-        'subject_id',
-        'teacher_id',
-        'day',
-        'start_time',
-        'end_time',
-        'room',
-    ];
+    use SoftDeletes;
 
-    protected $casts = [
-        'start_time' => 'datetime',
-        'end_time' => 'datetime',
-    ];
+    protected $fillable = ['classroom_id', 'subject_id', 'teacher_id', 'academic_year_id', 'semester_id', 'day', 'start_time', 'end_time', 'room', 'status'];
+
+    protected $casts = ['start_time' => 'datetime:H:i', 'end_time' => 'datetime:H:i'];
 
     public function classroom(): BelongsTo
     {
@@ -32,66 +25,18 @@ class Schedule extends Model
         return $this->belongsTo(Subject::class);
     }
 
-    /**
-     * Check for schedule conflicts.
-     * Returns true if there's a conflict.
-     */
-    public function hasConflict(): bool
+    public function teacher(): BelongsTo
     {
-        $query = self::where('classroom_id', $this->classroom_id)
-            ->where('day', $this->day)
-            ->where('id', '!=', $this->id ?? 0)
-            ->where(function ($q) {
-                $q->where(function ($q2) {
-                    $q2->where('start_time', '<', $this->end_time)
-                        ->where('end_time', '>', $this->start_time);
-                });
-            });
-
-        return $query->exists();
+        return $this->belongsTo(Teacher::class);
     }
 
-    /**
-     * Check for teacher conflicts.
-     */
-    public function hasTeacherConflict(): bool
+    public function academicYear(): BelongsTo
     {
-        if (! $this->teacher_id) {
-            return false;
-        }
-
-        $query = self::where('teacher_id', $this->teacher_id)
-            ->where('day', $this->day)
-            ->where('id', '!=', $this->id ?? 0)
-            ->where(function ($q) {
-                $q->where(function ($q2) {
-                    $q2->where('start_time', '<', $this->end_time)
-                        ->where('end_time', '>', $this->start_time);
-                });
-            });
-
-        return $query->exists();
+        return $this->belongsTo(AcademicYear::class);
     }
 
-    /**
-     * Check for room conflicts.
-     */
-    public function hasRoomConflict(): bool
+    public function semester(): BelongsTo
     {
-        if (! $this->room) {
-            return false;
-        }
-
-        $query = self::where('room', $this->room)
-            ->where('day', $this->day)
-            ->where('id', '!=', $this->id ?? 0)
-            ->where(function ($q) {
-                $q->where(function ($q2) {
-                    $q2->where('start_time', '<', $this->end_time)
-                        ->where('end_time', '>', $this->start_time);
-                });
-            });
-
-        return $query->exists();
+        return $this->belongsTo(Semester::class);
     }
 }

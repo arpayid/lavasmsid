@@ -18,17 +18,9 @@ class Attendance extends Model
 
     const STATUS_LATE = 'late';
 
-    protected $fillable = [
-        'student_id',
-        'classroom_id',
-        'attendance_date',
-        'status',
-        'note',
-    ];
+    protected $fillable = ['student_id', 'classroom_id', 'attendance_date', 'status', 'note'];
 
-    protected $casts = [
-        'attendance_date' => 'date',
-    ];
+    protected $casts = ['attendance_date' => 'date'];
 
     public function student(): BelongsTo
     {
