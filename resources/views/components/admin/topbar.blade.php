@@ -53,16 +53,16 @@
                 <div x-show="quickActionsOpen" x-cloak x-placement="bottom-end"
                      class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 pb-2">
                     <div class="py-1">
-                        <a href="{{ route('admin.students.create') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
+                        <a href="{{ Route::has('admin.students.create') ? route('admin.students.create') : '#' }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
                             Tambah Siswa
                         </a>
-                        <a href="{{ route('admin.teachers.create') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
+                        <a href="{{ Route::has('admin.teachers.create') ? route('admin.teachers.create') : '#' }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
                             Tambah Guru
                         </a>
                         <a href="{{ Route::has('admin.finance.invoices.create') ? route('admin.finance.invoices.create') : '#' }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
                             Buat Tagihan
                         </a>
-                        <a href="{{ Route::has('admin.attendance.today') ? route('admin.attendance.today') : '#' }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
+                        <a href="{{ Route::has('admin.attendance.index') ? route('admin.attendance.index') : '#' }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
                             Absensi Hari Ini
                         </a>
                     </div>

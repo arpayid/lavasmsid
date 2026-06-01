@@ -9,7 +9,7 @@ class UpdateUserRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return $this->user()->can('user.update');
     }
 
     public function rules(): array
@@ -24,16 +24,6 @@ class UpdateUserRequest extends FormRequest
             'is_active' => ['nullable', 'boolean'],
             'roles' => ['nullable', 'array'],
             'roles.*' => ['string', 'exists:roles,name'],
-        ];
-    }
-
-    public function messages(): array
-    {
-        return [
-            'name.required' => 'Nama wajib diisi.',
-            'email.required' => 'Email wajib diisi.',
-            'email.email' => 'Format email tidak valid.',
-            'email.unique' => 'Email sudah digunakan.',
         ];
     }
 }

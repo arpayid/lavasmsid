@@ -12,9 +12,6 @@ use Spatie\Permission\Models\Role;
 
 class RoleService
 {
-    /**
-     * Query DataTable dengan search, filter, pagination.
-     */
     public function queryDataTable(Request $request): LengthAwarePaginator
     {
         $query = Role::withCount('users');
@@ -25,9 +22,6 @@ class RoleService
             ->paginate($request->input('per_page', 15));
     }
 
-    /**
-     * Create new role.
-     */
     public function create(array $data): Role
     {
         return DB::transaction(function () use ($data) {
@@ -41,9 +35,6 @@ class RoleService
         });
     }
 
-    /**
-     * Update role.
-     */
     public function update(string $name, array $data): Role
     {
         return DB::transaction(function () use ($name, $data) {
@@ -63,11 +54,13 @@ class RoleService
         });
     }
 
-    /**
-     * Delete role.
-     */
     public function delete(string $name): bool
     {
+        // Prevent deletion of Super Admin role
+        if ($name === 'Super Admin') {
+            abort(403, 'The Super Admin role cannot be deleted.');
+        }
+
         $role = Role::findByName($name);
 
         return DB::transaction(function () use ($role) {
@@ -77,17 +70,11 @@ class RoleService
         });
     }
 
-    /**
-     * Find role by name.
-     */
     public function findByName(string $name): ?Role
     {
         return Role::with('permissions')->findByName($name);
     }
 
-    /**
-     * Get all permissions grouped by module.
-     */
     public function getAllPermissionsGrouped(): Collection
     {
         return Permission::orderBy('name')->get()->groupBy(function ($permission) {
@@ -97,9 +84,6 @@ class RoleService
         });
     }
 
-    /**
-     * Get all permissions.
-     */
     public function getAllPermissions(): Collection
     {
         return Permission::orderBy('name')->get();

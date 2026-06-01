@@ -13,9 +13,6 @@ use Spatie\Permission\Models\Role;
 
 class UserService
 {
-    /**
-     * Query DataTable dengan search, filter, pagination.
-     */
     public function queryDataTable(Request $request): LengthAwarePaginator
     {
         $query = User::with(['roles']);
@@ -27,16 +24,13 @@ class UserService
             ->paginate($request->input('per_page', 15));
     }
 
-    /**
-     * Create new user.
-     */
     public function create(array $data): User
     {
         return DB::transaction(function () use ($data) {
             $roles = $data['roles'] ?? [];
             unset($data['roles']);
 
-            $data['password'] = Hash::make($data['password'] ?? 'password');
+            $data['password'] = Hash::make($data['password']);
 
             $user = User::create($data);
             $user->syncRoles($roles);
@@ -45,13 +39,16 @@ class UserService
         });
     }
 
-    /**
-     * Update user.
-     */
     public function update(int $id, array $data): User
     {
         return DB::transaction(function () use ($id, $data) {
             $user = User::findOrFail($id);
+            $authUser = request()->user();
+
+            // Prevent non-super-admin from modifying Super Admin
+            if ($user->hasRole('Super Admin') && ! $authUser->hasRole('Super Admin')) {
+                abort(403, 'Only Super Admin can modify Super Admin users.');
+            }
 
             if (! empty($data['password'])) {
                 $data['password'] = Hash::make($data['password']);
@@ -70,11 +67,15 @@ class UserService
         });
     }
 
-    /**
-     * Delete user (soft delete).
-     */
     public function delete(int $id): bool
     {
+        $authUser = request()->user();
+
+        // Prevent self-deletion
+        if ($authUser && $authUser->id === $id) {
+            abort(403, 'You cannot delete your own account.');
+        }
+
         $user = User::findOrFail($id);
 
         return DB::transaction(function () use ($user) {
@@ -84,17 +85,11 @@ class UserService
         });
     }
 
-    /**
-     * Find user with relations.
-     */
     public function findWithRelations(int $id): ?User
     {
         return User::with(['roles.permissions'])->find($id);
     }
 
-    /**
-     * Get all roles.
-     */
     public function getAllRoles(): Collection
     {
         return Role::orderBy('name')->get();

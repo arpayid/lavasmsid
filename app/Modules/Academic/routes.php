@@ -17,12 +17,11 @@ Route::middleware(['auth'])
     ->group(function () {
         Route::resource('academic-years', AcademicYearController::class)->middleware('permission:academic.view');
         Route::resource('semesters', SemesterController::class)->except(['show'])->middleware('permission:academic.view');
-        Route::resource('departments', DepartmentController::class)->middleware('permission:academic.view');
+        Route::resource('departments', DepartmentController::class)->only(['index'])->middleware('permission:academic.view');
         Route::resource('competencies', CompetencyController::class)->except(['show'])->middleware('permission:academic.view');
         Route::resource('classrooms', ClassroomController::class)->except(['show'])->middleware('permission:academic.view');
         Route::resource('subjects', SubjectController::class)->except(['show'])->middleware('permission:academic.view');
 
-        // Tahap 5: Schedule, Attendance, Grade
         Route::resource('schedules', ScheduleController::class)->except(['show'])->middleware('permission:academic.view');
         Route::get('attendances/recap', [AttendanceController::class, 'recap'])->name('attendances.recap')->middleware('permission:attendance.view');
         Route::resource('attendances', AttendanceController::class)->except(['show', 'edit', 'update'])->middleware('permission:attendance.view');

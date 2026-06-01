@@ -7,5 +7,5 @@ Route::middleware(['auth'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        Route::resource('students', StudentController::class)->middleware('permission:student.view');
+        Route::resource('students', StudentController::class)->only(['index'])->middleware('permission:student.view');
     });
