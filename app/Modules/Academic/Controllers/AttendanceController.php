@@ -87,7 +87,7 @@ class AttendanceController extends Controller
             $query->where('attendance_date', $request->date);
         }
 
-        $rows = [["Tanggal", "NIS", "Nama", "Kelas", "Status", "Catatan"]];
+        $rows = [['Tanggal', 'NIS', 'Nama', 'Kelas', 'Status', 'Catatan']];
         foreach ($query->orderByDesc('attendance_date')->get() as $attendance) {
             $rows[] = [
                 $attendance->attendance_date,
