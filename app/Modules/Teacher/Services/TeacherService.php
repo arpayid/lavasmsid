@@ -11,6 +11,7 @@ class TeacherService
     public function create(array $data): Teacher
     {
         return DB::transaction(function () use ($data) {
+            $hasSubjectsKey = array_key_exists('subjects', $data);
             $subjects = $data['subjects'] ?? [];
             unset($data['subjects']);
 
@@ -20,7 +21,10 @@ class TeacherService
             }
 
             $teacher = Teacher::create($data);
-            $this->syncSubjects($teacher, $subjects);
+
+            if ($hasSubjectsKey) {
+                $this->syncSubjects($teacher, $subjects);
+            }
 
             return $teacher;
         });
@@ -29,6 +33,7 @@ class TeacherService
     public function update(Teacher $teacher, array $data): Teacher
     {
         return DB::transaction(function () use ($teacher, $data) {
+            $hasSubjectsKey = array_key_exists('subjects', $data);
             $subjects = $data['subjects'] ?? [];
             unset($data['subjects']);
 
@@ -41,7 +46,10 @@ class TeacherService
             }
 
             $teacher->update($data);
-            $this->syncSubjects($teacher, $subjects);
+
+            if ($hasSubjectsKey) {
+                $this->syncSubjects($teacher, $subjects);
+            }
 
             return $teacher;
         });
@@ -60,9 +68,10 @@ class TeacherService
 
     /**
      * Sync teacher subjects pivot.
-     * $subjects = [['subject_id' => 1, 'classroom_id' => null, ...], ...]
+     * Filters out empty rows where subject_id is empty/null.
+     * If all rows are empty after filtering, detach all.
      */
-    protected function syncSubjects(Teacher $teacher, array $subjects): void
+    protected function syncSubjects(Teacher $teacher, ?array $subjects): void
     {
         if (empty($subjects)) {
             $teacher->subjects()->detach();
@@ -70,9 +79,18 @@ class TeacherService
             return;
         }
 
+        // Filter out rows without subject_id
+        $validSubjects = array_values(array_filter($subjects, fn ($item) => ! empty($item['subject_id'])));
+
+        if (empty($validSubjects)) {
+            $teacher->subjects()->detach();
+
+            return;
+        }
+
         $syncData = [];
-        foreach ($subjects as $item) {
-            $sid = $item['subject_id'];
+        foreach ($validSubjects as $item) {
+            $sid = (int) $item['subject_id'];
             $syncData[$sid] = [
                 'classroom_id' => $item['classroom_id'] ?? null,
                 'academic_year_id' => $item['academic_year_id'] ?? null,

@@ -31,10 +31,10 @@ class UpdateTeacherRequest extends FormRequest
             'status' => ['required', 'in:active,inactive'],
             'photo' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
             'subjects' => ['nullable', 'array'],
-            'subjects.*.subject_id' => ['required', 'exists:subjects,id'],
-            'subjects.*.classroom_id' => ['nullable', 'exists:classrooms,id'],
-            'subjects.*.academic_year_id' => ['nullable', 'exists:academic_years,id'],
-            'subjects.*.semester_id' => ['nullable', 'exists:semesters,id'],
+            'subjects.*.subject_id' => ['sometimes', 'nullable', Rule::exists('subjects', 'id')],
+            'subjects.*.classroom_id' => ['sometimes', 'nullable', Rule::exists('classrooms', 'id')],
+            'subjects.*.academic_year_id' => ['sometimes', 'nullable', Rule::exists('academic_years', 'id')],
+            'subjects.*.semester_id' => ['sometimes', 'nullable', Rule::exists('semesters', 'id')],
         ];
     }
 }

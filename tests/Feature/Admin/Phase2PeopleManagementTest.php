@@ -4,6 +4,7 @@ use App\Models\User;
 use App\Modules\Academic\Models\Subject;
 use App\Modules\Student\Models\Student;
 use App\Modules\Teacher\Models\Teacher;
+use App\Modules\Teacher\Services\TeacherService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -97,38 +98,89 @@ test('soft delete student works', function () {
     $this->assertSoftDeleted('students', ['id' => $student->id]);
 });
 
-test('teacher_subject assignment works when subject exists', function () {
-    $teacher = Teacher::create(['name' => 'Subject Teacher', 'status' => 'active']);
-    $subject = Subject::create(['code' => 'MATH', 'name' => 'Matematika']);
-    $teacher->subjects()->attach($subject->id, ['classroom_id' => null, 'academic_year_id' => null, 'semester_id' => null]);
-    $this->assertDatabaseHas('teacher_subjects', ['teacher_id' => $teacher->id, 'subject_id' => $subject->id]);
+// === Teacher Subject Assignment Tests ===
+
+test('creating teacher without subjects must pass', function () {
+    $response = $this->actingAs($this->admin)->post(route('admin.teachers.store'), [
+        'name' => 'No Subject Teacher',
+        'status' => 'active',
+    ]);
+    $response->assertRedirect();
+    $this->assertDatabaseHas('teachers', ['name' => 'No Subject Teacher']);
 });
 
-test('creating teacher with subject assignment stores teacher_subjects', function () {
+test('creating teacher with one subject stores pivot', function () {
     $subject = Subject::create(['code' => 'MATH1', 'name' => 'Math Test']);
     $response = $this->actingAs($this->admin)->post(route('admin.teachers.store'), [
         'name' => 'Subject Teacher',
         'status' => 'active',
-        'subjects' => [['subject_id' => $subject->id, 'classroom_id' => null, 'academic_year_id' => null, 'semester_id' => null]],
+        'subjects' => [['subject_id' => $subject->id]],
     ]);
     $response->assertRedirect();
     $teacher = Teacher::where('name', 'Subject Teacher')->first();
     $this->assertTrue($teacher->subjects->contains($subject));
 });
 
-test('updating teacher subject assignment changes teacher_subjects', function () {
-    $teacher = Teacher::create(['name' => 'Update Test', 'status' => 'active']);
+test('updating teacher basic data without subjects must not delete existing pivot', function () {
+    $teacher = Teacher::create(['name' => 'Pivot Test', 'status' => 'active']);
+    $subject = Subject::create(['code' => 'SUB1', 'name' => 'Subject 1']);
+    $teacher->subjects()->attach($subject->id);
+
+    // Update without subjects key — should keep existing assignments
+    $response = $this->actingAs($this->admin)->put(route('admin.teachers.update', $teacher), [
+        'name' => 'Pivot Test Updated',
+        'status' => 'active',
+    ]);
+    $response->assertRedirect();
+    $teacher->refresh();
+    $this->assertEquals('Pivot Test Updated', $teacher->name);
+    $this->assertTrue($teacher->subjects->contains($subject), 'Existing pivot should remain');
+});
+
+test('updating teacher with changed subjects updates pivot', function () {
+    $teacher = Teacher::create(['name' => 'Change Test', 'status' => 'active']);
     $subject1 = Subject::create(['code' => 'SUB1', 'name' => 'Subject 1']);
     $subject2 = Subject::create(['code' => 'SUB2', 'name' => 'Subject 2']);
     $teacher->subjects()->attach($subject1->id);
 
     $response = $this->actingAs($this->admin)->put(route('admin.teachers.update', $teacher), [
-        'name' => 'Updated Teacher',
+        'name' => 'Change Test',
         'status' => 'active',
-        'subjects' => [['subject_id' => $subject2->id, 'classroom_id' => null, 'academic_year_id' => null, 'semester_id' => null]],
+        'subjects' => [['subject_id' => $subject2->id]],
     ]);
     $response->assertRedirect();
     $teacher->refresh();
     $this->assertFalse($teacher->subjects->contains($subject1));
     $this->assertTrue($teacher->subjects->contains($subject2));
+});
+
+test('updating teacher with empty subjects array intentionally clears pivot', function () {
+    $teacher = Teacher::create(['name' => 'Clear Test', 'status' => 'active']);
+    $subject = Subject::create(['code' => 'SUB1', 'name' => 'Subject 1']);
+    $teacher->subjects()->attach($subject->id);
+
+    // Send subjects key with all empty rows → should detach
+    $response = $this->actingAs($this->admin)->put(route('admin.teachers.update', $teacher), [
+        'name' => 'Clear Test',
+        'status' => 'active',
+        'subjects' => [['subject_id' => null]],
+    ]);
+    $response->assertRedirect();
+    $teacher->refresh();
+    $this->assertEquals(0, $teacher->subjects()->count(), 'Pivot should be cleared');
+});
+
+// === Service-level tests for hasSubjectsKey behavior ===
+
+test('teacher service update without subjects key preserves existing assignments', function () {
+    $teacher = Teacher::create(['name' => 'Service Test', 'status' => 'active']);
+    $subject = Subject::create(['code' => 'SRV1', 'name' => 'Service Subject']);
+    $teacher->subjects()->attach($subject->id);
+
+    $service = app(TeacherService::class);
+    $service->update($teacher, ['name' => 'Service Updated', 'status' => 'active']);
+
+    $teacher->refresh();
+    $this->assertEquals('Service Updated', $teacher->name);
+    $this->assertTrue($teacher->subjects->contains($subject), 'Pivot must be preserved when subjects key not sent');
 });
