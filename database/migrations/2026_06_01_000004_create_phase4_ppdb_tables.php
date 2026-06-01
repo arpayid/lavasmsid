@@ -33,7 +33,7 @@ return new class extends Migration
                 $table->foreignId('chosen_department_id')->nullable()->constrained('departments')->nullOnDelete();
                 $table->foreignId('chosen_classroom_id')->nullable()->constrained('classrooms')->nullOnDelete();
                 $table->string('nisn')->nullable();
-                $table->string('name');
+                $table->string('name')->nullable();
                 $table->string('candidate_name')->nullable();
                 $table->string('gender')->nullable();
                 $table->string('birth_place')->nullable();
