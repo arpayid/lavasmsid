@@ -12,7 +12,7 @@
         <a href="{{ route('public.home') }}" class="text-xl font-black text-indigo-700">LavaSMSID</a>
         <div class="hidden gap-6 text-sm font-medium md:flex">
             <a href="{{ route('public.profile') }}">Profil</a>
-            <a href="{{ route('public.ppdb') }}">PPDB</a>
+            <a href="{{ route('ppdb.index') }}">PPDB</a>
             <a href="{{ route('public.contact') }}">Kontak</a>
         </div>
         <a href="{{ route('login') }}" class="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white">Login Portal</a>
