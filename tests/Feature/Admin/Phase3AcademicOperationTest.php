@@ -111,12 +111,12 @@ test('bulk attendance store creates and updates attendance', function () {
     ];
 
     $this->actingAs($this->admin)->post(route('admin.attendances.store'), $payload)->assertRedirect();
-    $this->assertDatabaseHas('attendances', ['student_id' => $student->id, 'attendance_date' => '2026-07-10', 'status' => 'present']);
+    $this->assertDatabaseHas('attendances', ['student_id' => $student->id, 'attendance_date' => '2026-07-10 00:00:00', 'status' => 'present']);
 
     $payload['records'][0]['status'] = 'absent';
     $this->actingAs($this->admin)->post(route('admin.attendances.store'), $payload)->assertRedirect();
-    $this->assertDatabaseHas('attendances', ['student_id' => $student->id, 'attendance_date' => '2026-07-10', 'status' => 'absent']);
-    expect(Attendance::where('student_id', $student->id)->where('attendance_date', '2026-07-10')->count())->toBe(1);
+    $this->assertDatabaseHas('attendances', ['student_id' => $student->id, 'attendance_date' => '2026-07-10 00:00:00', 'status' => 'absent']);
+    expect(Attendance::where('student_id', $student->id)->whereDate('attendance_date', '2026-07-10')->count())->toBe(1);
 });
 
 test('attendance recap and export can be accessed', function () {
