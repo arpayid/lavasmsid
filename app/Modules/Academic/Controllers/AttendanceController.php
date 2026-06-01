@@ -5,11 +5,11 @@ namespace App\Modules\Academic\Controllers;
 use App\Http\Controllers\Controller;
 use App\Modules\Academic\Models\Attendance;
 use App\Modules\Academic\Models\Classroom;
-use App\Modules\Academic\Models\Student;
 use App\Modules\Academic\Requests\BulkAttendanceRequest;
 use App\Modules\Academic\Services\AttendanceService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\View\View;
 
 class AttendanceController extends Controller
@@ -63,7 +63,6 @@ class AttendanceController extends Controller
         $attendances = $query->get();
         $classrooms = Classroom::orderBy('name')->get();
 
-        // Group by student and count statuses
         $summary = $attendances->groupBy('student_id')->map(function ($records) {
             return [
                 'student_name' => $records->first()->student->name ?? '',
@@ -76,6 +75,36 @@ class AttendanceController extends Controller
         });
 
         return view('modules.academic.attendances.recap', compact('summary', 'classrooms'));
+    }
+
+    public function export(Request $request): Response
+    {
+        $query = Attendance::with(['student', 'classroom']);
+        if ($request->filled('classroom_id')) {
+            $query->where('classroom_id', $request->classroom_id);
+        }
+        if ($request->filled('date')) {
+            $query->where('attendance_date', $request->date);
+        }
+
+        $rows = [["Tanggal", "NIS", "Nama", "Kelas", "Status", "Catatan"]];
+        foreach ($query->orderByDesc('attendance_date')->get() as $attendance) {
+            $rows[] = [
+                $attendance->attendance_date,
+                $attendance->student->nis ?? '',
+                $attendance->student->name ?? '',
+                $attendance->classroom->name ?? '',
+                $attendance->status,
+                $attendance->note ?? '',
+            ];
+        }
+
+        $csv = collect($rows)->map(fn ($row) => collect($row)->map(fn ($value) => '"'.str_replace('"', '""', (string) $value).'"')->implode(','))->implode("\n");
+
+        return response($csv, 200, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="attendances.csv"',
+        ]);
     }
 
     public function destroy(Attendance $attendance): RedirectResponse
