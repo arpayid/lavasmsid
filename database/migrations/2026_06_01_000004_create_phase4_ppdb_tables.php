@@ -57,31 +57,40 @@ return new class extends Migration
         } else {
             Schema::table('ppdb_registrations', function (Blueprint $table) {
                 if (! Schema::hasColumn('ppdb_registrations', 'ppdb_period_id')) {
-                    $table->foreignId('ppdb_period_id')->nullable()->after('registration_number')->constrained('ppdb_periods')->nullOnDelete();
+                    $table->foreignId('ppdb_period_id')->nullable()->constrained('ppdb_periods')->nullOnDelete();
                 }
                 if (! Schema::hasColumn('ppdb_registrations', 'chosen_department_id')) {
-                    $table->foreignId('chosen_department_id')->nullable()->after('department_id')->constrained('departments')->nullOnDelete();
+                    $table->foreignId('chosen_department_id')->nullable()->constrained('departments')->nullOnDelete();
                 }
                 if (! Schema::hasColumn('ppdb_registrations', 'chosen_classroom_id')) {
-                    $table->foreignId('chosen_classroom_id')->nullable()->after('chosen_department_id')->constrained('classrooms')->nullOnDelete();
+                    $table->foreignId('chosen_classroom_id')->nullable()->constrained('classrooms')->nullOnDelete();
                 }
                 if (! Schema::hasColumn('ppdb_registrations', 'nisn')) {
-                    $table->string('nisn')->nullable()->after('chosen_classroom_id');
+                    $table->string('nisn')->nullable();
                 }
                 if (! Schema::hasColumn('ppdb_registrations', 'name')) {
-                    $table->string('name')->nullable()->after('nisn');
+                    $table->string('name')->nullable();
+                }
+                if (! Schema::hasColumn('ppdb_registrations', 'gender')) {
+                    $table->string('gender')->nullable();
+                }
+                if (! Schema::hasColumn('ppdb_registrations', 'birth_place')) {
+                    $table->string('birth_place')->nullable();
+                }
+                if (! Schema::hasColumn('ppdb_registrations', 'birth_date')) {
+                    $table->date('birth_date')->nullable();
                 }
                 if (! Schema::hasColumn('ppdb_registrations', 'religion')) {
-                    $table->string('religion')->nullable()->after('birth_date');
+                    $table->string('religion')->nullable();
                 }
                 if (! Schema::hasColumn('ppdb_registrations', 'verification_note')) {
-                    $table->text('verification_note')->nullable()->after('notes');
+                    $table->text('verification_note')->nullable();
                 }
                 if (! Schema::hasColumn('ppdb_registrations', 'accepted_at')) {
-                    $table->timestamp('accepted_at')->nullable()->after('status');
+                    $table->timestamp('accepted_at')->nullable();
                 }
                 if (! Schema::hasColumn('ppdb_registrations', 'converted_at')) {
-                    $table->timestamp('converted_at')->nullable()->after('accepted_at');
+                    $table->timestamp('converted_at')->nullable();
                 }
                 if (! Schema::hasColumn('ppdb_registrations', 'deleted_at')) {
                     $table->softDeletes();
