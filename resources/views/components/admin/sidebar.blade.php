@@ -134,6 +134,20 @@
         </div>
         @endif
 
+        @if(auth()->user()->can('bkk.view'))
+        <div class="mt-3">
+            <button @click="openGroup = openGroup === 'bkk' ? '' : 'bkk'" class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-xs font-semibold uppercase tracking-wider text-slate-500 transition hover:text-slate-300">
+                <span x-show="!sidebarCollapsed" x-collapse>BKK / Alumni</span>
+                <svg class="h-4 w-4 shrink-0 transition-transform" :class="openGroup === 'bkk' ? 'rotate-90' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </button>
+            <div x-show="openGroup === 'bkk'" x-collapse>
+                <a href="{{ route('admin.bkk.dashboard') }}" class="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-800 {{ $activeRoute('admin.bkk.dashboard') }}"><span x-show="!sidebarCollapsed" x-collapse>Dashboard</span></a>
+                <a href="{{ route('admin.bkk.alumni.index') }}" class="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-800 {{ $activeRoute('admin.bkk.alumni.*') }}"><span x-show="!sidebarCollapsed" x-collapse>Data Alumni</span></a>
+                <a href="{{ route('admin.bkk.vacancies.index') }}" class="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-800 {{ $activeRoute('admin.bkk.vacancies.*') }}"><span x-show="!sidebarCollapsed" x-collapse>Lowongan Kerja</span></a>
+            </div>
+        </div>
+        @endif
+
         @if(auth()->user()->can('user.view') || auth()->user()->can('role.view') || auth()->user()->hasRole('Super Admin'))
         <div class="mt-3">
             <button @click="openGroup = openGroup === 'users' ? '' : 'users'" class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-xs font-semibold uppercase tracking-wider text-slate-500 transition hover:text-slate-300">

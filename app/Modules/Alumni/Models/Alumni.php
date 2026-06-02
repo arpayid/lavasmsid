@@ -18,6 +18,8 @@ class Alumni extends Model
 
     const STATUS_ENTREPRENEUR = 'entrepreneur';
 
+    const STATUS_UNKNOWN = 'unknown';
+
     protected $table = 'alumni';
 
     protected $fillable = [
@@ -34,6 +36,8 @@ class Alumni extends Model
         'study_program',
         'email',
         'phone',
+        'address',
+        'notes',
     ];
 
     public function student(): BelongsTo

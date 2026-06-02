@@ -1,80 +1,84 @@
 <x-admin-layout heading="Data Alumni & Tracer Study">
-    {{-- Stats --}}
-    <div class="mb-6 grid gap-4 sm:grid-cols-5">
-        <div class="rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 text-center">
-            <div class="text-2xl font-bold text-slate-900">{{ $stats['total'] }}</div>
-            <div class="text-xs text-slate-500">Total Alumni</div>
-        </div>
-        <div class="rounded-xl bg-emerald-50 p-4 shadow-sm text-center">
-            <div class="text-2xl font-bold text-emerald-700">{{ $stats['working'] }}</div>
-            <div class="text-xs text-emerald-600">Bekerja</div>
-        </div>
-        <div class="rounded-xl bg-blue-50 p-4 shadow-sm text-center">
-            <div class="text-2xl font-bold text-blue-700">{{ $stats['studying'] }}</div>
-            <div class="text-xs text-blue-600">Kuliah</div>
-        </div>
-        <div class="rounded-xl bg-amber-50 p-4 shadow-sm text-center">
-            <div class="text-2xl font-bold text-amber-700">{{ $stats['entrepreneur'] }}</div>
-            <div class="text-xs text-amber-600">Wirausaha</div>
-        </div>
-        <div class="rounded-xl bg-red-50 p-4 shadow-sm text-center">
-            <div class="text-2xl font-bold text-red-700">{{ $stats['unemployed'] }}</div>
-            <div class="text-xs text-red-600">Belum Bekerja</div>
-        </div>
-    </div>
-
-    {{-- Filter --}}
-    <div class="mb-6 flex gap-2 flex-wrap">
-        <a href="{{ route('admin.bkk.alumni.index') }}" class="rounded-lg px-3 py-2 text-sm font-medium {{ !request('status') ? 'bg-indigo-600 text-white' : 'bg-white border text-slate-700' }}">Semua</a>
-        @foreach(['working'=>'Bekerja','studying'=>'Kuliah','entrepreneur'=>'Wirausaha','unemployed'=>'Belum Bekerja'] as $k => $l)
-        <a href="{{ route('admin.bkk.alumni.index', ['status' => $k]) }}" class="rounded-lg px-3 py-2 text-sm font-medium {{ request('status')==$k ? 'bg-indigo-600 text-white' : 'bg-white border text-slate-700' }}">{{ $l }}</a>
-        @endforeach
-    </div>
-
-    <div class="mb-6 flex justify-between">
-        <a href="{{ route('admin.bkk.alumni.create') }}" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white">+ Tambah Alumni</a>
-        <a href="{{ route('admin.bkk.vacancies.index') }}" class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white">Lowongan Kerja</a>
+    <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <form method="GET" action="{{ route('admin.bkk.alumni.index') }}" class="flex gap-2 flex-wrap">
+            <x-admin.form-input name="search" placeholder="Cari nama/NIS..." :value="request('search')" class="w-64" />
+            <select name="status" class="rounded-lg border-slate-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                <option value="">Semua Status</option>
+                <option value="working" @selected(request('status') == 'working')>Bekerja</option>
+                <option value="studying" @selected(request('status') == 'studying')>Kuliah</option>
+                <option value="entrepreneur" @selected(request('status') == 'entrepreneur')>Wirausaha</option>
+                <option value="unemployed" @selected(request('status') == 'unemployed')>Belum Bekerja</option>
+            </select>
+            <button type="submit" class="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-900">Filter</button>
+        </form>
+        @can('alumni.create')
+        <a href="{{ route('admin.bkk.alumni.create') }}" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-700">+ Tambah Alumni</a>
+        @endcan
     </div>
 
     <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
-        <table class="w-full text-sm">
-            <thead class="border-b bg-slate-50"><tr>
-                <th class="px-4 py-3 text-left font-semibold text-slate-700">Nama</th>
-                <th class="hidden md:table-cell px-4 py-3 text-left font-semibold text-slate-700">Jurusan</th>
-                <th class="hidden md:table-cell px-4 py-3 text-left font-semibold text-slate-700">Tahun</th>
-                <th class="px-4 py-3 text-left font-semibold text-slate-700">Status</th>
-                <th class="hidden md:table-cell px-4 py-3 text-left font-semibold text-slate-700">Perusahaan/Institusi</th>
-                <th class="px-4 py-3 text-right font-semibold text-slate-700">Aksi</th>
-            </tr></thead>
-            <tbody class="divide-y">
-                @forelse($alumni as $a)
-                <tr class="hover:bg-slate-50">
-                    <td class="px-4 py-3 font-medium">{{ $a->name }}</td>
-                    <td class="hidden md:table-cell px-4 py-3">{{ $a->department->name ?? '-' }}</td>
-                    <td class="hidden md:table-cell px-4 py-3">{{ $a->graduation_year }}</td>
-                    <td class="px-4 py-3">
-                        @php $vm = ['working'=>'success','studying'=>'info','entrepreneur'=>'warning','unemployed'=>'danger']; $vl = ['working'=>'Bekerja','studying'=>'Kuliah','entrepreneur'=>'Wirausaha','unemployed'=>'Belum Bekerja']; @endphp
-                        <x-admin.badge :label="$vl[$a->status]??$a->status" :variant="$vm[$a->status]??'default'" />
-                    </td>
-                    <td class="hidden md:table-cell px-4 py-3 text-xs">
-                        @if($a->status === 'working') {{ $a->company_name }}
-                        @elseif($a->status === 'studying') {{ $a->institution_name }}
-                        @elseif($a->status === 'entrepreneur') Wirausaha
-                        @else - @endif
-                    </td>
-                    <td class="px-4 py-3 text-right">
-                        <a href="{{ route('admin.bkk.alumni.edit', $a) }}" class="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100">Edit</a>
-                        <form method="POST" action="{{ route('admin.bkk.alumni.destroy', $a) }}" class="inline" onsubmit="return confirm('Hapus?')">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="rounded-lg p-1.5 text-red-500 hover:bg-red-50">Hapus</button>
-                        </form>
-                    </td>
-                </tr>
-                @empty
-                <tr><td colspan="6" class="px-4 py-16"><x-admin.empty-state title="Belum ada data alumni" message="Tambahkan data alumni." /></td></tr>
-                @endforelse
-            </tbody>
-        </table>
-        @if($alumni->hasPages())<div class="px-4 py-3 border-t">{{ $alumni->links() }}</div>@endif
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left">
+                <thead class="border-b bg-slate-50 text-slate-700 font-semibold">
+                    <tr>
+                        <th class="px-6 py-3">Nama / NIS</th>
+                        <th class="px-6 py-3">Jurusan</th>
+                        <th class="px-6 py-3">Tahun Lulus</th>
+                        <th class="px-6 py-3">Status</th>
+                        <th class="px-6 py-3 text-right">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    @forelse($alumni as $a)
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="px-6 py-4">
+                            <div class="font-medium text-slate-900">{{ $a->name }}</div>
+                            <div class="text-xs text-slate-500">{{ $a->nis ?? '-' }}</div>
+                        </td>
+                        <td class="px-6 py-4 text-slate-600">{{ $a->department->name ?? '-' }}</td>
+                        <td class="px-6 py-4 text-slate-600">{{ $a->graduation_year }}</td>
+                        <td class="px-6 py-4">
+                            @php
+                                $variants = ['working' => 'success', 'studying' => 'primary', 'entrepreneur' => 'warning', 'unemployed' => 'danger', 'unknown' => 'default'];
+                                $labels = ['working' => 'Bekerja', 'studying' => 'Kuliah', 'entrepreneur' => 'Wirausaha', 'unemployed' => 'Belum Bekerja', 'unknown' => 'Tidak Diketahui'];
+                            @endphp
+                            <x-admin.badge :label="$labels[$a->status] ?? $a->status" :variant="$variants[$a->status] ?? 'default'" size="xs" />
+                        </td>
+                        <td class="px-6 py-4 text-right whitespace-nowrap">
+                            <div class="flex justify-end gap-2">
+                                <a href="{{ route('admin.bkk.alumni.show', $a) }}" class="rounded-lg p-2 text-slate-500 hover:bg-slate-100 transition-colors" title="Detail">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                </a>
+                                @can('alumni.update')
+                                <a href="{{ route('admin.bkk.alumni.edit', $a) }}" class="rounded-lg p-2 text-indigo-600 hover:bg-indigo-50 transition-colors" title="Edit">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-5M16.5 3.5a2.121 2.121 0 113 3L117 19l-4 1 1-4 9.5-9.5z"/></svg>
+                                </a>
+                                @endcan
+                                @can('alumni.delete')
+                                <form action="{{ route('admin.bkk.alumni.destroy', $a) }}" method="POST" onsubmit="return confirm('Hapus data alumni ini?')" class="inline">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="rounded-lg p-2 text-red-600 hover:bg-red-50 transition-colors" title="Hapus">
+                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    </button>
+                                </form>
+                                @endcan
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="px-6 py-16 text-center">
+                            <x-admin.empty-state title="Data alumni tidak ditemukan" message="Coba sesuaikan kata kunci pencarian atau filter Anda." />
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        @if($alumni->hasPages())
+        <div class="px-6 py-4 border-t bg-slate-50/50">
+            {{ $alumni->links() }}
+        </div>
+        @endif
     </div>
 </x-admin-layout>
