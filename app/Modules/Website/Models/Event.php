@@ -2,6 +2,7 @@
 
 namespace App\Modules\Website\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
@@ -17,5 +18,10 @@ class Event extends Model
         static::creating(function ($model) {
             $model->slug = Str::slug($model->title) ?: Str::random(10);
         });
+    }
+
+    public function scopePublished(Builder $query): Builder
+    {
+        return $query->where('is_published', true);
     }
 }

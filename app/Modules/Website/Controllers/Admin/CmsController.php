@@ -9,6 +9,8 @@ use App\Modules\Website\Models\Event;
 use App\Modules\Website\Models\Facility;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class CmsController extends Controller
@@ -16,6 +18,9 @@ class CmsController extends Controller
     // --- CMS Pages ---
     public function pagesIndex(): View
     {
+        if (Gate::denies('website.view')) {
+            abort(403);
+        }
         $pages = CmsPage::orderBy('title')->get();
 
         return view('modules.website.cms.pages.index', compact('pages'));
@@ -23,6 +28,9 @@ class CmsController extends Controller
 
     public function pagesEdit($slug): View
     {
+        if (Gate::denies('website.update')) {
+            abort(403);
+        }
         $page = CmsPage::where('slug', $slug)->first();
         if (! $page) {
             $page = new CmsPage(['slug' => $slug, 'title' => ucfirst(str_replace('-', ' ', $slug))]);
@@ -33,6 +41,9 @@ class CmsController extends Controller
 
     public function pagesUpdate(Request $request, $slug): RedirectResponse
     {
+        if (Gate::denies('website.update')) {
+            abort(403);
+        }
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'content' => ['nullable', 'string'],
@@ -45,6 +56,9 @@ class CmsController extends Controller
     // --- Events ---
     public function eventsIndex(Request $request): View
     {
+        if (Gate::denies('website.view')) {
+            abort(403);
+        }
         $query = Event::orderByDesc('start_date');
         $events = $query->paginate(15);
 
@@ -53,11 +67,18 @@ class CmsController extends Controller
 
     public function eventsCreate(): View
     {
+        if (Gate::denies('website.create')) {
+            abort(403);
+        }
+
         return view('modules.website.cms.events.create');
     }
 
     public function eventsStore(Request $request): RedirectResponse
     {
+        if (Gate::denies('website.create')) {
+            abort(403);
+        }
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
@@ -74,11 +95,18 @@ class CmsController extends Controller
 
     public function eventsEdit(Event $event): View
     {
+        if (Gate::denies('website.update')) {
+            abort(403);
+        }
+
         return view('modules.website.cms.events.edit', compact('event'));
     }
 
     public function eventsUpdate(Request $request, Event $event): RedirectResponse
     {
+        if (Gate::denies('website.update')) {
+            abort(403);
+        }
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
@@ -95,6 +123,9 @@ class CmsController extends Controller
 
     public function eventsDestroy(Event $event): RedirectResponse
     {
+        if (Gate::denies('website.delete')) {
+            abort(403);
+        }
         $event->delete();
 
         return redirect()->route('admin.website.events.index')->with('success', 'Agenda berhasil dihapus.');
@@ -103,6 +134,9 @@ class CmsController extends Controller
     // --- Facilities ---
     public function facilitiesIndex(): View
     {
+        if (Gate::denies('website.view')) {
+            abort(403);
+        }
         $facilities = Facility::orderBy('sort_order')->get();
 
         return view('modules.website.cms.facilities.index', compact('facilities'));
@@ -110,6 +144,9 @@ class CmsController extends Controller
 
     public function facilitiesStore(Request $request): RedirectResponse
     {
+        if (Gate::denies('website.create')) {
+            abort(403);
+        }
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'image' => ['nullable', 'image', 'max:2048'],
@@ -127,6 +164,12 @@ class CmsController extends Controller
 
     public function facilitiesDestroy(Facility $facility): RedirectResponse
     {
+        if (Gate::denies('website.delete')) {
+            abort(403);
+        }
+        if ($facility->image_path) {
+            Storage::disk('public')->delete($facility->image_path);
+        }
         $facility->delete();
 
         return back()->with('success', 'Fasilitas berhasil dihapus.');
@@ -135,6 +178,9 @@ class CmsController extends Controller
     // --- Achievements ---
     public function achievementsIndex(Request $request): View
     {
+        if (Gate::denies('website.view')) {
+            abort(403);
+        }
         $query = Achievement::orderByDesc('year');
         $achievements = $query->paginate(15);
 
@@ -143,11 +189,18 @@ class CmsController extends Controller
 
     public function achievementsCreate(): View
     {
+        if (Gate::denies('website.create')) {
+            abort(403);
+        }
+
         return view('modules.website.cms.achievements.create');
     }
 
     public function achievementsStore(Request $request): RedirectResponse
     {
+        if (Gate::denies('website.create')) {
+            abort(403);
+        }
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'student_name' => ['nullable', 'string', 'max:255'],
@@ -163,11 +216,18 @@ class CmsController extends Controller
 
     public function achievementsEdit(Achievement $achievement): View
     {
+        if (Gate::denies('website.update')) {
+            abort(403);
+        }
+
         return view('modules.website.cms.achievements.edit', compact('achievement'));
     }
 
     public function achievementsUpdate(Request $request, Achievement $achievement): RedirectResponse
     {
+        if (Gate::denies('website.update')) {
+            abort(403);
+        }
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'student_name' => ['nullable', 'string', 'max:255'],
@@ -183,6 +243,9 @@ class CmsController extends Controller
 
     public function achievementsDestroy(Achievement $achievement): RedirectResponse
     {
+        if (Gate::denies('website.delete')) {
+            abort(403);
+        }
         $achievement->delete();
 
         return redirect()->route('admin.website.achievements.index')->with('success', 'Prestasi berhasil dihapus.');

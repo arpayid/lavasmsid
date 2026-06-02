@@ -8,10 +8,21 @@ class SchoolSetting extends Model
 {
     protected $fillable = [
         'school_name',
+        'tagline',
         'school_email',
         'school_phone',
         'school_address',
+        'principal_name',
+        'principal_message',
+        'history',
+        'vision',
+        'mission',
+        'website_url',
+        'facebook_url',
+        'instagram_url',
+        'youtube_url',
         'logo_path',
+        'favicon_path',
     ];
 
     public static function firstOrCreateDefault(): self

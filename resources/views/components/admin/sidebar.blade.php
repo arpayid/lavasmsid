@@ -30,6 +30,25 @@
             <span x-show="!sidebarCollapsed" x-collapse>Dashboard</span>
         </a>
 
+        @if(auth()->user()->can('website.view'))
+        <div class="mt-3">
+            <button @click="openGroup = openGroup === 'website' ? '' : 'website'" class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-xs font-semibold uppercase tracking-wider text-slate-500 transition hover:text-slate-300">
+                <span x-show="!sidebarCollapsed" x-collapse>Website CMS</span>
+                <svg class="h-4 w-4 shrink-0 transition-transform" :class="openGroup === 'website' ? 'rotate-90' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </button>
+            <div x-show="openGroup === 'website'" x-collapse>
+                <a href="{{ route('admin.website.dashboard') }}" class="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-800 {{ $activeRoute('admin.website.dashboard') }}"><span x-show="!sidebarCollapsed" x-collapse>Dashboard CMS</span></a>
+                <a href="{{ route('admin.website.settings.edit') }}" class="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-800 {{ $activeRoute('admin.website.settings.*') }}"><span x-show="!sidebarCollapsed" x-collapse>Profil Sekolah</span></a>
+                <a href="{{ route('admin.website.news.index') }}" class="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-800 {{ $activeRoute('admin.website.news.*') }}"><span x-show="!sidebarCollapsed" x-collapse>Berita</span></a>
+                <a href="{{ route('admin.website.events.index') }}" class="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-800 {{ $activeRoute('admin.website.events.*') }}"><span x-show="!sidebarCollapsed" x-collapse>Agenda</span></a>
+                <a href="{{ route('admin.website.gallery.index') }}" class="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-800 {{ $activeRoute('admin.website.gallery.*') }}"><span x-show="!sidebarCollapsed" x-collapse>Galeri</span></a>
+                <a href="{{ route('admin.website.achievements.index') }}" class="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-800 {{ $activeRoute('admin.website.achievements.*') }}"><span x-show="!sidebarCollapsed" x-collapse>Prestasi</span></a>
+                <a href="{{ route('admin.website.facilities.index') }}" class="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-800 {{ $activeRoute('admin.website.facilities.*') }}"><span x-show="!sidebarCollapsed" x-collapse>Fasilitas</span></a>
+                <a href="{{ route('admin.website.pages.index') }}" class="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-800 {{ $activeRoute('admin.website.pages.*') }}"><span x-show="!sidebarCollapsed" x-collapse>Halaman</span></a>
+            </div>
+        </div>
+        @endif
+
         @if($hasPeopleAccess)
         <div class="mt-3">
             <button @click="openGroup = openGroup === 'people' ? '' : 'people'" class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-xs font-semibold uppercase tracking-wider text-slate-500 transition hover:text-slate-300">
