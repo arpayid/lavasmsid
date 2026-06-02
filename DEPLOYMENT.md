@@ -130,6 +130,8 @@ ls -ld storage bootstrap/cache public/storage
 
 ### 9. Backup
 
+Lihat juga `BACKUP_RESTORE.md` untuk prosedur backup terjadwal, restore, retensi, dan checklist uji pemulihan.
+
 **Before any deploy:**
 
 ```bash
