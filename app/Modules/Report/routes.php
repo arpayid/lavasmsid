@@ -18,4 +18,22 @@ Route::middleware(['auth'])
         Route::get('/ppdb', [ReportController::class, 'ppdb'])->name('ppdb')->middleware('permission:report.view');
         Route::get('/internship', [ReportController::class, 'internship'])->name('internship')->middleware('permission:report.view');
         Route::get('/alumni', [ReportController::class, 'alumni'])->name('alumni')->middleware('permission:report.view');
+
+        // Exports
+        Route::get('/export/sample', [ReportController::class, 'exportSample'])->name('export.sample')->middleware('permission:report.view');
+        Route::get('/students/export', [ReportController::class, 'exportStudents'])->name('students.export')->middleware('permission:report.view');
+        Route::get('/finance/export', [ReportController::class, 'exportFinance'])->name('finance.export')->middleware('permission:report.view');
+        Route::get('/ppdb/export', [ReportController::class, 'exportPpdb'])->name('ppdb.export')->middleware('permission:report.view');
+        Route::get('/attendance/export', [ReportController::class, 'exportAttendance'])->name('attendance.export')->middleware('permission:report.view');
+        Route::get('/grades/export', [ReportController::class, 'exportGrades'])->name('grades.export')->middleware('permission:report.view');
+        Route::get('/internship/export', [ReportController::class, 'exportInternships'])->name('internships.export')->middleware('permission:report.view');
+        Route::get('/alumni/export', [ReportController::class, 'exportAlumni'])->name('alumni.export')->middleware('permission:report.view');
+        Route::get('/teachers/export', [ReportController::class, 'exportTeachers'])->name('teachers.export')->middleware('permission:report.view');
+        Route::get('/classrooms/export', [ReportController::class, 'exportClassrooms'])->name('classrooms.export')->middleware('permission:report.view');
+
+        // Website & Communication Reports
+        Route::get('/website', [ReportController::class, 'website'])->name('website')->middleware('permission:report.view');
+        Route::get('/website/export', [ReportController::class, 'exportWebsite'])->name('website.export')->middleware('permission:report.view');
+        Route::get('/communication', [ReportController::class, 'communication'])->name('communication')->middleware('permission:report.view');
+        Route::get('/communication/export', [ReportController::class, 'exportCommunication'])->name('communication.export')->middleware('permission:report.view');
     });

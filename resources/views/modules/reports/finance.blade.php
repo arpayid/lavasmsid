@@ -17,6 +17,11 @@
             <div class="text-lg font-bold text-blue-700">Rp{{ number_format($summary['total_amount'],0,',','.') }}</div>
             <div class="text-xs text-blue-600">Total Tagihan</div>
         </div>
+        <div class="mb-4 flex justify-end">
+            @if(Route::has('admin.reports.finance.export'))
+            <a href="{{ route('admin.reports.finance.export', request()->query()) }}" class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 transition-colors">Export CSV</a>
+            @endif
+        </div>
     </div>
     <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
         <table class="w-full text-sm">

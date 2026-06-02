@@ -1,6 +1,9 @@
 <x-admin-layout heading="Laporan Guru">
-    <div class="mb-6">
+    <div class="mb-6 flex items-center justify-between">
         <span class="text-sm text-slate-500">Total: <strong>{{ $teachers->count() }}</strong> guru</span>
+        @if(Route::has('admin.reports.teachers.export'))
+        <a href="{{ route('admin.reports.teachers.export') }}" class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700">Export CSV</a>
+        @endif
     </div>
     <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
         <table class="w-full text-sm">

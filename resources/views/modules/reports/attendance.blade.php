@@ -16,6 +16,9 @@
                 @endforeach
             </select>
             <button type="submit" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white">Filter</button>
+            @if(Route::has('admin.reports.attendance.export'))
+            <a href="{{ route('admin.reports.attendance.export', request()->query()) }}" class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700">Export CSV</a>
+            @endif
         </form>
     </div>
     <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">

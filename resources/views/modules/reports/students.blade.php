@@ -15,7 +15,10 @@
             </select>
             <button type="submit" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white">Filter</button>
         </form>
-        <span class="text-sm text-slate-500 self-end">Total: <strong>{{ $students->count() }}</strong> siswa</span>
+        <div class="self-end flex gap-2">
+            <a href="{{ route('admin.reports.students.export', request()->query()) }}" class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700">Export CSV</a>
+            <span class="text-sm text-slate-500 self-center"><strong>{{ $students->count() }}</strong> siswa</span>
+        </div>
     </div>
     <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
         <table class="w-full text-sm">

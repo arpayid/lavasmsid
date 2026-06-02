@@ -6,6 +6,11 @@
         <div class="rounded-xl bg-emerald-50 p-4 text-center"><div class="text-2xl font-bold text-emerald-700">{{ $summary['accepted'] }}</div><div class="text-xs text-emerald-600">Diterima</div></div>
         <div class="rounded-xl bg-red-50 p-4 text-center"><div class="text-2xl font-bold text-red-700">{{ $summary['rejected'] }}</div><div class="text-xs text-red-600">Ditolak</div></div>
     </div>
+    <div class="mb-4 flex justify-end">
+        @if(Route::has('admin.reports.ppdb.export'))
+        <a href="{{ route('admin.reports.ppdb.export', request()->query()) }}" class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 transition-colors">Export CSV</a>
+        @endif
+    </div>
     <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
         <table class="w-full text-sm">
             <thead class="border-b bg-slate-50"><tr>

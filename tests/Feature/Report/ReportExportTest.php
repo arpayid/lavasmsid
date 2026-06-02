@@ -21,3 +21,7 @@ test('attendance report page loads', fn () => $this->actingAs($this->admin)->get
 test('grades report page loads', fn () => $this->actingAs($this->admin)->get(route('admin.reports.grades'))->assertOk());
 test('finance report page loads', fn () => $this->actingAs($this->admin)->get(route('admin.reports.finance'))->assertOk());
 test('alumni report page loads', fn () => $this->actingAs($this->admin)->get(route('admin.reports.alumni'))->assertOk());
+test('website report page loads', fn () => $this->actingAs($this->admin)->get(route('admin.reports.website'))->assertOk());
+test('communication report page loads', fn () => $this->actingAs($this->admin)->get(route('admin.reports.communication'))->assertOk());
+test('teachers report page loads', fn () => $this->actingAs($this->admin)->get(route('admin.reports.teachers'))->assertOk());
+test('classrooms report page loads', fn () => $this->actingAs($this->admin)->get(route('admin.reports.classrooms'))->assertOk());

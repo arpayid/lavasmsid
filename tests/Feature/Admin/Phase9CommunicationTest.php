@@ -19,8 +19,11 @@ class Phase9CommunicationTest extends TestCase
     use RefreshDatabase;
 
     protected $superAdmin;
+
     protected $commAdmin;
+
     protected $otherUser;
+
     protected $unauthorizedUser;
 
     protected function setUp(): void

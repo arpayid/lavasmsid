@@ -1,4 +1,9 @@
 <x-admin-layout heading="Laporan Kelas">
+    <div class="mb-6 flex justify-end">
+        @if(Route::has('admin.reports.classrooms.export'))
+        <a href="{{ route('admin.reports.classrooms.export') }}" class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700">Export CSV</a>
+        @endif
+    </div>
     <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
         <table class="w-full text-sm">
             <thead class="border-b bg-slate-50"><tr>

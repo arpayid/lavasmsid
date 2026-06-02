@@ -13,7 +13,9 @@ class NotificationController extends Controller
 {
     public function index(Request $request): View
     {
-        if (Gate::denies('communication.view')) abort(403);
+        if (Gate::denies('communication.view')) {
+            abort(403);
+        }
 
         $query = Notification::where('user_id', auth()->id())->orderByDesc('created_at');
         if ($request->filled('type')) {
@@ -26,13 +28,15 @@ class NotificationController extends Controller
 
     public function show(Notification $notification): View
     {
-        if (Gate::denies('communication.view')) abort(403);
+        if (Gate::denies('communication.view')) {
+            abort(403);
+        }
 
         if ($notification->user_id !== auth()->id()) {
             abort(403, 'Anda tidak memiliki akses ke notifikasi ini.');
         }
 
-        if (!$notification->is_read) {
+        if (! $notification->is_read) {
             $notification->markAsRead();
         }
 
@@ -41,7 +45,9 @@ class NotificationController extends Controller
 
     public function markRead(Notification $notification): RedirectResponse
     {
-        if (Gate::denies('communication.update')) abort(403);
+        if (Gate::denies('communication.update')) {
+            abort(403);
+        }
 
         if ($notification->user_id !== auth()->id()) {
             abort(403);
@@ -54,13 +60,15 @@ class NotificationController extends Controller
 
     public function markAllRead(): RedirectResponse
     {
-        if (Gate::denies('communication.update')) abort(403);
+        if (Gate::denies('communication.update')) {
+            abort(403);
+        }
 
         Notification::where('user_id', auth()->id())
             ->where('is_read', false)
             ->update([
                 'is_read' => true,
-                'read_at' => now()
+                'read_at' => now(),
             ]);
 
         return back()->with('success', 'Semua notifikasi ditandai sebagai terbaca.');
@@ -68,7 +76,9 @@ class NotificationController extends Controller
 
     public function destroy(Notification $notification): RedirectResponse
     {
-        if (Gate::denies('communication.delete')) abort(403);
+        if (Gate::denies('communication.delete')) {
+            abort(403);
+        }
 
         if ($notification->user_id !== auth()->id()) {
             abort(403);
