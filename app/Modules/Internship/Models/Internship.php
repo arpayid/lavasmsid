@@ -5,8 +5,11 @@ namespace App\Modules\Internship\Models;
 use App\Models\User;
 use App\Modules\IndustryPartner\Models\IndustryPartner;
 use App\Modules\Student\Models\Student;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Internship extends Model
 {
@@ -48,5 +51,25 @@ class Internship extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'teacher_id');
+    }
+
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->whereIn('status', [self::STATUS_PLANNED, self::STATUS_ONGOING]);
+    }
+
+    public function logs(): HasMany
+    {
+        return $this->hasMany(InternshipLog::class);
+    }
+
+    public function monitorings(): HasMany
+    {
+        return $this->hasMany(InternshipMonitoring::class);
+    }
+
+    public function score(): HasOne
+    {
+        return $this->hasOne(InternshipScore::class);
     }
 }

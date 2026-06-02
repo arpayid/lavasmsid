@@ -118,6 +118,22 @@
         </div>
         @endif
 
+        @if(auth()->user()->can('internship.view'))
+        <div class="mt-3">
+            <button @click="openGroup = openGroup === 'internship' ? '' : 'internship'" class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-xs font-semibold uppercase tracking-wider text-slate-500 transition hover:text-slate-300">
+                <span x-show="!sidebarCollapsed" x-collapse>PKL / Internship</span>
+                <svg class="h-4 w-4 shrink-0 transition-transform" :class="openGroup === 'internship' ? 'rotate-90' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </button>
+            <div x-show="openGroup === 'internship'" x-collapse>
+                <a href="{{ route('admin.internships.dashboard') }}" class="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-800 {{ $activeRoute('admin.internships.dashboard') }}"><span x-show="!sidebarCollapsed" x-collapse>Dashboard</span></a>
+                <a href="{{ route('admin.internships.index') }}" class="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-800 {{ $activeRoute('admin.internships.*') }}"><span x-show="!sidebarCollapsed" x-collapse>Data PKL</span></a>
+                @if(auth()->user()->can('industry.view'))
+                <a href="{{ route('admin.industry-partners.index') }}" class="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-800 {{ $activeRoute('admin.industry-partners.*') }}"><span x-show="!sidebarCollapsed" x-collapse>Mitra Industri</span></a>
+                @endif
+            </div>
+        </div>
+        @endif
+
         @if(auth()->user()->can('user.view') || auth()->user()->can('role.view') || auth()->user()->hasRole('Super Admin'))
         <div class="mt-3">
             <button @click="openGroup = openGroup === 'users' ? '' : 'users'" class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-xs font-semibold uppercase tracking-wider text-slate-500 transition hover:text-slate-300">

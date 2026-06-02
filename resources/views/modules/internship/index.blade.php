@@ -24,7 +24,7 @@
             <tbody class="divide-y">
                 @forelse($internships as $i)
                 <tr class="hover:bg-slate-50">
-                    <td class="px-4 py-3 font-medium">{{ $i->student->name ?? '-' }}</td>
+                    <td class="px-4 py-3 font-medium"><a href="{{ route('admin.internships.show', $i) }}" class="text-indigo-600 hover:underline">{{ $i->student->name ?? '-' }}</a></td>
                     <td class="hidden md:table-cell px-4 py-3">{{ $i->industryPartner->name ?? '-' }}</td>
                     <td class="hidden md:table-cell px-4 py-3 text-xs">{{ $i->start_date->format('d/m') }} - {{ $i->end_date->format('d/m/y') }}</td>
                     <td class="px-4 py-3">

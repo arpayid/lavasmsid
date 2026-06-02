@@ -6,9 +6,11 @@ use App\Models\User;
 use App\Modules\Academic\Models\Classroom;
 use App\Modules\Academic\Models\Department;
 use App\Modules\Guardian\Models\Guardian;
+use App\Modules\Internship\Models\Internship;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Student extends Model
@@ -21,7 +23,9 @@ class Student extends Model
         'religion', 'phone', 'address', 'status', 'photo_path',
     ];
 
-    protected $casts = ['birth_date' => 'date'];
+    protected $casts = [
+        'birth_date' => 'date',
+    ];
 
     public function user(): BelongsTo
     {
@@ -41,5 +45,10 @@ class Student extends Model
     public function guardian(): BelongsTo
     {
         return $this->belongsTo(Guardian::class);
+    }
+
+    public function internships(): HasMany
+    {
+        return $this->hasMany(Internship::class);
     }
 }
