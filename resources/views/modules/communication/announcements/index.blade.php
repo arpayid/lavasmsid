@@ -24,7 +24,9 @@
             <tbody class="divide-y">
                 @forelse($announcements as $a)
                 <tr class="hover:bg-slate-50">
-                    <td class="px-4 py-3 font-medium">{{ Str::limit($a->title, 50) }}</td>
+                    <td class="px-4 py-3 font-medium">
+                        <a href="{{ route('admin.communication.announcements.show', $a) }}" class="text-indigo-600 hover:underline">{{ Str::limit($a->title, 50) }}</a>
+                    </td>
                     <td class="hidden md:table-cell px-4 py-3"><x-admin.badge :label="$a->target" variant="info" /></td>
                     <td class="hidden md:table-cell px-4 py-3">
                         @php $pv = ['urgent'=>'danger','high'=>'warning','normal'=>'default','low'=>'default']; $pl = ['urgent'=>'Urgent','high'=>'Tinggi','normal'=>'Normal','low'=>'Rendah']; @endphp

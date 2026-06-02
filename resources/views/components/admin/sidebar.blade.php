@@ -1,4 +1,3 @@
-{{-- Sidebar: desktop fixed, mobile slide-in, collapsible via Alpine --}}
 @php
     $activeRoute = fn($pattern) => request()->routeIs($pattern) ? 'bg-slate-800 text-white' : '';
     $hasPeopleAccess = auth()->user()->can('student.view') || auth()->user()->can('teacher.view') || auth()->user()->can('staff.view') || auth()->user()->can('guardian.view') || auth()->user()->can('academic.view');
@@ -163,6 +162,23 @@
                 <a href="{{ route('admin.bkk.dashboard') }}" class="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-800 {{ $activeRoute('admin.bkk.dashboard') }}"><span x-show="!sidebarCollapsed" x-collapse>Dashboard</span></a>
                 <a href="{{ route('admin.bkk.alumni.index') }}" class="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-800 {{ $activeRoute('admin.bkk.alumni.*') }}"><span x-show="!sidebarCollapsed" x-collapse>Data Alumni</span></a>
                 <a href="{{ route('admin.bkk.vacancies.index') }}" class="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-800 {{ $activeRoute('admin.bkk.vacancies.*') }}"><span x-show="!sidebarCollapsed" x-collapse>Lowongan Kerja</span></a>
+                <a href="{{ route('admin.bkk.applications.index') }}" class="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-800 {{ $activeRoute('admin.bkk.applications.*') }}"><span x-show="!sidebarCollapsed" x-collapse>Lamaran Kerja</span></a>
+                <a href="{{ route('admin.bkk.reports.index') }}" class="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-800 {{ $activeRoute('admin.bkk.reports.*') }}"><span x-show="!sidebarCollapsed" x-collapse>Laporan</span></a>
+            </div>
+        </div>
+        @endif
+
+        @if(auth()->user()->can('communication.view'))
+        <div class="mt-3">
+            <button @click="openGroup = openGroup === 'communication' ? '' : 'communication'" class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-xs font-semibold uppercase tracking-wider text-slate-500 transition hover:text-slate-300">
+                <span x-show="!sidebarCollapsed" x-collapse>Komunikasi</span>
+                <svg class="h-4 w-4 shrink-0 transition-transform" :class="openGroup === 'communication' ? 'rotate-90' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </button>
+            <div x-show="openGroup === 'communication'" x-collapse>
+                <a href="{{ route('admin.communication.dashboard') }}" class="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-800 {{ $activeRoute('admin.communication.dashboard') }}"><span x-show="!sidebarCollapsed" x-collapse>Dashboard</span></a>
+                <a href="{{ route('admin.communication.announcements.index') }}" class="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-800 {{ $activeRoute('admin.communication.announcements.*') }}"><span x-show="!sidebarCollapsed" x-collapse>Pengumuman</span></a>
+                <a href="{{ route('admin.communication.messages.inbox') }}" class="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-800 {{ $activeRoute('admin.communication.messages.*') }}"><span x-show="!sidebarCollapsed" x-collapse>Pesan Internal</span></a>
+                <a href="{{ route('admin.communication.notifications.index') }}" class="flex items-center gap-3 rounded-xl px-3 py-2 transition hover:bg-slate-800 {{ $activeRoute('admin.communication.notifications.*') }}"><span x-show="!sidebarCollapsed" x-collapse>Notifikasi</span></a>
             </div>
         </div>
         @endif

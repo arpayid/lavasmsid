@@ -1,35 +1,56 @@
-<x-admin-layout heading="Notifikasi Saya">
-    <div class="mb-6 flex items-center justify-between">
-        <p class="text-sm text-slate-500">Semua notifikasi Anda</p>
-        <form method="POST" action="{{ route('admin.communication.notifications.read-all') }}" id="readAllForm">
-            @csrf
-            <button type="submit" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white">Tandai Semua Sudah Dibaca</button>
-        </form>
+<x-admin-layout heading="Pusat Notifikasi">
+    <div class="mb-6 flex justify-between items-center">
+        <h3 class="text-sm font-bold text-slate-500 uppercase tracking-widest">Semua Notifikasi Anda</h3>
+        <div class="flex gap-2">
+            @can('communication.update')
+            <form action="{{ route('admin.communication.notifications.mark-all-read') }}" method="POST">
+                @csrf
+                <button type="submit" class="rounded-lg bg-white border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors shadow-sm">Tandai Semua Terbaca</button>
+            </form>
+            @endcan
+        </div>
     </div>
-    <div class="space-y-3">
-        @forelse($notifications as $n)
-        <div class="rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 {{ $n->is_read ? '' : 'border-l-4 border-indigo-600' }}">
-            <div class="flex items-start justify-between">
-                <div class="flex-1">
-                    <h3 class="font-medium text-slate-900">{{ $n->title }}</h3>
-                    <p class="mt-1 text-sm text-slate-600">{{ $n->message }}</p>
-                    <p class="mt-2 text-xs text-slate-400">{{ $n->created_at->diffForHumans() }} • {{ $n->type }}</p>
+
+    <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
+        <div class="divide-y divide-slate-100">
+            @forelse($notifications as $notification)
+            <div @class(['p-6 hover:bg-slate-50 transition-colors flex gap-4', 'bg-blue-50/30' => !$notification->is_read])>
+                <div @class([
+                    'h-10 w-10 rounded-full shrink-0 flex items-center justify-center font-bold',
+                    'bg-blue-100 text-blue-600' => !$notification->is_read,
+                    'bg-slate-100 text-slate-400' => $notification->is_read
+                ])>
+                    @if($notification->type === 'announcement') 📣 @elseif($notification->type === 'payment') 💰 @else 🔔 @endif
                 </div>
-                @if(!$n->is_read)
-                <form method="POST" action="{{ route('admin.communication.notifications.read', $n) }}" class="ml-4">
-                    @csrf
-                    <button type="submit" class="rounded-lg px-3 py-1.5 text-xs font-medium text-indigo-600 hover:bg-indigo-50">Tandai Dibaca</button>
-                </form>
-                @else
-                <x-admin.badge label="Dibaca" variant="default" />
-                @endif
+                <div class="flex-1 min-w-0">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 @class(['text-sm font-bold', 'text-blue-900' => !$notification->is_read, 'text-slate-900' => $notification->is_read])>
+                                {{ $notification->title }}
+                            </h4>
+                            <p class="text-xs text-slate-500 uppercase font-bold tracking-tighter mt-0.5">{{ $notification->type }}</p>
+                        </div>
+                        <span class="text-xs font-mono text-slate-400 shrink-0">{{ $notification->created_at->diffForHumans() }}</span>
+                    </div>
+                    <p class="mt-2 text-sm text-slate-600 leading-relaxed">{{ $notification->message }}</p>
+                    <div class="mt-4 flex gap-3">
+                        <a href="{{ route('admin.communication.notifications.show', $notification) }}" class="text-xs font-bold text-indigo-600 hover:underline">Detail</a>
+                        @if(!$notification->is_read && auth()->user()->can('communication.update'))
+                        <form action="{{ route('admin.communication.notifications.mark-read', $notification) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="text-xs font-bold text-slate-500 hover:text-slate-800">Tandai Terbaca</button>
+                        </form>
+                        @endif
+                        @if($notification->action_url)
+                        <a href="{{ $notification->action_url }}" class="text-xs font-bold text-blue-600 hover:underline">Lihat Aksi ↗</a>
+                        @endif
+                    </div>
+                </div>
             </div>
+            @empty
+            <div class="p-12 text-center text-slate-500 italic text-sm">Belum ada notifikasi untuk Anda.</div>
+            @endforelse
         </div>
-        @empty
-        <div class="rounded-xl bg-white p-16 text-center shadow-sm ring-1 ring-slate-200">
-            <x-admin.empty-state title="Tidak ada notifikasi" message="Anda belum memiliki notifikasi." />
-        </div>
-        @endforelse
+        @if($notifications->hasPages())<div class="px-6 py-4 border-t bg-slate-50/50">{{ $notifications->links() }}</div>@endif
     </div>
-    @if($notifications->hasPages())<div class="mt-4">{{ $notifications->links() }}</div>@endif
 </x-admin-layout>
