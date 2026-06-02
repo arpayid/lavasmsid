@@ -4,9 +4,9 @@
             <select name="status" class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm">
                 <option value="">Semua Status</option> <option value="active" @selected(request('status') == 'active')>Aktif</option> <option value="inactive" @selected(request('status') == 'inactive')>Nonaktif</option>
             </select>
-            <button type="submit" class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white">Filter</button>
+            <button type="submit" class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white">Filter</button>
         </form>
-        @can('staff.create')<a href="{{ route('admin.staff.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-primary-700"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>Tambah Staff</a>@endcan
+        @can('staff.create')<a href="{{ route('admin.staff.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>Tambah Staff</a>@endcan
     </div>
     <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
         <table class="w-full text-sm"><thead class="border-b bg-slate-50"><tr>

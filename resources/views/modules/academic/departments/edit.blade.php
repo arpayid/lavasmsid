@@ -7,7 +7,7 @@
             <x-admin.form-textarea name="description" label="Deskripsi" :value="old('description', $department->description)" rows="3" />
         </div>
         <div class="mt-6 flex gap-3">
-            <button type="submit" class="rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white">Simpan</button>
+            <button type="submit" class="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white">Simpan</button>
             <a href="{{ route('admin.departments.index') }}" class="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700">Batal</a>
         </div>
     </form>

@@ -42,7 +42,7 @@
 
         <div class="mt-6 flex items-center justify-end gap-3">
             <a href="{{ route('admin.grades.index') }}" class="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700">Batal</a>
-            <button type="submit" class="rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white">Simpan Nilai</button>
+            <button type="submit" class="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white">Simpan Nilai</button>
         </div>
     </form>
 </x-admin-layout>

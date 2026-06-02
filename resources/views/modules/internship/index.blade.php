@@ -8,7 +8,7 @@
                 <option value="completed" @selected(request('status')=='completed')>Selesai</option>
                 <option value="cancelled" @selected(request('status')=='cancelled')>Dibatalkan</option>
             </select>
-            <button type="submit" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white">Filter</button>
+            <button type="submit" class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white">Filter</button>
         </form>
         <a href="{{ route('admin.internships.create') }}" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white">+ Tambah PKL</a>
     </div>

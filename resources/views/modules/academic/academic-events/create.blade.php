@@ -8,6 +8,6 @@
         </div>
         <x-admin.form-select name="type" label="Tipe" :options="['exam'=>'Ujian','holiday'=>'Libur','event'=>'Event','registration'=>'Pendaftaran','report'=>'Laporan','other'=>'Lainnya']" :value="old('type','event')" />
         <div class="flex items-center gap-2 mt-4"><input type="hidden" name="is_public" value="0"><input type="checkbox" name="is_public" value="1" id="is_public" class="rounded border-slate-300 text-primary-600" @checked(old('is_public', true))><label for="is_public" class="text-sm">Publik</label></div>
-        <div class="mt-6 flex gap-3"><button type="submit" class="rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white">Simpan</button><a href="{{ route('admin.academic-events.index') }}" class="rounded-lg border bg-white px-4 py-2.5 text-sm font-medium text-slate-700">Batal</a></div>
+        <div class="mt-6 flex gap-3"><button type="submit" class="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white">Simpan</button><a href="{{ route('admin.academic-events.index') }}" class="rounded-lg border bg-white px-4 py-2.5 text-sm font-medium text-slate-700">Batal</a></div>
     </form>
 </x-admin-layout>

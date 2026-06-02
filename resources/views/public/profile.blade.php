@@ -14,7 +14,7 @@
                 <div class="space-y-8">
                     <div>
                         <h2 class="text-3xl font-bold text-slate-900 mb-6 flex items-center gap-2">
-                            <span class="h-8 w-1.5 bg-indigo-600 rounded-full"></span>
+                            <span class="h-8 w-1.5 bg-blue-600 rounded-full"></span>
                             Tentang {{ $settings->school_name }}
                         </h2>
                         <div class="prose prose-slate max-w-none text-slate-600 leading-relaxed">
@@ -44,19 +44,19 @@
 
                 <div class="space-y-12">
                     @if($settings->principal_name)
-                    <div class="rounded-3xl bg-indigo-50 p-8 border border-indigo-100 relative shadow-sm">
+                    <div class="rounded-3xl bg-blue-50 p-8 border border-blue-100 relative shadow-sm">
                         <span class="absolute -top-6 left-8 text-6xl text-indigo-200">“</span>
-                        <h3 class="text-xl font-bold text-indigo-900 mb-4 relative z-10">Sambutan Kepala Sekolah</h3>
-                        <p class="text-indigo-800 text-sm leading-relaxed mb-6 italic">
+                        <h3 class="text-xl font-bold text-blue-900 mb-4 relative z-10">Sambutan Kepala Sekolah</h3>
+                        <p class="text-blue-800 text-sm leading-relaxed mb-6 italic">
                             {{ $settings->principal_message ?? '-' }}
                         </p>
                         <div class="flex items-center gap-4">
-                            <div class="h-12 w-12 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-xl">
+                            <div class="h-12 w-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xl">
                                 {{ substr($settings->principal_name, 0, 1) }}
                             </div>
                             <div>
-                                <p class="font-bold text-indigo-900 leading-tight">{{ $settings->principal_name }}</p>
-                                <p class="text-xs text-indigo-600 uppercase font-semibold tracking-wider">Kepala Sekolah</p>
+                                <p class="font-bold text-blue-900 leading-tight">{{ $settings->principal_name }}</p>
+                                <p class="text-xs text-blue-600 uppercase font-semibold tracking-wider">Kepala Sekolah</p>
                             </div>
                         </div>
                     </div>

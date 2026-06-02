@@ -4,6 +4,6 @@
             <x-admin.form-select name="student_id" label="Pilih Siswa" :options="$students->mapWithKeys(fn($s) => [$s->id => $s->name.' ('.($s->classroom?->name ?? 'Tanpa Kelas').')'])->toArray()" :value="request('student_id')" required />
             <x-admin.form-select name="semester_id" label="Pilih Semester" :options="$semesters->mapWithKeys(fn($s) => [$s->id => $s->name.' ('.($s->academicYear?->name ?? 'Tanpa Tahun Ajaran').')'])->toArray()" :value="request('semester_id')" required />
         </div>
-        <div class="mt-6"><button type="submit" class="rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white">Tampilkan Rapor</button></div>
+        <div class="mt-6"><button type="submit" class="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white">Tampilkan Rapor</button></div>
     </form>
 </x-admin-layout>

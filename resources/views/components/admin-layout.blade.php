@@ -13,67 +13,70 @@
 
     {{-- Mobile overlay --}}
     <div x-show="sidebarOpen" x-cloak
-         class="fixed inset-0 z-40 bg-black/50 lg:hidden"
+         class="fixed inset-0 z-40 bg-black/40 lg:hidden"
          @click="sidebarOpen = false"></div>
 
-    <div class="min-h-screen lg:flex">
+    <div class="min-h-screen flex">
 
         {{-- Sidebar --}}
         @include('components.admin.sidebar')
 
         {{-- Main content --}}
-        <div class="flex-1 lg:pl-0" :class="sidebarCollapsed ? '' : ''">
+        <div class="flex-1 flex flex-col min-w-0 lg:ml-72"
+             :class="sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-72'">
 
             {{-- Topbar --}}
             @include('components.admin.topbar')
 
             {{-- Page heading --}}
             @if(isset($heading) && $heading)
-                <div class="border-b border-slate-200 bg-white px-6 py-4">
-                    <div class="flex items-center justify-between">
+                <div class="bg-white border-b border-slate-200 px-6 py-5">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         <div>
                             <h1 class="text-xl font-bold text-slate-900">{{ $heading }}</h1>
                             @if(isset($breadcrumb))
                                 <div class="mt-1 text-sm text-slate-500">
-                                    <a href="{{ route('admin.dashboard') }}" class="hover:text-indigo-600">Dashboard</a>
+                                    <a href="{{ route('admin.dashboard') }}" class="hover:text-blue-600 transition-colors">Dashboard</a>
                                     @if(is_string($breadcrumb))
-                                        <span class="mx-1">/</span>
-                                        <span>{{ $breadcrumb }}</span>
+                                        <span class="mx-1.5 text-slate-300">/</span>
+                                        <span class="text-slate-600">{{ $breadcrumb }}</span>
                                     @elseif(is_array($breadcrumb))
                                         @foreach($breadcrumb as $bc)
-                                            <span class="mx-1">/</span>
+                                            <span class="mx-1.5 text-slate-300">/</span>
                                             @if($loop->last)
-                                                <span>{{ $bc }}</span>
+                                                <span class="text-slate-600">{{ $bc }}</span>
                                             @else
-                                                <span>{{ $bc }}</span>
+                                                <span class="text-slate-500">{{ $bc }}</span>
                                             @endif
                                         @endforeach
                                     @endif
                                 </div>
                             @endif
                         </div>
-                        <div class="flex items-center gap-3">
-                            {{ $actions ?? '' }}
+                        @if(isset($actions))
+                        <div class="flex items-center gap-3 shrink-0">
+                            {{ $actions }}
                         </div>
+                        @endif
                     </div>
                 </div>
             @endif
 
             {{-- Session flash messages --}}
             @if(session('success'))
-                <div class="mx-6 mt-4" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)">
+                <div class="px-6 pt-4" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)">
                     <x-admin.toast type="success" :message="session('success')" />
                 </div>
             @endif
 
             @if(session('error'))
-                <div class="mx-6 mt-4" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)">
+                <div class="px-6 pt-4" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)">
                     <x-admin.toast type="error" :message="session('error')" />
                 </div>
             @endif
 
             {{-- Page content --}}
-            <section class="p-6">
+            <section class="flex-1 p-6 lg:p-8">
                 {{ $slot }}
             </section>
         </div>

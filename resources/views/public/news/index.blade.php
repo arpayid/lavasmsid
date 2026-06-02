@@ -25,11 +25,11 @@
                                     <span>&bull;</span>
                                     <span>{{ $item->author ?? 'Admin' }}</span>
                                 </div>
-                                <h4 class="text-xl font-bold text-slate-900 mb-3 line-clamp-2 group-hover:text-indigo-600 transition-colors">
+                                <h4 class="text-xl font-bold text-slate-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
                                     <a href="{{ route('public.news.show', $item->slug) }}">{{ $item->title }}</a>
                                 </h4>
                                 <p class="text-slate-600 text-sm line-clamp-3 mb-4 flex-1">{{ Str::limit(strip_tags($item->content), 150) }}</p>
-                                <a href="{{ route('public.news.show', $item->slug) }}" class="inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:text-indigo-800 transition-colors">
+                                <a href="{{ route('public.news.show', $item->slug) }}" class="inline-flex items-center gap-1 text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors">
                                     Baca selengkapnya <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                                 </a>
                             </div>

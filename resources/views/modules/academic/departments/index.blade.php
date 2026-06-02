@@ -2,10 +2,10 @@
     <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <form method="GET" class="flex gap-2">
             <x-admin.form-input name="search" placeholder="Cari jurusan..." :value="request('search')" class="w-72" />
-            <button type="submit" class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white">Cari</button>
+            <button type="submit" class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white">Cari</button>
         </form>
         @can('academic.create')
-        <a href="{{ route('admin.departments.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-primary-700">
+        <a href="{{ route('admin.departments.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700">
             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             Tambah Jurusan
         </a>

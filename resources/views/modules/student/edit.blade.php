@@ -24,7 +24,7 @@
         @endif
         <x-admin.form-input name="photo" label="Ganti Foto" type="file" accept="image/jpeg,image/png,image/webp" />
         <div class="mt-6 flex gap-3">
-            <button type="submit" class="rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white">Simpan</button>
+            <button type="submit" class="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white">Simpan</button>
             <a href="{{ route('admin.students.index') }}" class="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700">Batal</a>
         </div>
     </form>

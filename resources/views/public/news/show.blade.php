@@ -3,9 +3,9 @@
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <nav class="flex mb-8 text-sm text-slate-500" aria-label="Breadcrumb">
                 <ol class="flex items-center space-x-2">
-                    <li><a href="{{ route('public.home') }}" class="hover:text-indigo-600">Beranda</a></li>
+                    <li><a href="{{ route('public.home') }}" class="hover:text-blue-600">Beranda</a></li>
                     <li><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></li>
-                    <li><a href="{{ route('public.news') }}" class="hover:text-indigo-600">Berita</a></li>
+                    <li><a href="{{ route('public.news') }}" class="hover:text-blue-600">Berita</a></li>
                     <li><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></li>
                     <li class="truncate font-medium text-slate-900" aria-current="page">{{ $article->title }}</li>
                 </ol>
@@ -18,7 +18,7 @@
                     </h1>
                     <div class="flex items-center gap-4 text-sm text-slate-500 border-b border-slate-100 pb-6">
                         <div class="flex items-center gap-1.5">
-                            <span class="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center text-indigo-600 font-bold text-xs">
+                            <span class="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center text-blue-600 font-bold text-xs">
                                 {{ substr($article->author ?? 'A', 0, 1) }}
                             </span>
                             <span class="font-medium text-slate-700">{{ $article->author ?? 'Admin' }}</span>

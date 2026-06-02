@@ -7,21 +7,21 @@
                 <option value="partial" @selected(request('status')=='partial')>Sebagian</option>
                 <option value="paid" @selected(request('status')=='paid')>Lunas</option>
             </select>
-            <button type="submit" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white">Filter</button>
+            <button type="submit" class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white">Filter</button>
         </form>
-        <a href="{{ route('admin.finance.invoices.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white">+ Buat Tagihan</a>
+        <a href="{{ route('admin.finance.invoices.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white">+ Buat Tagihan</a>
     </div>
     <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <thead class="border-b bg-slate-50"><tr>
-                    <th class="px-4 py-3 text-left font-semibold text-slate-700">No. Invoice</th>
-                    <th class="px-4 py-3 text-left font-semibold text-slate-700">Siswa</th>
-                    <th class="hidden md:table-cell px-4 py-3 text-left font-semibold text-slate-700">Kategori</th>
-                    <th class="hidden md:table-cell px-4 py-3 text-right font-semibold text-slate-700">Tagihan</th>
-                    <th class="hidden md:table-cell px-4 py-3 text-right font-semibold text-slate-700">Terbayar</th>
-                    <th class="px-4 py-3 text-left font-semibold text-slate-700">Status</th>
-                    <th class="px-4 py-3 text-right font-semibold text-slate-700">Aksi</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">No. Invoice</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Siswa</th>
+                    <th class="hidden md:table-cell px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Kategori</th>
+                    <th class="hidden md:table-cell px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">Tagihan</th>
+                    <th class="hidden md:table-cell px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">Terbayar</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">Status</th>
+                    <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">Aksi</th>
                 </tr></thead>
                 <tbody class="divide-y">
                     @forelse($invoices as $inv)

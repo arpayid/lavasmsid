@@ -20,29 +20,29 @@
                 @if(isset($settings->logo_path) && $settings->logo_path)
                     <img src="{{ Storage::url($settings->logo_path) }}" alt="Logo" class="h-10 w-auto">
                 @else
-                    <div class="h-10 w-10 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">L</div>
+                    <div class="h-10 w-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">L</div>
                 @endif
                 <span class="text-xl font-black text-slate-900 hidden sm:block">{{ $settings->school_name ?? 'LavaSMSID' }}</span>
             </a>
 
             {{-- Desktop Menu --}}
             <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
-                <a href="{{ route('public.home') }}" class="hover:text-indigo-600 {{ request()->routeIs('public.home') ? 'text-indigo-600' : '' }}">Beranda</a>
-                <a href="{{ route('public.profile') }}" class="hover:text-indigo-600 {{ request()->routeIs('public.profile') ? 'text-indigo-600' : '' }}">Profil</a>
-                <a href="{{ route('public.news') }}" class="hover:text-indigo-600 {{ request()->routeIs('public.news*') ? 'text-indigo-600' : '' }}">Berita</a>
-                <a href="{{ route('public.events') }}" class="hover:text-indigo-600 {{ request()->routeIs('public.events*') ? 'text-indigo-600' : '' }}">Agenda</a>
-                <a href="{{ route('public.gallery') }}" class="hover:text-indigo-600 {{ request()->routeIs('public.gallery*') ? 'text-indigo-600' : '' }}">Galeri</a>
-                <a href="{{ route('public.achievements') }}" class="hover:text-indigo-600 {{ request()->routeIs('public.achievements*') ? 'text-indigo-600' : '' }}">Prestasi</a>
-                <a href="{{ route('public.facilities') }}" class="hover:text-indigo-600 {{ request()->routeIs('public.facilities*') ? 'text-indigo-600' : '' }}">Fasilitas</a>
-                <a href="{{ route('public.contact') }}" class="hover:text-indigo-600 {{ request()->routeIs('public.contact') ? 'text-indigo-600' : '' }}">Kontak</a>
+                <a href="{{ route('public.home') }}" class="hover:text-blue-600 {{ request()->routeIs('public.home') ? 'text-blue-600' : '' }}">Beranda</a>
+                <a href="{{ route('public.profile') }}" class="hover:text-blue-600 {{ request()->routeIs('public.profile') ? 'text-blue-600' : '' }}">Profil</a>
+                <a href="{{ route('public.news') }}" class="hover:text-blue-600 {{ request()->routeIs('public.news*') ? 'text-blue-600' : '' }}">Berita</a>
+                <a href="{{ route('public.events') }}" class="hover:text-blue-600 {{ request()->routeIs('public.events*') ? 'text-blue-600' : '' }}">Agenda</a>
+                <a href="{{ route('public.gallery') }}" class="hover:text-blue-600 {{ request()->routeIs('public.gallery*') ? 'text-blue-600' : '' }}">Galeri</a>
+                <a href="{{ route('public.achievements') }}" class="hover:text-blue-600 {{ request()->routeIs('public.achievements*') ? 'text-blue-600' : '' }}">Prestasi</a>
+                <a href="{{ route('public.facilities') }}" class="hover:text-blue-600 {{ request()->routeIs('public.facilities*') ? 'text-blue-600' : '' }}">Fasilitas</a>
+                <a href="{{ route('public.contact') }}" class="hover:text-blue-600 {{ request()->routeIs('public.contact') ? 'text-blue-600' : '' }}">Kontak</a>
 
                 @if(Route::has('public.ppdb'))
-                    <a href="{{ route('public.ppdb') }}" class="text-indigo-600 font-bold hover:text-indigo-800">PPDB</a>
+                    <a href="{{ route('public.ppdb') }}" class="text-blue-600 font-bold hover:text-blue-800">PPDB</a>
                 @endif
             </div>
 
             <div class="flex items-center gap-3">
-                <a href="{{ route('login') }}" class="hidden sm:inline-flex rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors">Portal Admin</a>
+                <a href="{{ route('login') }}" class="hidden sm:inline-flex rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition-colors">Portal Admin</a>
 
                 {{-- Mobile Menu Button --}}
                 <button @click="mobileMenuOpen = !mobileMenuOpen" type="button" class="md:hidden inline-flex items-center justify-center p-2 rounded-md text-slate-400 hover:text-slate-500 hover:bg-slate-100">
@@ -57,16 +57,16 @@
         {{-- Mobile Menu --}}
         <div x-show="mobileMenuOpen" class="md:hidden bg-white border-t border-slate-100" style="display: none;" x-collapse>
             <div class="px-4 py-3 space-y-1 shadow-lg">
-                <a href="{{ route('public.home') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Beranda</a>
-                <a href="{{ route('public.profile') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Profil</a>
-                <a href="{{ route('public.news') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Berita</a>
-                <a href="{{ route('public.events') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Agenda</a>
-                <a href="{{ route('public.gallery') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Galeri</a>
-                <a href="{{ route('public.achievements') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Prestasi</a>
-                <a href="{{ route('public.facilities') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Fasilitas</a>
-                <a href="{{ route('public.contact') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Kontak</a>
+                <a href="{{ route('public.home') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50">Beranda</a>
+                <a href="{{ route('public.profile') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50">Profil</a>
+                <a href="{{ route('public.news') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50">Berita</a>
+                <a href="{{ route('public.events') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50">Agenda</a>
+                <a href="{{ route('public.gallery') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50">Galeri</a>
+                <a href="{{ route('public.achievements') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50">Prestasi</a>
+                <a href="{{ route('public.facilities') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50">Fasilitas</a>
+                <a href="{{ route('public.contact') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50">Kontak</a>
                 @if(Route::has('public.ppdb'))
-                    <a href="{{ route('public.ppdb') }}" class="block px-3 py-2 rounded-md text-base font-bold text-indigo-600 hover:bg-slate-50">Informasi PPDB</a>
+                    <a href="{{ route('public.ppdb') }}" class="block px-3 py-2 rounded-md text-base font-bold text-blue-600 hover:bg-slate-50">Informasi PPDB</a>
                 @endif
                 <div class="border-t border-slate-100 my-2 pt-2">
                     <a href="{{ route('login') }}" class="block px-3 py-2 rounded-md text-base font-bold text-slate-900 bg-slate-100 hover:bg-slate-200 text-center">Login Portal Admin</a>
@@ -136,7 +136,7 @@
         </div>
         <div class="mx-auto max-w-7xl mt-12 pt-8 border-t border-slate-800 text-xs text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-4">
             <p>&copy; {{ date('Y') }} {{ $settings->school_name ?? 'LavaSMSID' }}. Hak Cipta Dilindungi.</p>
-            <p>Dibangun dengan <a href="#" class="text-indigo-400 hover:text-indigo-300">LavaSMSID</a></p>
+            <p>Dibangun dengan <a href="#" class="text-blue-400 hover:text-blue-300">LavaSMSID</a></p>
         </div>
     </footer>
 </body>

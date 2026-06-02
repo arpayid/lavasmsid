@@ -17,7 +17,7 @@
                 @endforeach
             </select>
         </div>
-        <button type="submit" class="rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white">Tampilkan</button>
+        <button type="submit" class="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white">Tampilkan</button>
     </form>
 
     @if(count($summary) > 0)

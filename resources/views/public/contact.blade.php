@@ -11,7 +11,7 @@
                     <h2 class="text-2xl font-bold text-slate-900 mb-8">Informasi Kontak</h2>
                     <div class="space-y-8">
                         <div class="flex items-start gap-4">
-                            <div class="h-12 w-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                            <div class="h-12 w-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
                                 📍
                             </div>
                             <div>
@@ -70,7 +70,7 @@
                             <label class="block text-sm font-medium text-slate-700 mb-2">Pesan</label>
                             <textarea rows="5" class="w-full rounded-xl border-slate-200 focus:ring-indigo-500 focus:border-indigo-500 text-sm" placeholder="Tuliskan detail pesan Anda..."></textarea>
                         </div>
-                        <button type="button" class="w-full bg-indigo-600 text-white rounded-xl py-4 font-bold text-sm hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-100">
+                        <button type="button" class="w-full bg-blue-600 text-white rounded-xl py-4 font-bold text-sm hover:bg-blue-700 transition-colors shadow-lg shadow-indigo-100">
                             Kirim Pesan Sekarang
                         </button>
                         <p class="text-center text-xs text-slate-400 italic">Pesan Anda akan segera kami respon melalui email.</p>

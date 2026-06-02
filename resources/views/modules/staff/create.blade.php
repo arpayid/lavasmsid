@@ -9,6 +9,6 @@
         <x-admin.form-textarea name="address" label="Alamat" :value="old('address')" rows="2" />
         <x-admin.form-select name="status" label="Status" :options="['active' => 'Aktif', 'inactive' => 'Nonaktif']" :value="old('status', 'active')" />
         <x-admin.form-input name="photo" label="Foto" type="file" accept="image/jpeg,image/png,image/webp" />
-        <div class="mt-6 flex gap-3"><button type="submit" class="rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white">Simpan</button><a href="{{ route('admin.staff.index') }}" class="rounded-lg border bg-white px-4 py-2.5 text-sm font-medium text-slate-700">Batal</a></div>
+        <div class="mt-6 flex gap-3"><button type="submit" class="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white">Simpan</button><a href="{{ route('admin.staff.index') }}" class="rounded-lg border bg-white px-4 py-2.5 text-sm font-medium text-slate-700">Batal</a></div>
     </form>
 </x-admin-layout>
