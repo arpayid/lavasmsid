@@ -75,21 +75,7 @@ Route::get('/kontak', [PublicWebsiteController::class, 'contact'])->name('public
 Route::get('/halaman/{slug}', [PublicWebsiteController::class, 'page'])->name('public.page');
 
 // Smart PPDB Integration - Alias to ppdb.index for backward compatibility
-Route::get('/ppdb', function () {
-    if (Route::has('public.ppdb.form')) {
-        return redirect()->route('public.ppdb.form');
-    }
-    if (Route::has('ppdb.index')) {
-        // Prevent infinite loop if this route is ppdb.index
-        $route = Route::getRoutes()->getByName('ppdb.index');
-        if ($route && $route->getActionName() !== 'Closure') {
-            return redirect()->route('ppdb.index');
-        }
-    }
-    abort(404, 'Informasi PPDB belum tersedia.');
-})->name('ppdb.index');
+Route::get('/ppdb', [PublicWebsiteController::class, 'redirectPpdb'])->name('ppdb.index');
 
 // Additional alias for Phase 8 consistency if needed
-if (! Route::has('public.ppdb')) {
-    Route::get('/ppdb-info', fn () => redirect()->route('ppdb.index'))->name('public.ppdb');
-}
+Route::get('/ppdb-info', [PublicWebsiteController::class, 'redirectPpdbInfo'])->name('public.ppdb');

@@ -11,6 +11,8 @@ use App\Modules\Website\Models\Event;
 use App\Modules\Website\Models\Facility;
 use App\Modules\Website\Models\Gallery;
 use App\Modules\Website\Models\News;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
@@ -140,5 +142,24 @@ class PublicWebsiteController extends Controller
         $page = Schema::hasTable('cms_pages') ? CmsPage::where('slug', $slug)->firstOrFail() : abort(404);
 
         return view('public.page', compact('settings', 'page'));
+    }
+
+    public function redirectPpdb(): RedirectResponse
+    {
+        if (Route::has('public.ppdb.form')) {
+            return redirect()->route('public.ppdb.form');
+        }
+        if (Route::has('ppdb.index')) {
+            $route = Route::getRoutes()->getByName('ppdb.index');
+            if ($route && $route->getActionName() !== 'Closure') {
+                return redirect()->route('ppdb.index');
+            }
+        }
+        abort(404, 'Informasi PPDB belum tersedia.');
+    }
+
+    public function redirectPpdbInfo(): RedirectResponse
+    {
+        return redirect()->route('ppdb.index');
     }
 }

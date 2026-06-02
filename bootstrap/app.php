@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\SecurityHeaders;
 use App\Providers\AppServiceProvider;
 use App\Providers\ModuleRouteServiceProvider;
 use Illuminate\Auth\AuthenticationException;
@@ -31,6 +32,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => PermissionMiddleware::class,
             'role_or_permission' => RoleOrPermissionMiddleware::class,
         ]);
+
+        $middleware->appendToGroup('web', SecurityHeaders::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // Authentication exception → redirect to login
