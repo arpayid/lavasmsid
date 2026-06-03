@@ -38,14 +38,21 @@ class FinanceReportController extends Controller
             $query->where('created_at', '<=', $request->date_to.' 23:59:59');
         }
 
-        $totalInvoices = $query->count();
-        $totalBilled = $query->sum('amount');
-        $totalPaid = (clone $query)->sum('paid_amount');
-        $outstanding = $totalBilled - $totalPaid;
+        $stats = (clone $query)->selectRaw('COUNT(*) as total_invoices')
+            ->selectRaw('COALESCE(SUM(amount), 0) as total_billed')
+            ->selectRaw('COALESCE(SUM(paid_amount), 0) as total_paid')
+            ->selectRaw("COALESCE(SUM(CASE WHEN status = 'unpaid' THEN 1 ELSE 0 END), 0) as unpaid_count")
+            ->selectRaw("COALESCE(SUM(CASE WHEN status = 'partial' THEN 1 ELSE 0 END), 0) as partial_count")
+            ->selectRaw("COALESCE(SUM(CASE WHEN status = 'paid' THEN 1 ELSE 0 END), 0) as paid_count")
+            ->first();
 
-        $unpaidCount = (clone $query)->where('status', 'unpaid')->count();
-        $partialCount = (clone $query)->where('status', 'partial')->count();
-        $paidCount = (clone $query)->where('status', 'paid')->count();
+        $totalInvoices = $stats->total_invoices;
+        $totalBilled = $stats->total_billed;
+        $totalPaid = $stats->total_paid;
+        $outstanding = $totalBilled - $totalPaid;
+        $unpaidCount = $stats->unpaid_count;
+        $partialCount = $stats->partial_count;
+        $paidCount = $stats->paid_count;
 
         $paymentQuery = Payment::where('status', 'verified');
         if ($request->filled('date_from')) {

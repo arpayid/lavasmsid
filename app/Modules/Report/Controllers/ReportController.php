@@ -213,7 +213,9 @@ class ReportController extends Controller
             'total_invoices' => Invoice::count(),
             'total_amount' => Invoice::sum('amount'),
             'total_paid' => Invoice::sum('paid_amount'),
-            'total_unpaid' => Invoice::where('status', 'unpaid')->sum('amount') - Invoice::where('status', 'unpaid')->sum('paid_amount'),
+            'total_unpaid' => (float) Invoice::where('status', 'unpaid')
+                ->selectRaw('COALESCE(SUM(amount), 0) - COALESCE(SUM(paid_amount), 0) as total_unpaid')
+                ->value('total_unpaid'),
         ];
 
         $categories = PaymentCategory::orderBy('name')->get();
