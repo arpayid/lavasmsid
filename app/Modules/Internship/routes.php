@@ -11,7 +11,7 @@ Route::middleware(['auth'])
     ->prefix('admin/internships')
     ->name('admin.internships.')
     ->group(function () {
-        Route::get('/dashboard', [InternshipController::class, 'dashboard'])->name('dashboard');
+        Route::get('/dashboard', [InternshipController::class, 'dashboard'])->name('dashboard')->middleware('permission:internship.view');
         Route::get('/', [InternshipController::class, 'index'])->name('index')->middleware('permission:internship.view');
         Route::get('/create', [InternshipController::class, 'create'])->name('create')->middleware('permission:internship.create');
         Route::post('/', [InternshipController::class, 'store'])->name('store')->middleware('permission:internship.create');
