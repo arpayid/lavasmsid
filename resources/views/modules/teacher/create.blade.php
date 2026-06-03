@@ -1,6 +1,5 @@
 <x-admin-layout heading="Tambah Guru">
-    <form method="POST" action="{{ route('admin.teachers.store') }}" enctype="multipart/form-data" class="max-w-3xl rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-        @csrf
+    <x-admin.form action="{{ route('admin.teachers.store') }}" enctype="multipart/form-data" class="max-w-3xl rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
         <x-admin.form-input name="name" label="Nama Lengkap" :value="old('name')" required />
         <div class="grid gap-4 md:grid-cols-2">
             <x-admin.form-input name="nip" label="NIP" :value="old('nip')" />
@@ -50,10 +49,10 @@
         </div>
 
         <div class="mt-6 flex gap-3">
-            <button type="submit" class="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white">Simpan</button>
+            <x-admin.button type="submit">Simpan</x-admin.button>
             <a href="{{ route('admin.teachers.index') }}" class="rounded-lg border bg-white px-4 py-2.5 text-sm font-medium text-slate-700">Batal</a>
         </div>
-    </form>
+    </x-admin.form>
 
     @push('scripts')
     <script>

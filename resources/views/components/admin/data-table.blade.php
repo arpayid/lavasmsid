@@ -60,11 +60,9 @@
             </tbody>
         </table>
         {{-- Pagination --}}
-        if($items instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator)
+        @if($items instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator && $items->hasPages())
         <div class="mt-4 flex items-center justify-between px-4">
-            <span class="text-sm text-slate-500">
-                Menampilkan {{ $items->firstItem() }} - {{ $items->lastItem() }} dari {{ $items->total() }} entri
-            </span>
+            <x-admin.pagination-summary :paginator="$items" />
             {{ $items->links() }}
         </div>
         @endif

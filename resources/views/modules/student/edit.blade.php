@@ -1,6 +1,5 @@
 <x-admin-layout heading="Edit Siswa">
-    <form method="POST" action="{{ route('admin.students.update', $student) }}" enctype="multipart/form-data" class="max-w-3xl rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-        @csrf @method('PUT')
+    <x-admin.form method="PUT" action="{{ route('admin.students.update', $student) }}" enctype="multipart/form-data" class="max-w-3xl rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
         <div class="grid gap-5 md:grid-cols-2">
             <x-admin.form-input name="nis" label="NIS" :value="old('nis', $student->nis)" required />
             <x-admin.form-input name="nisn" label="NISN" :value="old('nisn', $student->nisn)" />
@@ -24,8 +23,8 @@
         @endif
         <x-admin.form-input name="photo" label="Ganti Foto" type="file" accept="image/jpeg,image/png,image/webp" />
         <div class="mt-6 flex gap-3">
-            <button type="submit" class="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white">Simpan</button>
+            <x-admin.button type="submit">Simpan</x-admin.button>
             <a href="{{ route('admin.students.index') }}" class="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700">Batal</a>
         </div>
-    </form>
+    </x-admin.form>
 </x-admin-layout>
