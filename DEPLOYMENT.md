@@ -1,199 +1,213 @@
-# Deployment Guide — LavaSMSID
+# Docker/Portainer Deployment — LavaSMSID
 
-## Production Readiness Checklist
+This is the canonical deployment document for LavaSMSID. The primary deployment path is Docker Compose or Portainer Stack. Legacy host-service process setup is not the primary path for this repository.
 
-### 1. Environment Setup
+## 1. Fresh server requirements
+
+Install these on the deployment server:
+
+- Git
+- Docker Engine
+- Docker Compose plugin
+- Portainer Community Edition, if deploying through the Portainer UI
+
+The application stack itself provides:
+
+- PHP runtime container
+- Nginx web container
+- MySQL 8 container
+- Redis container
+- Queue worker container
+- Scheduler container
+
+## 2. Clone repository
 
 ```bash
-# Clone repository
-git clone https://github.com/your-org/lavasmsid.git
+git clone https://github.com/arpayid/lavasmsid.git
 cd lavasmsid
-
-# Install PHP dependencies
-composer install --no-dev --optimize-autoloader
-
-# Install Node.js dependencies
-npm ci
-
-# Build production assets
-npm run build
-
-# Create environment file
-cp .env.example .env
-
-# Generate application key
-php artisan key:generate
 ```
 
-### 2. Configure Environment (.env)
+## 3. Environment file
 
-| Variable | Production Value | Notes |
-|----------|----------------|-------|
-| APP_ENV | production | |
-| APP_DEBUG | false | Critical: do not set to true |
-| APP_URL | https://your-domain.com | Must use HTTPS |
-| LOG_LEVEL | error | Warning is also acceptable |
-| DB_* | (your production credentials) | Set secure password |
-| SESSION_DRIVER | database | Already configured |
-| QUEUE_CONNECTION | database | Already configured |
-| CACHE_STORE | database | Already configured |
-| FILESYSTEM_DISK | public | Used by uploads |
-| MAIL_* | (your SMTP credentials) | Set real mail server |
-
-### 3. Database Migration
+For development:
 
 ```bash
-# Run migrations
-php artisan migrate --force
-
-# Seed initial roles and permissions (only if fresh database)
-php artisan db:seed --force
-
-# Create storage symlink
-php artisan storage:link
+cp .env.docker.example .env
 ```
 
-### 4. Cache Optimization
+For production, use `.env.production.example` as a placeholder reference and create a real `.env` or Portainer environment variables. Do not commit real secrets.
+
+Important production values:
+
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://your-domain.example
+DB_HOST=mysql
+DB_PORT=3306
+CACHE_STORE=database
+QUEUE_CONNECTION=database
+SESSION_DRIVER=database
+```
+
+If deploying without a domain, set `APP_URL=http://SERVER-IP:8080` and adjust `APP_PORT` as needed.
+
+## 4. Build and start stack
 
 ```bash
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-
-# Clear cache if needed
-php artisan optimize:clear
+docker compose build
+docker compose up -d
 ```
 
-### 5. Queue Worker
-
-Queue worker is required for notification broadcasting and other background tasks:
-```bash
-# Start queue worker (production)
-php artisan queue:work --daemon
-
-# Or use Supervisor to keep it running
-# Example supervisor config at /etc/supervisor/conf.d/lavasmsid-worker.conf
-```
-
-Sample Supervisor configuration:
-```ini
-[program:lavasmsid-worker]
-process_name=%(program_name)s_%(process_num)02d
-command=php /path/to/artisan queue:work --sleep=3 --tries=3 --max-time=3600
-autostart=true
-autorestart=true
-stopasgroup=true
-killasgroup=true
-user=www-data
-numprocs=2
-redirect_stderr=true
-stdout_logfile=/path/to/storage/logs/worker.log
-```
-
-### 6. Scheduler (Cron)
-
-Add this entry to crontab:
-```
-* * * * * cd /path/to/lavasmsid && php artisan schedule:run >> /dev/null 2>&1
-```
-
-### 7. File Permissions
+Check services:
 
 ```bash
-# Recursive ownership
-chown -R www-data:www-data storage bootstrap/cache
-
-# Directory permissions
-chmod -R 775 storage
-chmod -R 775 bootstrap/cache
-chmod -R 775 public/storage
-
-# Important: NEVER use 777 for any directory or file.
-# 775 (owner+group write) is sufficient for most setups.
-
-# Verify permission
-ls -ld storage bootstrap/cache public/storage
+docker compose ps
+docker compose logs -f
 ```
 
-### 8. Security Checklist
+## 5. First-time application setup
 
-- [ ] APP_DEBUG=false
-- [ ] APP_KEY generated (php artisan key:generate)
-- [ ] HTTPS enabled
-- [ ] APP_URL matches production domain
-- [ ] Database credentials use strong password
-- [ ] storage:link executed
-- [ ] Symfony requirements satisfied
-- [ ] Secret .env file never committed to git
-- [ ].gitignore includes .env
-- [ ] Composer auth.json not committed
-
-### 9. Backup
-
-Lihat juga `BACKUP_RESTORE.md` untuk prosedur backup terjadwal, restore, retensi, dan checklist uji pemulihan.
-
-**Before any deploy:**
+Run these commands after containers are running:
 
 ```bash
-# Backup database
-mysqldump -u username -p database_name > backups/db_$(date +%Y%m%d_%H%M%S).sql
-
-# Backup uploaded files
-rsync -av storage/app/public/ backups/uploads_$(date +%Y%m%d)/
+docker compose exec app composer install
+docker compose exec app php artisan key:generate
+docker compose exec app php artisan migrate --force
+docker compose exec app php artisan storage:link
+docker compose exec app npm install
+docker compose exec app npm run build
 ```
 
-**Restore:**
+`php artisan migrate --force` is the production-safe migration command.
+
+Development-only database reset:
 
 ```bash
-# Restore database
-mysql -u username -p database_name < backups/db_20260101_120000.sql
-
-# Restore uploaded files
-rsync -av backups/uploads_20260101/ storage/app/public/
+docker compose exec app php artisan migrate:fresh --seed
 ```
 
-**Before deploy checklist:**
-- [ ] Database backup completed
-- [ ] Storage/files backup completed
-- [ ] Current release tagged or noted
-- [ ] Maintenance mode enabled: `php artisan down`
+Do not use `migrate:fresh --seed` in production because it drops existing data.
 
-### 10. Post-Deploy Validation
+## 6. Portainer Stack deployment
+
+Recommended method:
+
+1. Open Portainer.
+2. Select the Docker environment.
+3. Open **Stacks** and click **Add stack**.
+4. Choose **Git Repository**.
+5. Repository URL: `https://github.com/arpayid/lavasmsid.git`.
+6. Branch: `main` or the intended release branch.
+7. Compose path: `docker-compose.yml`.
+8. Add environment variables from `.env.docker.example` for development or `.env.production.example` for production.
+9. Deploy the stack.
+10. Open the `app` container console and run the first-time setup commands.
+
+See `DOCKER_PORTAINER_GUIDE.md` for detailed Portainer instructions.
+
+## 7. Queue worker and scheduler
+
+The Compose stack includes separate containers for background work:
+
+- `worker` runs `php artisan queue:work --sleep=3 --tries=3`.
+- `scheduler` runs `php artisan schedule:work`.
+
+Check logs with:
 
 ```bash
-# Verify environment
-php artisan about
-
-# Verify routes load correctly
-php artisan route:list
-
-# Run tests
-php artisan test
-
-# Verify caching works
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-
-# Verify frontend builds
-npm run build
-
-# Check application logs
-tail -f storage/logs/laravel.log
-
-# Verify scheduler is working
-php artisan schedule:list
+docker compose logs -f worker
+docker compose logs -f scheduler
 ```
 
-## Important Security Reminders
+Restart containers after configuration changes:
 
-1. **Never commit .env** to the repository.
-2. **Never commit real credentials** (database passwords, API keys).
-3. **Keep APP_DEBUG=false** in production to prevent sensitive stack trace exposure.
-4. **Use HTTPS** for all traffic. Set SESSION_SECURE_COOKIE=true if using HTTPS.
-5. **Set correct APP_URL** to prevent broken links and CSRF issues.
-6. **Run storage:link** so uploaded images appear in the public directory.
-7. **Verify PHP upload_max_filesize** and post_max_size in php.ini for file uploads.
-8. **Set up regular backups** for database and uploaded files.
-9. **Monitor storage/logs/laravel.log** for errors and warnings.
-10. **Update dependencies regularly**: `composer update` and `npm update`.
+```bash
+docker compose up -d --force-recreate
+```
+
+## 8. Volumes and persistence
+
+`docker-compose.yml` defines persistent volumes for:
+
+- `mysql_data` — database files.
+- `redis_data` — Redis data.
+- `vendor_data` — Composer dependencies inside the stack.
+- `node_modules_data` — Node dependencies inside the stack.
+
+Do not run `docker compose down -v` in production unless you intentionally want to remove persistent data volumes.
+
+## 9. Logs
+
+```bash
+docker compose logs -f
+docker compose logs -f app
+docker compose logs -f nginx
+docker compose logs -f mysql
+docker compose logs -f worker
+docker compose logs -f scheduler
+```
+
+Laravel logs are available inside the app container:
+
+```bash
+docker compose exec app tail -f storage/logs/laravel.log
+```
+
+## 10. Backup and restore
+
+Create a database backup from the MySQL container:
+
+```bash
+docker compose exec mysql mysqldump -u"$DB_USERNAME" -p"$DB_PASSWORD" "$DB_DATABASE" > lavasmsid_backup.sql
+```
+
+If shell environment variables are not exported on the Docker host, replace them with the non-secret values from your deployment environment. Do not commit generated backups.
+
+Restore a database backup:
+
+```bash
+docker compose exec -T mysql mysql -u"$DB_USERNAME" -p"$DB_PASSWORD" "$DB_DATABASE" < lavasmsid_backup.sql
+```
+
+Back up uploaded files from the application storage path:
+
+```bash
+docker compose exec app tar -czf /tmp/lavasmsid-storage.tar.gz storage/app/public
+```
+
+Copy archives off the server according to your infrastructure backup policy.
+
+## 11. Reverse proxy and HTTPS
+
+For production with a domain, place a TLS-capable reverse proxy in front of the Compose stack or configure the hosting platform to terminate HTTPS. The Compose stack exposes the Nginx container on `APP_PORT` and serves HTTP internally.
+
+Production guidance:
+
+- Set `APP_URL=https://your-domain.example` when HTTPS is active.
+- Set secure session/cookie values in the real production environment as needed.
+- Do not expose MySQL publicly unless there is a specific secured operational need.
+- Keep secrets in Portainer environment variables or a protected `.env` file, not in Git.
+
+## 12. Troubleshooting HTTP 500
+
+Check the following:
+
+```bash
+docker compose ps
+docker compose logs -f app
+docker compose logs -f nginx
+docker compose exec app php artisan about
+docker compose exec app php artisan route:list
+docker compose exec app php artisan optimize:clear
+docker compose exec app tail -f storage/logs/laravel.log
+```
+
+Common causes:
+
+- `APP_KEY` has not been generated.
+- Database container is not healthy yet.
+- `.env` uses the wrong `DB_HOST`; inside Docker it should be `mysql`.
+- Migrations have not been run.
+- Storage permissions or `storage:link` are missing.
+- Frontend assets have not been built.
