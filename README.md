@@ -58,6 +58,25 @@ http://localhost:8080
 
 If `APP_PORT` is changed in `.env` or Portainer variables, use that port instead.
 
+## Fresh VPS deployment
+
+For a full production deployment on a fresh VPS, follow the steps in `DEPLOYMENT.md`. Key commands:
+
+```bash
+git clone https://github.com/arpayid/lavasmsid.git
+cd lavasmsid
+cp .env.production.example .env
+# edit .env with production values
+docker compose build
+docker compose up -d
+docker compose exec app php artisan key:generate --force
+docker compose exec app php artisan migrate --force
+docker compose exec app php artisan storage:link
+docker compose exec app php artisan config:cache
+docker compose exec app php artisan route:cache
+docker compose exec app php artisan view:cache
+```
+
 ## Portainer deployment summary
 
 1. Open Portainer and choose the target Docker environment.
@@ -72,47 +91,71 @@ If `APP_PORT` is changed in `.env` or Portainer variables, use that port instead
 
 See `DOCKER_PORTAINER_GUIDE.md` for detailed Portainer steps and `DEPLOYMENT.md` for production-safe Docker/Portainer notes.
 
-## First-time setup commands
+## Quality checks and CI/CD
 
-Run these from the repository root on a Docker host, or through the `app` container console in Portainer:
+The project runs automated quality checks on every push and pull request via GitHub Actions:
+
+| Check | Command | Description |
+|-------|---------|-------------|
+| Lint | `composer lint` | `pint --test` — checks Blade/PHP style (blocking) |
+| Format | `composer format` | `pint` — auto-fixes style |
+| Analyse | `composer analyse` | `phpstan analyse` — static analysis (level 1) |
+| Test | `composer test` | `php artisan test` — runs test suite |
+| Audit | `composer audit` | checks for known security advisories |
+| Validate | `composer validate --strict` | validates `composer.json` |
+| Build | `npm run build` | builds frontend assets via Vite |
 
 ```bash
-docker compose exec app composer install
-docker compose exec app php artisan key:generate
-docker compose exec app php artisan migrate --force
-docker compose exec app php artisan storage:link
-docker compose exec app npm install
+# Run all quality checks locally (via Docker)
+docker compose exec app composer validate --strict
+docker compose exec app composer audit
+docker compose exec app composer lint
+docker compose exec app composer analyse
+docker compose exec app composer test
+docker compose exec app npm ci
 docker compose exec app npm run build
 ```
 
-For development resets only, you may use:
+## Verification commands
 
-```bash
-docker compose exec app php artisan migrate:fresh --seed
-```
-
-Do not run `migrate:fresh --seed` against production data.
-
-## Common Docker commands
+After deployment, verify the application:
 
 ```bash
 docker compose ps
-docker compose logs -f
-docker compose logs -f app
-docker compose exec app bash
 docker compose exec app php artisan about
 docker compose exec app php artisan route:list
-docker compose down
-docker compose up -d --build
-```
-
-## Testing and build inside the container
-
-```bash
 docker compose exec app php artisan test
-docker compose exec app npm run build
-docker compose exec app ./vendor/bin/pint --test
+docker compose exec app composer audit
+docker compose exec app vendor/bin/pint --test
+docker compose exec app vendor/bin/phpstan analyse
 ```
+
+## Production environment checklist
+
+- [ ] `APP_ENV=production`
+- [ ] `APP_DEBUG=false`
+- [ ] `APP_KEY` generated and never leaked
+- [ ] `DB_PASSWORD` and `MYSQL_ROOT_PASSWORD` are strong, unique values
+- [ ] `CORS_ALLOWED_ORIGINS` set to specific allowed domains
+- [ ] HTTPS/SSL enabled via reverse proxy
+- [ ] `php artisan storage:link` executed
+- [ ] `php artisan config:cache` executed
+- [ ] `php artisan route:cache` executed
+- [ ] `php artisan view:cache` executed
+- [ ] Queue worker container is running
+- [ ] Scheduler container is running
+- [ ] Database backup configured and tested
+- [ ] MySQL port not exposed publicly
+- [ ] `.env` file permissions restricted (`chmod 600`)
+
+## Security notes
+
+- Never commit `.env` files, database dumps, or credentials to Git.
+- Rotate `APP_KEY` immediately if it is ever exposed: `docker compose exec app php artisan key:generate --force`
+- Rotate `DB_PASSWORD` and `MYSQL_ROOT_PASSWORD` if they are ever exposed.
+- Restrict `CORS_ALLOWED_ORIGINS` to only the domains that need access.
+- Keep `APP_DEBUG=false` in production to prevent information disclosure.
+- Do not expose MySQL (port 3306) or Redis (port 6379) to the public internet.
 
 ## Architecture
 
@@ -146,5 +189,6 @@ docker compose exec app ./vendor/bin/pint --test
 - `USER_GUIDE.md` — user guide.
 - `ROLE_PERMISSION_MATRIX.md` — roles and permissions.
 - `BACKUP_RESTORE.md` — backup/restore concepts.
+- `CHANGELOG.md` — changelog.
 - `docs/ARCHITECTURE.md` — architecture details.
 - `docs/HYBRID_MODULAR_MONOLITH.md` — architecture model.
