@@ -61,8 +61,8 @@ Membangun sistem manajemen sekolah SMK yang:
 - Chart.js
 - Laravel Sanctum
 - Spatie Laravel Permission
-- Laravel Excel
-- DomPDF
+- Export CSV streaming untuk laporan operasional
+- PDF/Excel dapat ditambahkan sebagai integrasi opsional bila diperlukan
 - Laravel Queue
 - Redis optional
 - Laravel Pint
@@ -167,8 +167,7 @@ Membangun sistem manajemen sekolah SMK yang:
 - Rekap per kelas
 - Rekap per siswa
 - Grafik kehadiran
-- Export PDF
-- Export Excel
+- Export CSV streaming
 
 ### Nilai dan Rapor
 
@@ -274,8 +273,7 @@ Membangun sistem manajemen sekolah SMK yang:
 - Laporan PPDB
 - Laporan PKL
 - Laporan alumni
-- Export PDF
-- Export Excel
+- Export CSV streaming
 
 ---
 
@@ -370,6 +368,22 @@ app/Modules/Student/
 
 ---
 
+## Dokumentasi Root
+
+| Dokumen | Kegunaan |
+|---|---|
+| `DEPLOYMENT.md` | Panduan deployment production dan validasi pascadeploy. |
+| `ADMIN_GUIDE.md` | Panduan operasional Super Admin dan Admin Sekolah. |
+| `USER_GUIDE.md` | Panduan penggunaan portal untuk pengguna sekolah. |
+| `ROLE_PERMISSION_MATRIX.md` | Ringkasan role dan permission utama. |
+| `BACKUP_RESTORE.md` | Panduan backup dan restore database serta file upload. |
+| `CHANGELOG.md` | Catatan perubahan rilis. |
+| `RELEASE_NOTES.md` | Ringkasan rilis dan catatan keamanan. |
+| `PHASE_15_PRODUCTION_DEPLOYMENT.md` | Checklist executable deployment production v1.0.0 ke VPS. |
+| `CLAUDE.md` | Panduan kerja untuk AI coding assistant. |
+
+---
+
 ## Role Wajib
 
 - Super Admin
@@ -425,16 +439,6 @@ ppdb.view
 ppdb.verify
 ppdb.approve
 ppdb.convert
-```
-
----
-
-## Akun Seeder Default
-
-```text
-Email: admin@lavasmsid.local
-Password: password
-Role: Super Admin
 ```
 
 ---
@@ -627,7 +631,7 @@ Project dianggap selesai jika:
 - [ ] PPDB online berjalan.
 - [ ] PKL berjalan.
 - [ ] BKK/alumni berjalan.
-- [ ] Laporan bisa export PDF/Excel.
+- [ ] Laporan operasional bisa diekspor CSV streaming.
 - [ ] UI responsif di mobile.
 - [ ] Migration dan seeder tidak error.
 - [ ] `npm run build` berhasil.
@@ -658,6 +662,8 @@ Setelah setiap tahap, tampilkan file dibuat, file diubah, command dijalankan, po
 
 ## Catatan Status Repository
 
-Repository saat ini adalah scaffold awal. Beberapa file framework Laravel standar dan beberapa config frontend mungkin masih perlu dilengkapi melalui local development atau AI CLI agar aplikasi benar-benar bisa dijalankan penuh.
+Patch dokumentasi **Phase 13** sudah digabung ke dokumentasi root repository. Dokumen operasional admin, panduan pengguna, matriks role/permission, backup/restore, changelog, release notes, deployment, dan panduan AI assistant sudah tersedia untuk audit akhir.
 
-Prioritas pertama setelah clone adalah menyelesaikan **Tahap 0 — Validasi Foundation Laravel**.
+Perubahan Phase 13 bersifat dokumentasi-only. Tidak ada perubahan PHP, Blade, route, migration, seeder, test, atau package manager file dalam patch dokumentasi ini.
+
+Prioritas berikutnya adalah melakukan **final audit dokumentasi** dan validasi manual production-readiness sesuai `DEPLOYMENT.md` serta `BACKUP_RESTORE.md`.

@@ -90,18 +90,25 @@ LavaSMSID employs a **Hybrid Modular Monolith Laravel** architecture. This means
     php artisan queue:restart
     ```
 
+## Phase Status
+
+Phase 13 documentation is finalized for final audit. Keep future changes documentation-only unless a separate task explicitly asks for application code changes.
+
 ## Important Documentation
 
-Always refer to these files for detailed information:
+Always refer to these root documentation files for detailed information:
 -   `README.md`
--   `docs/HYBRID_MODULAR_MONOLITH.md`
--   `docs/MONOLITH_PLAN.md`
--   `docs/EXECUTION_ROADMAP_FULL.md`
--   `docs/ROADMAP_UNEXECUTED_PROMPT.md`
+-   `DEPLOYMENT.md`
+-   `ADMIN_GUIDE.md`
+-   `USER_GUIDE.md`
+-   `ROLE_PERMISSION_MATRIX.md`
+-   `BACKUP_RESTORE.md`
+-   `CHANGELOG.md`
+-   `RELEASE_NOTES.md`
 
 ## Global Rules
 
--   Start development from `docs/EXECUTION_ROADMAP_FULL.md` and proceed stage by stage.
+-   Follow the active task scope and keep repository documentation aligned with implemented features.
 -   Do not delete existing files without a clear reason.
 -   Keep controllers thin; business logic belongs in Service or Action classes.
 -   Complex queries belong in Repository classes.
@@ -114,14 +121,6 @@ Always refer to these files for detailed information:
 -   Data that needs to be preserved should use soft deletes.
 -   Every menu item must have a corresponding route, controller, view, and permission.
 -   Ensure all tests pass (`php artisan test`) and frontend assets build successfully (`npm run build`) after major changes.
-
-## New Files Added for Finance Module (Phase 5)
-
--   `app/Services/FinanceService.php`: Handles aggregated finance data retrieval for the dashboard.
--   `app/Modules/Finance/Controllers/FinanceController.php`: Controller for the finance dashboard and potentially other finance-related actions.
--   `resources/views/modules/finance/dashboard.blade.php`: Blade view for the finance dashboard display.
--   `routes/admin.php` (or `routes/finance.php`): Definition for the finance dashboard route (`admin.finance.dashboard`).
--   `tests/Feature/Admin/Phase5FinanceTest.php`: Feature tests for finance dashboard access.
 
 ## Custom Skills
 
