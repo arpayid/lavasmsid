@@ -78,7 +78,7 @@ class Phase5FinanceTest extends TestCase
         return Student::create(array_merge([
             'name' => 'Student Test',
             'nis' => '12345',
-            'gender' => 'male',
+            'gender' => 'L',
             'status' => 'active',
         ], $attributes));
     }
