@@ -11,6 +11,7 @@ use App\Modules\Student\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
+use Spatie\Permission\Models\Permission;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class InternshipReportController extends Controller
@@ -75,8 +76,7 @@ class InternshipReportController extends Controller
 
     public function export(Request $request): StreamedResponse
     {
-        // Using internship.view because there is no specific export permission yet
-        if (Gate::denies('internship.view')) {
+        if ($this->deniesExportAccess()) {
             abort(403);
         }
 
@@ -132,5 +132,14 @@ class InternshipReportController extends Controller
 
             fclose($handle);
         }, $fileName, $headers);
+    }
+
+    private function deniesExportAccess(): bool
+    {
+        if (Permission::where('name', 'internship.export')->where('guard_name', 'web')->exists()) {
+            return Gate::denies('internship.export');
+        }
+
+        return Gate::denies('internship.view');
     }
 }
