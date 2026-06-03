@@ -14,10 +14,31 @@
                             <x-admin.badge :label="$vl[$internship->status] ?? $internship->status" :variant="$vm[$internship->status] ?? 'default'" />
                         </dd></div>
                         <div><dt class="text-sm text-slate-500">Periode</dt><dd class="text-slate-700 font-mono text-sm">{{ $internship->start_date?->format('d M Y') }} - {{ $internship->end_date?->format('d M Y') }}</dd></div>
-                        @if($internship->grade)
-                        <div><dt class="text-sm text-slate-500">Nilai Akhir</dt><dd class="text-3xl font-bold text-indigo-600">{{ $internship->grade }} <span class="text-lg font-semibold text-slate-400">/ {{ $internship->score->predicate ?? '-' }}</span></dd></div>
-                        @endif
                     </dl>
+
+                    <div class="mt-6 rounded-xl border border-indigo-100 bg-indigo-50/40 p-4">
+                        <h4 class="text-sm font-semibold text-indigo-700">Penilaian</h4>
+                        @if($internship->score)
+                        <div class="mt-3 flex items-end justify-between gap-4">
+                            <div>
+                                <div class="text-xs text-slate-500">Nilai Akhir</div>
+                                <div class="text-3xl font-bold text-indigo-700">{{ $internship->score->final_score }}</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xs text-slate-500">Predikat</div>
+                                <div class="text-2xl font-bold text-indigo-700">{{ $internship->score->predicate ?? '-' }}</div>
+                            </div>
+                        </div>
+                        @elseif($internship->grade)
+                        <div class="mt-3">
+                            <div class="text-xs text-slate-500">Nilai Akhir</div>
+                            <div class="text-3xl font-bold text-indigo-700">{{ $internship->grade }}</div>
+                        </div>
+                        @else
+                        <p class="mt-2 text-sm text-slate-500 italic">Belum ada penilaian.</p>
+                        @endif
+                    </div>
+
                     <div class="mt-6 flex flex-col gap-2">
                         @can('internship.update')<a href="{{ route('admin.internships.edit', $internship) }}" class="rounded-lg bg-indigo-600 px-4 py-2 text-center text-sm font-medium text-white transition hover:bg-indigo-700">Edit Data</a>@endcan
                         <a href="{{ route('admin.internships.index') }}" class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-center text-sm font-medium text-slate-700 transition hover:bg-slate-50">Kembali</a>
