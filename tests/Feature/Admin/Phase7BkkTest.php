@@ -66,7 +66,7 @@ class Phase7BkkTest extends TestCase
         return Student::create(array_merge([
             'name' => 'Student Test',
             'nis' => '12345',
-            'gender' => 'male',
+            'gender' => 'L',
             'status' => 'active',
         ], $attributes));
     }
