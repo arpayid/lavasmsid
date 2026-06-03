@@ -33,10 +33,9 @@
                     </td>
                     <td class="px-4 py-3 text-right">
                         <a href="{{ route('admin.internships.edit', $i) }}" class="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100">Edit</a>
-                        <form method="POST" action="{{ route('admin.internships.destroy', $i) }}" class="inline" onsubmit="return confirm('Hapus?')">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="rounded-lg p-1.5 text-red-500 hover:bg-red-50">Hapus</button>
-                        </form>
+                        <x-admin.delete-confirm :action="route('admin.internships.destroy', $i)" message="Hapus data PKL ini?">
+                            Hapus
+                        </x-admin.delete-confirm>
                     </td>
                 </tr>
                 @empty

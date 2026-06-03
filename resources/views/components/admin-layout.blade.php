@@ -8,6 +8,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title }} — LavaSMSID</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('styles')
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased" x-data="{ sidebarOpen: false, sidebarCollapsed: false }">
 
