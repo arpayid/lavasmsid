@@ -56,12 +56,13 @@ docker compose exec app php artisan migrate --force
 Recommended first-time production commands:
 
 ```bash
-docker compose exec app composer install
-docker compose exec app php artisan key:generate
+docker compose exec app composer install --no-interaction --prefer-dist --optimize-autoloader
+docker compose exec app php artisan key:generate --force
 docker compose exec app php artisan migrate --force
 docker compose exec app php artisan storage:link
-docker compose exec app npm install
-docker compose exec app npm run build
+docker compose exec app php artisan config:cache
+docker compose exec app php artisan route:cache
+docker compose exec app php artisan view:cache
 ```
 
 Set production values in `.env` or Portainer variables:
@@ -75,6 +76,7 @@ DB_PORT=3306
 CACHE_STORE=database
 QUEUE_CONNECTION=database
 SESSION_DRIVER=database
+CORS_ALLOWED_ORIGINS=https://your-domain.example
 ```
 
 If a domain is not ready, use `APP_URL=http://SERVER-IP:8080`. When HTTPS is enabled through a reverse proxy, update `APP_URL` to the HTTPS domain.
@@ -89,7 +91,7 @@ If a domain is not ready, use `APP_URL=http://SERVER-IP:8080`. When HTTPS is ena
 Generate key:
 
 ```bash
-docker compose exec app php artisan key:generate
+docker compose exec app php artisan key:generate --force
 ```
 
 ## 5. Portainer Stack using Git Repository
@@ -192,7 +194,7 @@ docker compose exec app tail -f storage/logs/laravel.log
 
 Common issues:
 
-- `APP_KEY` missing: run `docker compose exec app php artisan key:generate`.
+- `APP_KEY` missing: run `docker compose exec app php artisan key:generate --force`.
 - Database connection refused: confirm MySQL is healthy and `DB_HOST=mysql`.
 - HTTP 500: inspect app logs and run `php artisan optimize:clear` inside the container.
 - Missing assets: run `docker compose exec app npm install` and `docker compose exec app npm run build`.
