@@ -1,674 +1,150 @@
-# LavaSMSID — SMK Management System Professional
+# LavaSMSID
 
-LavaSMSID adalah project **School Management System khusus SMK** berbasis Laravel dengan arsitektur **Hybrid Modular Monolith**.
+LavaSMSID is a Laravel-based school management system for SMK operations. The project uses a Hybrid Modular Monolith architecture: one Laravel application contains the public website, admin panel, dashboards, internal APIs, reports, queues, cache, and file uploads.
 
-Project ini dirancang untuk mengelola website publik sekolah, admin panel profesional, dashboard multi role, data siswa, guru, staff, akademik, absensi, nilai, rapor, PPDB online, keuangan, PKL, BKK, alumni, komunikasi, dan laporan dalam satu aplikasi Laravel yang rapi, aman, responsif, dan siap dikembangkan ke production VPS.
+Docker Compose and Portainer are the primary deployment path for this repository. Legacy host-service deployment is not the documented primary path.
 
----
+## Stack
 
-## Arsitektur Resmi
-
-```text
-Hybrid Modular Monolith Laravel
-```
-
-Artinya:
-
-- Laravel menjadi satu core aplikasi utama.
-- Website publik dan admin panel berada dalam satu project Laravel.
-- Frontend menggunakan Blade, TailwindCSS, Vite, Alpine.js, dan Chart.js.
-- API internal tetap tersedia via Laravel Sanctum.
-- Fitur besar dipisahkan berdasarkan domain module di `app/Modules`.
-- Fitur global diletakkan di `app/Core` atau `app/Support`.
-- Tidak memakai microservice pada tahap awal.
-- Tidak memisahkan frontend ke Next.js pada tahap awal.
-- Tetap bisa dikembangkan ke mobile app atau frontend eksternal di masa depan.
-
-Dokumentasi Docker/Portainer development:
-
-```text
-DOCKER_PORTAINER_GUIDE.md
-```
-
-Dokumentasi arsitektur:
-
-```text
-docs/HYBRID_MODULAR_MONOLITH.md
-docs/MONOLITH_PLAN.md
-docs/ARCHITECTURE.md
-docs/ROADMAP_UNEXECUTED_PROMPT.md
-```
-
----
-
-## Tujuan Project
-
-Membangun sistem manajemen sekolah SMK yang:
-
-- Profesional.
-- Modular.
-- Mudah dikembangkan.
-- Aman secara role dan permission.
-- Responsif di desktop dan mobile.
-- Siap deploy ke VPS production.
-- Cocok untuk kebutuhan sekolah SMK modern.
-
----
-
-## Stack Teknologi
-
-- PHP 8.3+
-- Laravel 12+
-- MySQL atau PostgreSQL
-- Laravel Blade
-- TailwindCSS
-- Vite
-- Alpine.js
-- Chart.js
-- Laravel Sanctum
+- Laravel 12
+- PHP-FPM container
+- MySQL 8 container
+- Redis container
+- Nginx container
+- Docker Compose
+- Portainer Community Edition
+- Blade, Tailwind CSS, Vite, Alpine.js, and Chart.js
 - Spatie Laravel Permission
-- Export CSV streaming untuk laporan operasional
-- PDF/Excel dapat ditambahkan sebagai integrasi opsional bila diperlukan
-- Laravel Queue
-- Redis optional
-- Laravel Pint
-- Pest/PHPUnit
+- PHPUnit/Pest-compatible Laravel tests
 
----
+## Repository deployment files
 
-## Modul Utama
+- `Dockerfile` — application PHP-FPM image.
+- `docker-compose.yml` — Compose stack for app, Nginx, MySQL, Redis, worker, and scheduler.
+- `.env.docker.example` — Docker development environment example.
+- `.env.production.example` — Docker/Portainer production environment example with placeholders.
+- `docker/nginx/default.conf` — Nginx container configuration.
+- `docker/php/local.ini` — PHP container configuration.
+- `DOCKER_PORTAINER_GUIDE.md` — detailed Docker and Portainer guide.
+- `DEPLOYMENT.md` — production-safe Docker/Portainer deployment notes.
 
-### Core
-
-- Auth
-- Dashboard
-- Settings
-- Audit Log
-- Notification
-- Shared Service
-- Shared Repository
-
-### Website Publik
-
-- Beranda
-- Profil Sekolah
-- Visi dan Misi
-- Sejarah Sekolah
-- Sambutan Kepala Sekolah
-- Jurusan SMK
-- Fasilitas
-- Prestasi
-- Berita
-- Agenda
-- Galeri
-- PPDB
-- Mitra Industri
-- Teaching Factory
-- PKL / Prakerin
-- BKK
-- Alumni
-- Kontak
-- Login Portal
-
-### Admin Panel
-
-- Dashboard statistik
-- Sidebar profesional
-- Topbar user
-- Breadcrumb
-- Menu berdasarkan role
-- Table modern
-- Form modern
-- Search, filter, sorting
-- Pagination
-- Modal
-- Toast notification
-- Loading state
-- Empty state
-- Error state
-- Badge status
-- User profile
-- Setting sekolah
-- Activity log
-- Notification dropdown
-
-### Master Data
-
-- Profil Sekolah
-- Tahun Ajaran
-- Semester
-- Jurusan
-- Kompetensi Keahlian
-- Kelas / Rombel
-- Ruang Kelas
-- Mata Pelajaran
-- Guru
-- Staff
-- Siswa
-- Orang Tua / Wali
-- Ekstrakurikuler
-- Mitra Industri
-- Kategori Pembayaran
-- Kalender Akademik
-
-### Akademik
-
-- Jadwal Pelajaran
-- Jadwal Guru
-- Jadwal Kelas
-- Jadwal Ruang
-- Jadwal Ujian
-- Deteksi bentrok jadwal
-- Kalender akademik
-- Kenaikan kelas
-- Kelulusan siswa
-
-### Absensi
-
-- Absensi siswa harian
-- Absensi per mata pelajaran
-- Absensi guru
-- Rekap harian
-- Rekap bulanan
-- Rekap per kelas
-- Rekap per siswa
-- Grafik kehadiran
-- Export CSV streaming
-
-### Nilai dan Rapor
-
-- Nilai tugas
-- Nilai harian
-- Nilai UTS
-- Nilai UAS
-- Nilai praktik
-- Nilai proyek
-- Nilai produktif SMK
-- Nilai PKL
-- Nilai sikap
-- Nilai pengetahuan
-- Nilai keterampilan
-- Perhitungan nilai akhir otomatis
-- Rapor PDF
-- Rekap nilai
-
-### Keuangan
-
-- Kategori pembayaran
-- Tagihan SPP
-- Tagihan daftar ulang
-- Tagihan ujian
-- Tagihan praktik
-- Tagihan lain-lain
-- Pembayaran siswa
-- Pembayaran cicilan
-- Status lunas / sebagian / belum lunas
-- Kwitansi PDF
-- Laporan pemasukan
-- Laporan pengeluaran
-- Laporan kas
-- Dashboard keuangan
-
-### PPDB Online
-
-- Form pendaftaran publik
-- Nomor pendaftaran otomatis
-- Pilihan jurusan SMK
-- Data calon siswa
-- Data orang tua
-- Upload berkas
-- Verifikasi berkas
-- Seleksi administrasi
-- Status pendaftaran
-- Pengumuman hasil
-- Cetak bukti pendaftaran
-- Konversi pendaftar diterima menjadi siswa aktif
-
-### SMK Specialist
-
-- Program Keahlian
-- Kompetensi Keahlian
-- Mata Pelajaran Produktif
-- PKL / Prakerin
-- Mitra Industri
-- Guru Pembimbing PKL
-- Pembimbing Industri
-- Logbook PKL
-- Monitoring PKL
-- Penilaian PKL
-- Teaching Factory
-- Sertifikasi Kompetensi
-- Uji Kompetensi Keahlian
-
-### BKK dan Alumni
-
-- Data alumni
-- Tracer study
-- Status alumni bekerja
-- Status alumni kuliah
-- Status alumni wirausaha
-- Lowongan kerja
-- Lamaran alumni
-- Perusahaan mitra
-- Statistik penyerapan alumni
-- Laporan alumni
-
-### Komunikasi
-
-- Pengumuman sekolah
-- Pesan internal
-- Notifikasi dashboard
-- Broadcast siswa
-- Broadcast orang tua
-- Broadcast guru
-- Notifikasi pembayaran
-- Notifikasi absensi
-- Notifikasi nilai
-- Riwayat notifikasi
-
-### Report
-
-- Laporan siswa
-- Laporan guru
-- Laporan kelas
-- Laporan jurusan
-- Laporan absensi
-- Laporan nilai
-- Laporan rapor
-- Laporan keuangan
-- Laporan PPDB
-- Laporan PKL
-- Laporan alumni
-- Export CSV streaming
-
----
-
-## Struktur Folder Target
-
-```text
-app/
-├── Core/
-│   ├── Auth/
-│   ├── Dashboard/
-│   ├── Settings/
-│   ├── Audit/
-│   ├── Notification/
-│   └── Shared/
-│       ├── BaseService.php
-│       ├── BaseRepository.php
-│       └── DataTableQuery.php
-│
-├── Modules/
-│   ├── Academic/
-│   ├── Student/
-│   ├── Teacher/
-│   ├── Staff/
-│   ├── Attendance/
-│   ├── Grade/
-│   ├── Finance/
-│   ├── PPDB/
-│   ├── Schedule/
-│   ├── Internship/
-│   ├── IndustryPartner/
-│   ├── Alumni/
-│   ├── BKK/
-│   ├── Website/
-│   ├── Communication/
-│   ├── Report/
-│   └── UserManagement/
-│
-├── Http/
-├── Models/
-├── Providers/
-└── Support/
-```
-
----
-
-## Standar Struktur Setiap Module
-
-```text
-app/Modules/Student/
-├── Controllers/
-│   └── StudentController.php
-├── Models/
-│   └── Student.php
-├── Services/
-│   └── StudentService.php
-├── Repositories/
-│   └── StudentRepository.php
-├── Requests/
-│   ├── StoreStudentRequest.php
-│   └── UpdateStudentRequest.php
-├── Policies/
-│   └── StudentPolicy.php
-├── Actions/
-│   ├── CreateStudentAction.php
-│   └── UpdateStudentAction.php
-├── Data/
-│   └── StudentData.php
-├── Exports/
-├── Imports/
-├── Resources/
-└── routes.php
-```
-
----
-
-## Prinsip Kode
-
-- Controller harus tipis.
-- Business logic berada di Service atau Action.
-- Query kompleks berada di Repository.
-- Validasi input memakai Form Request.
-- Authorization memakai Policy, Gate, Middleware, Role, dan Permission.
-- Semua route admin wajib memakai auth dan permission.
-- Semua upload file wajib validasi MIME dan ukuran.
-- Data penting wajib memakai soft delete.
-- Aksi penting wajib masuk audit log.
-- Tidak boleh ada menu tanpa route dan view.
-- Tidak boleh ada route mati.
-- Seeder harus bisa dijalankan ulang.
-- `npm run build` harus berhasil.
-- `php artisan migrate --seed` harus berhasil.
-
----
-
-## Dokumentasi Root
-
-| Dokumen | Kegunaan |
-|---|---|
-| `DEPLOYMENT.md` | Panduan deployment production dan validasi pascadeploy. |
-| `ADMIN_GUIDE.md` | Panduan operasional Super Admin dan Admin Sekolah. |
-| `USER_GUIDE.md` | Panduan penggunaan portal untuk pengguna sekolah. |
-| `ROLE_PERMISSION_MATRIX.md` | Ringkasan role dan permission utama. |
-| `BACKUP_RESTORE.md` | Panduan backup dan restore database serta file upload. |
-| `CHANGELOG.md` | Catatan perubahan rilis. |
-| `RELEASE_NOTES.md` | Ringkasan rilis dan catatan keamanan. |
-| `CLAUDE.md` | Panduan kerja untuk AI coding assistant. |
-
----
-
-## Role Wajib
-
-- Super Admin
-- Admin Sekolah
-- Kepala Sekolah
-- Waka Kurikulum
-- Waka Kesiswaan
-- Guru
-- Wali Kelas
-- Siswa
-- Orang Tua / Wali
-- Bendahara
-- Staff TU
-- Panitia PPDB
-- Pembimbing PKL
-- Admin BKK
-
----
-
-## Permission Pattern
-
-Setiap module memakai pola permission:
-
-```text
-module.view
-module.create
-module.update
-module.delete
-module.export
-module.import
-module.approve
-module.verify
-module.print
-```
-
-Contoh:
-
-```text
-student.view
-student.create
-student.update
-student.delete
-student.import
-student.export
-
-finance.view
-finance.create
-finance.verify
-finance.export
-finance.print
-
-ppdb.view
-ppdb.verify
-ppdb.approve
-ppdb.convert
-```
-
----
-
-## Instalasi Lokal / VPS
+## Docker-first quick start
 
 ```bash
 git clone https://github.com/arpayid/lavasmsid.git
 cd lavasmsid
-composer install
-npm install
-cp .env.example .env
-php artisan key:generate
-php artisan migrate --seed
-npm run build
-php artisan serve --host=0.0.0.0 --port=8000
+cp .env.docker.example .env
+docker compose build
+docker compose up -d
+docker compose exec app composer install
+docker compose exec app php artisan key:generate
+docker compose exec app php artisan migrate --force
+docker compose exec app php artisan storage:link
+docker compose exec app npm install
+docker compose exec app npm run build
 ```
 
----
-
-## Konfigurasi Database MySQL
-
-```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=lavasmsid
-DB_USERNAME=root
-DB_PASSWORD=your_password
-```
-
-## Konfigurasi Database PostgreSQL
-
-```env
-DB_CONNECTION=pgsql
-DB_HOST=127.0.0.1
-DB_PORT=5432
-DB_DATABASE=lavasmsid
-DB_USERNAME=postgres
-DB_PASSWORD=your_password
-```
-
----
-
-## Perintah Development
-
-```bash
-php artisan route:list
-php artisan migrate:fresh --seed
-php artisan test
-npm run dev
-npm run build
-vendor/bin/pint
-```
-
----
-
-## Perintah Production VPS
-
-```bash
-composer install --no-dev --optimize-autoloader
-npm ci
-npm run build
-php artisan migrate --force
-php artisan storage:link
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-php artisan queue:restart
-```
-
----
-
-## Roadmap Eksekusi
-
-### Tahap 0 — Validasi Foundation Laravel ✅ SELESAI (2026-05-31)
-
-- Lengkapi skeleton Laravel standar.
-- Pastikan `php artisan` berjalan.
-- Pastikan route tidak error.
-- Pastikan migration dan seeder berjalan.
-- Pastikan Vite dan Tailwind build berhasil.
-
-### Tahap 1 — Core Hybrid Modular Monolith
-
-- Tambahkan `app/Core`.
-- Tambahkan base service.
-- Tambahkan base repository.
-- Tambahkan module route loader.
-- Standarkan struktur setiap module.
-
-### Tahap 2 — Admin Panel Core
-
-- Sidebar collapsible.
-- Topbar user.
-- Breadcrumb.
-- Dynamic menu by permission.
-- Reusable table, form, card, badge, modal, toast.
-
-### Tahap 3 — User Management
-
-- CRUD users.
-- CRUD roles.
-- CRUD permissions.
-- Assign role dan permission.
-- User profile.
-- Activity log.
-
-### Tahap 4 — Master Data
-
-- CRUD siswa.
-- CRUD guru.
-- CRUD staff.
-- CRUD jurusan.
-- CRUD kelas.
-- CRUD mapel.
-- CRUD tahun ajaran dan semester.
-
-### Tahap 5 — Akademik
-
-- Jadwal pelajaran.
-- Absensi.
-- Nilai.
-- Rapor.
-- Kalender akademik.
-
-### Tahap 6 — SMK Specialist
-
-- PKL.
-- Mitra industri.
-- Teaching Factory.
-- Sertifikasi kompetensi.
-- BKK.
-- Alumni.
-
-### Tahap 7 — Keuangan
-
-- Tagihan.
-- Pembayaran.
-- Kwitansi.
-- Laporan kas.
-
-### Tahap 8 — PPDB
-
-- Form publik.
-- Upload berkas.
-- Verifikasi.
-- Seleksi.
-- Konversi menjadi siswa.
-
-### Tahap 9 — Website Publik
-
-- Profil.
-- Jurusan.
-- Berita.
-- Agenda.
-- Galeri.
-- Kontak.
-
-### Tahap 10 — Production
-
-- Testing.
-- Security check.
-- Queue worker.
-- Scheduler.
-- Nginx.
-- PHP-FPM.
-- SSL.
-- Backup database.
-
----
-
-## Checklist Final
-
-Project dianggap selesai jika:
-
-- [ ] Login berjalan.
-- [ ] Role permission berjalan.
-- [ ] Admin panel tampil profesional.
-- [ ] Website publik tampil modern.
-- [ ] Dashboard berbeda sesuai role.
-- [ ] CRUD siswa berjalan.
-- [ ] CRUD guru berjalan.
-- [ ] CRUD jurusan berjalan.
-- [ ] CRUD kelas berjalan.
-- [ ] Absensi berjalan.
-- [ ] Nilai berjalan.
-- [ ] Rapor bisa dicetak.
-- [ ] Keuangan berjalan.
-- [ ] PPDB online berjalan.
-- [ ] PKL berjalan.
-- [ ] BKK/alumni berjalan.
-- [ ] Laporan operasional bisa diekspor CSV streaming.
-- [ ] UI responsif di mobile.
-- [ ] Migration dan seeder tidak error.
-- [ ] `npm run build` berhasil.
-- [ ] `php artisan test` berhasil.
-- [ ] Siap deploy ke VPS production.
-
----
-
-## Prompt Lanjutan untuk AI CLI
+Open the application at:
 
 ```text
-Anda adalah Senior Laravel Fullstack Architect. Lanjutkan repository LavaSMSID dari kondisi saat ini dengan arsitektur Hybrid Modular Monolith Laravel.
-
-Jangan hapus file yang sudah ada. Laravel harus tetap menjadi satu core aplikasi utama untuk website publik, admin panel, dashboard multi role, API internal, report, queue, cache, dan upload file.
-
-Pertama, audit semua file dan jalankan composer install, npm install, php artisan route:list, php artisan migrate:fresh --seed, npm run build, dan php artisan test. Perbaiki semua error foundation sampai project Laravel valid.
-
-Setelah foundation valid, lanjutkan roadmap di README.md dan docs/ROADMAP_UNEXECUTED_PROMPT.md secara bertahap.
-
-Setiap module wajib mengikuti struktur Controllers, Models, Services, Repositories, Requests, Policies, Actions, Data, Resources, routes.php.
-
-Controller harus tipis. Business logic harus berada di Service atau Action. Query kompleks berada di Repository. Validasi memakai Form Request. Authorization memakai Policy dan Spatie Permission.
-
-Setelah setiap tahap, tampilkan file dibuat, file diubah, command dijalankan, potensi error, cara testing manual, dan langkah berikutnya.
+http://SERVER-IP:8080
 ```
 
----
+For local development, use:
 
-## Catatan Status Repository
+```text
+http://localhost:8080
+```
 
-Patch dokumentasi **Phase 13** sudah digabung ke dokumentasi root repository. Dokumen operasional admin, panduan pengguna, matriks role/permission, backup/restore, changelog, release notes, deployment, dan panduan AI assistant sudah tersedia untuk audit akhir.
+If `APP_PORT` is changed in `.env` or Portainer variables, use that port instead.
 
-Perubahan Phase 13 bersifat dokumentasi-only. Tidak ada perubahan PHP, Blade, route, migration, seeder, test, atau package manager file dalam patch dokumentasi ini.
+## Portainer deployment summary
 
-Prioritas berikutnya adalah melakukan **final audit dokumentasi** dan validasi manual production-readiness sesuai `DEPLOYMENT.md` serta `BACKUP_RESTORE.md`.
+1. Open Portainer and choose the target Docker environment.
+2. Go to **Stacks** and select **Add stack**.
+3. Use **Git Repository** for the simplest deployment flow.
+4. Set Repository URL to `https://github.com/arpayid/lavasmsid.git`.
+5. Set branch to `main` or the intended release branch.
+6. Set Compose path to `docker-compose.yml`.
+7. Provide environment variables from `.env.docker.example` for development or `.env.production.example` for production.
+8. Deploy the stack.
+9. Open the `app` container console and run first-time setup commands.
+
+See `DOCKER_PORTAINER_GUIDE.md` for detailed Portainer steps and `DEPLOYMENT.md` for production-safe Docker/Portainer notes.
+
+## First-time setup commands
+
+Run these from the repository root on a Docker host, or through the `app` container console in Portainer:
+
+```bash
+docker compose exec app composer install
+docker compose exec app php artisan key:generate
+docker compose exec app php artisan migrate --force
+docker compose exec app php artisan storage:link
+docker compose exec app npm install
+docker compose exec app npm run build
+```
+
+For development resets only, you may use:
+
+```bash
+docker compose exec app php artisan migrate:fresh --seed
+```
+
+Do not run `migrate:fresh --seed` against production data.
+
+## Common Docker commands
+
+```bash
+docker compose ps
+docker compose logs -f
+docker compose logs -f app
+docker compose exec app bash
+docker compose exec app php artisan about
+docker compose exec app php artisan route:list
+docker compose down
+docker compose up -d --build
+```
+
+## Testing and build inside the container
+
+```bash
+docker compose exec app php artisan test
+docker compose exec app npm run build
+docker compose exec app ./vendor/bin/pint --test
+```
+
+## Architecture
+
+- Laravel remains the single core application.
+- Public website and admin panel live in the same project.
+- Major features are organized by domain under `app/Modules`.
+- Shared application logic belongs in `app/Core`, `app/Services`, or module-specific service layers.
+- Controllers should stay thin; business logic belongs in Services or Actions.
+- Authorization uses Policies, Gates, middleware, roles, and permissions.
+
+## Main modules
+
+- Website public pages
+- Admin dashboard
+- User and role management
+- Master data
+- Academic management
+- Attendance
+- Grades and reports
+- Finance
+- PPDB
+- PKL, BKK, alumni, and industry partners
+- Communication and notifications
+- Operational reports
+
+## Documentation
+
+- `DOCKER_PORTAINER_GUIDE.md` — Docker Compose and Portainer operations.
+- `DEPLOYMENT.md` — production-safe Docker/Portainer deployment.
+- `ADMIN_GUIDE.md` — admin operations.
+- `USER_GUIDE.md` — user guide.
+- `ROLE_PERMISSION_MATRIX.md` — roles and permissions.
+- `BACKUP_RESTORE.md` — backup/restore concepts.
+- `docs/ARCHITECTURE.md` — architecture details.
+- `docs/HYBRID_MODULAR_MONOLITH.md` — architecture model.

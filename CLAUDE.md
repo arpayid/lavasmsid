@@ -1,134 +1,94 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code when working in this repository.
 
-## High-Level Architecture
+## High-level architecture
 
-LavaSMSID employs a **Hybrid Modular Monolith Laravel** architecture. This means the entire application resides within a single Laravel project, with features modularized by business domain. Laravel serves as the core for the public website, custom admin panel, multi-role dashboards, internal APIs, reports, queues, caches, and file uploads.
+LavaSMSID uses a Hybrid Modular Monolith Laravel architecture. The public website, custom admin panel, dashboards, internal APIs, reports, queues, cache, and file uploads live in one Laravel application.
 
-**Key Architectural Principles:**
--   **Core Modules**: Global logic resides in `app/Core` (Auth, Dashboard, Settings, Audit, Notification, Shared base classes).
--   **Business Modules**: Domain-specific features are organized in `app/Modules` (e.g., `Academic`, `Student`, `Finance`, `PPDB`).
--   **Thin Controllers**: Controllers primarily handle requests, delegate business logic to Services/Actions, and return responses.
--   **Service Layer**: Contains core business logic, orchestrates repositories/models, handles database transactions, and manages queues/events. New services should be created in `app/Services/` or `app/Modules/{ModuleName}/Services/`.
--   **Repository Layer**: Encapsulates complex queries, search, filter, sorting, and pagination logic.
--   **Action Classes**: Handle specific use cases (e.g., `ConvertPpdbToStudentAction`).
--   **Form Requests**: Used for input validation and light authorization.
--   **Policies & Spatie Permission**: Essential for robust authorization, protecting sensitive data, and ensuring role-based access control.
--   **Frontend**: Built with Blade, TailwindCSS, Vite, Alpine.js, and Chart.js. No separate frontend project at this stage.
--   **Database**: Single primary database, with tables organized by domain.
+Key rules:
 
-## Common Commands
+- Global logic belongs in `app/Core`, `app/Services`, or shared support classes.
+- Domain features belong in `app/Modules`.
+- Controllers stay thin and delegate business logic to Services or Actions.
+- Complex queries belong in Repositories.
+- Validation uses Form Requests.
+- Authorization uses Policies, Gates, middleware, roles, and Spatie Permission.
+- Frontend is Blade, Tailwind CSS, Vite, Alpine.js, and Chart.js.
+- Do not create a separate frontend application unless explicitly requested.
 
-**Development:**
--   **Install dependencies**:
-    ```bash
-    composer install
-    npm install
-    ```
--   **Generate application key**:
-    ```bash
-    php artisan key:generate
-    ```
--   **Run migrations and seeders (fresh database)**:
-    ```bash
-    php artisan migrate:fresh --seed
-    ```
--   **List all routes**:
-    ```bash
-    php artisan route:list
-    ```
--   **Run Vite development server**:
-    ```bash
-    npm run dev
-    ```
--   **Build frontend assets for production**:
-    ```bash
-    npm run build
-    ```
--   **Run tests**:
-    ```bash
-    php artisan test
-    ```
--   **Run a single test file/case**:
-    ```bash
-    php artisan test --filter "YourTestClass"
-    php artisan test "tests/Feature/YourFeatureTest.php"
-    ```
--   **Lint code with Laravel Pint**:
-    ```bash
-    vendor/bin/pint
-    ```
--   **Start local development server**:
-    ```bash
-    php artisan serve --host=0.0.0.0 --port=8000
-    ```
+## Default operational context
 
-**Production (VPS):**
--   **Install dependencies (production)**:
-    ```bash
-    composer install --no-dev --optimize-autoloader
-    npm ci
-    npm run build
-    ```
--   **Run migrations (production)**:
-    ```bash
-    php artisan migrate --force
-    ```
--   **Link storage**:
-    ```bash
-    php artisan storage:link
-    ```
--   **Cache configurations**:
-    ```bash
-    php artisan config:cache
-    php artisan route:cache
-    php artisan view:cache
-    ```
--   **Restart queue workers**:
-    ```bash
-    php artisan queue:restart
-    ```
+Docker Compose and Portainer are the default operational context. Prefer container commands over legacy host-service instructions.
 
-## Phase Status
+Use `docker compose exec app ...` for Laravel, Composer, and NPM commands.
 
-Phase 13 documentation is finalized for final audit. Keep future changes documentation-only unless a separate task explicitly asks for application code changes.
+## Common Docker commands
 
-## Important Documentation
+```bash
+docker compose build
+docker compose up -d
+docker compose ps
+docker compose logs -f
+docker compose logs -f app
+docker compose exec app bash
+docker compose down
+```
 
-Always refer to these root documentation files for detailed information:
--   `README.md`
--   `DEPLOYMENT.md`
--   `ADMIN_GUIDE.md`
--   `USER_GUIDE.md`
--   `ROLE_PERMISSION_MATRIX.md`
--   `BACKUP_RESTORE.md`
--   `CHANGELOG.md`
--   `RELEASE_NOTES.md`
+## Laravel commands inside the app container
 
-## Global Rules
+```bash
+docker compose exec app composer install
+docker compose exec app php artisan key:generate
+docker compose exec app php artisan migrate --force
+docker compose exec app php artisan storage:link
+docker compose exec app php artisan route:list
+docker compose exec app php artisan about
+docker compose exec app php artisan optimize:clear
+```
 
--   Follow the active task scope and keep repository documentation aligned with implemented features.
--   Do not delete existing files without a clear reason.
--   Keep controllers thin; business logic belongs in Service or Action classes.
--   Complex queries belong in Repository classes.
--   Use Form Requests for input validation.
--   Implement authorization using Policies and Spatie Permission.
--   All admin routes must use `auth` and `permission` middleware.
--   All file uploads require MIME and size validation.
--   Sensitive data must be protected by policies.
--   Important actions must be logged to an audit log.
--   Data that needs to be preserved should use soft deletes.
--   Every menu item must have a corresponding route, controller, view, and permission.
--   Ensure all tests pass (`php artisan test`) and frontend assets build successfully (`npm run build`) after major changes.
+Development-only database reset:
 
-## Custom Skills
+```bash
+docker compose exec app php artisan migrate:fresh --seed
+```
 
-Utilize the custom skills located in `.claude/skills/` for specialized tasks:
--   `laravel-hybrid-modular-monolith`
--   `custom-admin-panel`
--   `module-crud-generator`
--   `database-migration-seeder`
--   `security-production-auditor`
--   `testing-engineer`
--   `vps-deployment-engineer`
+Never recommend `migrate:fresh --seed` for production data.
+
+## Frontend and tests inside the app container
+
+```bash
+docker compose exec app npm install
+docker compose exec app npm run build
+docker compose exec app php artisan test
+docker compose exec app ./vendor/bin/pint --test
+```
+
+## Deployment documentation
+
+Use these Docker/Portainer-first documents:
+
+- `DOCKER_PORTAINER_GUIDE.md` for Docker Compose and Portainer operations.
+- `DEPLOYMENT.md` for production-safe Docker/Portainer deployment.
+
+Do not promote legacy host-service deployment as the primary path. If a server is mentioned, assume Docker is installed on that server and the application runs through the Compose stack.
+
+## Global coding rules
+
+- Follow the active task scope.
+- Do not delete existing Laravel source/runtime files without an explicit task.
+- Do not change business logic unless the user asks for implementation work.
+- Keep controllers thin.
+- Keep reusable business logic in Services, Actions, or Repositories.
+- Use Form Requests for validation.
+- Protect admin routes with auth and permission middleware.
+- Validate all uploads by MIME and size.
+- Protect sensitive data with policies.
+- Log important actions to an audit log where supported.
+- Use soft deletes for data that must be preserved.
+- Every menu item should have a route, controller, view, and permission.
+- After major changes, prefer containerized validation with `docker compose exec app php artisan test` and `docker compose exec app npm run build`.
+
+## Custom skills
+
+The `.claude/skills/` directory may contain historical or specialized skills. Use only skills that match the current Docker/Portainer-first direction and the user's task. Do not use non-Docker deployment guidance unless the user explicitly asks for it.

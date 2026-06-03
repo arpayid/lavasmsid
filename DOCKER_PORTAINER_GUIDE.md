@@ -1,170 +1,24 @@
-# Panduan Development Docker & Portainer LavaSMSID
+# Docker and Portainer Guide — LavaSMSID
 
-Panduan ini dibuat untuk menjalankan LavaSMSID di lingkungan **development lokal atau server development** memakai Docker Compose dan Portainer. Konfigurasi ini bukan panduan production.
+This guide explains how to run LavaSMSID with Docker Compose and Portainer. Docker Compose and Portainer are the primary operational path for this repository.
 
-> Catatan: gunakan kredensial pada `.env.docker.example` hanya untuk development. Jangan memakai nilai contoh ini untuk server production.
+Use development defaults from `.env.docker.example` only for local or development stacks. For production, use placeholders from `.env.production.example` and provide real values through a protected `.env` file or Portainer environment variables. Never commit secrets.
 
----
+## 1. Requirements
 
-## 1. Kebutuhan
+- Git
+- Docker Engine
+- Docker Compose plugin
+- Portainer Community Edition, optional but recommended for UI-based stack management
+- Available application port, default `8080`
+- Available host MySQL port, default `33066` for development exposure
 
-- Git.
-- Docker Engine dan Docker Compose plugin.
-- Portainer Community Edition bila ingin deploy lewat UI Portainer.
-- Akses terminal ke server atau komputer development.
-- Port aplikasi yang tersedia, default `8080`.
-- Port MySQL host yang tersedia, default `33066`.
-
----
-
-## 2. Ringkasan Instalasi Docker dan Portainer
-
-### Docker
-
-Instal Docker Engine sesuai sistem operasi yang dipakai. Setelah instalasi, pastikan perintah berikut berjalan:
-
-```bash
-docker --version
-docker compose version
-```
-
-### Portainer
-
-Portainer dapat dijalankan sebagai container. Contoh ringkas untuk development:
-
-```bash
-docker volume create portainer_data
-docker run -d \
-  -p 8000:8000 \
-  -p 9443:9443 \
-  --name portainer \
-  --restart=always \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  -v portainer_data:/data \
-  portainer/portainer-ce:latest
-```
-
-Buka Portainer melalui:
-
-```text
-https://SERVER-IP:9443
-```
-
----
-
-## 3. Clone Repository
+## 2. Development quick start
 
 ```bash
 git clone https://github.com/arpayid/lavasmsid.git
 cd lavasmsid
-```
-
----
-
-## 4. Siapkan File Environment
-
-Salin file environment Docker ke `.env`:
-
-```bash
 cp .env.docker.example .env
-```
-
-Nilai default development:
-
-```text
-APP_URL=http://localhost:8080
-APP_PORT=8080
-MYSQL_PORT=33066
-DB_HOST=mysql
-DB_DATABASE=lavasmsid
-DB_USERNAME=lavasmsid
-DB_PASSWORD=secret
-CACHE_STORE=database
-QUEUE_CONNECTION=database
-SESSION_DRIVER=database
-```
-
-Jika memakai server, sesuaikan `APP_URL`, misalnya:
-
-```text
-APP_URL=http://SERVER-IP:8080
-```
-
----
-
-## 5. Deploy dari Portainer Stack Menggunakan Git Repository
-
-1. Masuk ke Portainer.
-2. Pilih environment Docker yang akan dipakai.
-3. Buka menu **Stacks**.
-4. Klik **Add stack**.
-5. Isi nama stack, misalnya `lavasmsid-dev`.
-6. Pilih metode **Git Repository**.
-7. Isi Repository URL:
-
-   ```text
-   https://github.com/arpayid/lavasmsid.git
-   ```
-
-8. Isi branch sesuai kebutuhan, misalnya:
-
-   ```text
-   main
-   ```
-
-9. Isi Compose path:
-
-   ```text
-   docker-compose.yml
-   ```
-
-10. Pada bagian environment variables Portainer, tambahkan bila ingin override nilai default:
-
-    ```text
-    APP_PORT=8080
-    MYSQL_PORT=33066
-    DB_DATABASE=lavasmsid
-    DB_USERNAME=lavasmsid
-    DB_PASSWORD=secret
-    MYSQL_ROOT_PASSWORD=rootsecret
-    ```
-
-11. Klik **Deploy the stack**.
-12. Setelah container berjalan, buka terminal/console container `app` di Portainer untuk menjalankan perintah first-time setup.
-
----
-
-## 6. Deploy dari Portainer Stack Menggunakan Web Editor
-
-1. Clone repository di server, atau buka isi `docker-compose.yml` dari repository.
-2. Masuk ke Portainer.
-3. Pilih **Stacks** lalu klik **Add stack**.
-4. Isi nama stack, misalnya `lavasmsid-dev`.
-5. Pilih **Web editor**.
-6. Paste isi `docker-compose.yml`.
-7. Tambahkan environment variables bila perlu:
-
-   ```text
-   APP_PORT=8080
-   MYSQL_PORT=33066
-   DB_DATABASE=lavasmsid
-   DB_USERNAME=lavasmsid
-   DB_PASSWORD=secret
-   MYSQL_ROOT_PASSWORD=rootsecret
-   ```
-
-8. Klik **Deploy the stack**.
-9. Jalankan perintah setup awal melalui console container `app` atau terminal server.
-
-> Penting: bila memakai Web editor, pastikan build context dan file project tersedia pada Docker host. Untuk alur yang lebih sederhana, gunakan metode Git Repository.
-
----
-
-## 7. First-time Setup dari Terminal
-
-Jalankan perintah berikut dari root repository:
-
-```bash
 docker compose build
 docker compose up -d
 docker compose exec app composer install
@@ -175,212 +29,175 @@ docker compose exec app npm install
 docker compose exec app npm run build
 ```
 
-Penjelasan singkat:
+`migrate:fresh --seed` is for development only. It drops and recreates tables.
 
-- `composer install` mengisi dependency PHP ke volume `vendor_data`.
-- `npm install` mengisi dependency frontend ke volume `node_modules_data`.
-- `migrate:fresh --seed` menghapus dan membuat ulang tabel database development.
-- `storage:link` membuat symlink storage publik Laravel.
-
----
-
-## 8. Akses Aplikasi
-
-Buka aplikasi melalui browser:
-
-```text
-http://SERVER-IP:8080
-```
-
-Untuk komputer lokal:
+Open the application at:
 
 ```text
 http://localhost:8080
 ```
 
-Jika `APP_PORT` diubah, sesuaikan URL dengan port tersebut.
-
----
-
-## 9. Perintah Umum
-
-Melihat status container:
-
-```bash
-docker compose ps
-```
-
-Melihat log semua service:
-
-```bash
-docker compose logs -f
-```
-
-Masuk ke shell container aplikasi:
-
-```bash
-docker compose exec app bash
-```
-
-Menjalankan test Laravel:
-
-```bash
-docker compose exec app php artisan test
-```
-
-Menghentikan stack tanpa menghapus volume:
-
-```bash
-docker compose down
-```
-
-Menghentikan stack dan menghapus volume database/dependency:
-
-```bash
-docker compose down -v
-```
-
----
-
-## 10. Troubleshooting
-
-### Permission issue pada `storage` atau `bootstrap/cache`
-
-Gejala:
-
-- Laravel tidak bisa menulis cache.
-- Upload gagal.
-- Log tidak bisa dibuat.
-
-Solusi:
-
-```bash
-docker compose exec app chown -R www-data:www-data storage bootstrap/cache
-docker compose exec app chmod -R ug+rwX storage bootstrap/cache
-```
-
-### Port conflict
-
-Gejala:
-
-- `Bind for 0.0.0.0:8080 failed`.
-- MySQL host port `33066` sudah dipakai.
-
-Solusi:
-
-Ubah nilai di `.env` atau environment variables Portainer:
+On a server, use:
 
 ```text
-APP_PORT=8081
-MYSQL_PORT=33067
+http://SERVER-IP:8080
 ```
 
-Lalu recreate stack:
+If `APP_PORT` changes, use the configured port.
+
+## 3. Production-safe setup notes
+
+For production, do not use the development reset command. Use:
 
 ```bash
-docker compose up -d --force-recreate
+docker compose exec app php artisan migrate --force
 ```
 
-### Database connection refused
-
-Gejala:
-
-- Laravel gagal konek ke database.
-- Pesan error `SQLSTATE[HY000] [2002] Connection refused`.
-
-Solusi:
-
-1. Pastikan service MySQL sehat:
-
-   ```bash
-   docker compose ps
-   ```
-
-2. Pastikan konfigurasi database memakai host service Docker:
-
-   ```text
-   DB_HOST=mysql
-   DB_PORT=3306
-   ```
-
-3. Tunggu MySQL selesai start, lalu ulangi migration:
-
-   ```bash
-   docker compose exec app php artisan migrate:fresh --seed
-   ```
-
-### APP_KEY belum ada
-
-Gejala:
-
-- Laravel menampilkan error key aplikasi belum tersedia.
-
-Solusi:
+Recommended first-time production commands:
 
 ```bash
+docker compose exec app composer install
 docker compose exec app php artisan key:generate
-```
-
-### Storage link bermasalah
-
-Gejala:
-
-- File publik dari storage tidak tampil.
-
-Solusi:
-
-```bash
+docker compose exec app php artisan migrate --force
 docker compose exec app php artisan storage:link
-```
-
-Jika link sudah ada tetapi rusak:
-
-```bash
-docker compose exec app rm -f public/storage
-docker compose exec app php artisan storage:link
-```
-
-### NPM build issue
-
-Gejala:
-
-- Asset Vite tidak ditemukan.
-- `npm run build` gagal karena dependency belum ada.
-
-Solusi:
-
-```bash
 docker compose exec app npm install
 docker compose exec app npm run build
 ```
 
-Jika masih gagal, hapus volume dependency frontend lalu install ulang:
+Set production values in `.env` or Portainer variables:
 
-```bash
-docker compose down
-docker volume ls | grep node_modules
-docker compose up -d
-docker compose exec app npm install
-docker compose exec app npm run build
-```
-
----
-
-## 11. Catatan Redis
-
-Service Redis disediakan untuk development bila suatu saat cache, session, atau queue ingin diarahkan ke Redis. Konfigurasi default tetap memakai database:
-
-```text
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://your-domain.example
+DB_HOST=mysql
+DB_PORT=3306
 CACHE_STORE=database
 QUEUE_CONNECTION=database
 SESSION_DRIVER=database
 ```
 
-PHP Redis extension sudah tersedia di image aplikasi. Untuk memakai Redis, ubah environment secara sadar, misalnya:
+If a domain is not ready, use `APP_URL=http://SERVER-IP:8080`. When HTTPS is enabled through a reverse proxy, update `APP_URL` to the HTTPS domain.
 
-```text
-CACHE_STORE=redis
-QUEUE_CONNECTION=redis
-SESSION_DRIVER=redis
-REDIS_HOST=redis
+## 4. APP_KEY and environment handling
+
+- Keep `APP_KEY` empty in examples.
+- Generate the real key inside the running `app` container.
+- Store real `.env` values on the deployment server or in Portainer environment variables.
+- Do not commit `.env`, production passwords, API tokens, database dumps, or backup archives.
+
+Generate key:
+
+```bash
+docker compose exec app php artisan key:generate
 ```
+
+## 5. Portainer Stack using Git Repository
+
+1. Open Portainer.
+2. Select the target Docker environment.
+3. Go to **Stacks**.
+4. Click **Add stack**.
+5. Enter a stack name, for example `lavasmsid`.
+6. Choose **Git Repository**.
+7. Repository URL:
+
+   ```text
+   https://github.com/arpayid/lavasmsid.git
+   ```
+
+8. Branch:
+
+   ```text
+   main
+   ```
+
+9. Compose path:
+
+   ```text
+   docker-compose.yml
+   ```
+
+10. Add environment variables for the deployment environment.
+11. Click **Deploy the stack**.
+12. Open the `app` container console and run setup commands.
+
+## 6. Portainer Stack using Web Editor
+
+1. Open Portainer.
+2. Select the target Docker environment.
+3. Go to **Stacks** and click **Add stack**.
+4. Choose **Web editor**.
+5. Paste the contents of `docker-compose.yml`.
+6. Add environment variables.
+7. Deploy the stack.
+8. Run setup commands from the `app` container console.
+
+The Git Repository method is preferred because Portainer can pull the repository and use the correct Compose path.
+
+## 7. Common commands
+
+```bash
+docker compose ps
+docker compose logs -f
+docker compose logs -f app
+docker compose logs -f nginx
+docker compose exec app bash
+docker compose exec app php artisan about
+docker compose exec app php artisan route:list
+docker compose exec app php artisan test
+docker compose exec app npm run build
+docker compose down
+docker compose up -d --build
+```
+
+Do not run this in production unless you intentionally want to delete persistent volumes:
+
+```bash
+docker compose down -v
+```
+
+## 8. Services
+
+- `app` — Laravel PHP-FPM runtime.
+- `nginx` — web server container.
+- `mysql` — MySQL 8 database.
+- `redis` — Redis service for optional cache/session/queue usage.
+- `worker` — Laravel queue worker.
+- `scheduler` — Laravel scheduler worker.
+
+## 9. Logs and troubleshooting
+
+Check container health:
+
+```bash
+docker compose ps
+```
+
+Read logs:
+
+```bash
+docker compose logs -f app
+docker compose logs -f nginx
+docker compose logs -f mysql
+docker compose logs -f worker
+docker compose logs -f scheduler
+```
+
+Check Laravel logs:
+
+```bash
+docker compose exec app tail -f storage/logs/laravel.log
+```
+
+Common issues:
+
+- `APP_KEY` missing: run `docker compose exec app php artisan key:generate`.
+- Database connection refused: confirm MySQL is healthy and `DB_HOST=mysql`.
+- HTTP 500: inspect app logs and run `php artisan optimize:clear` inside the container.
+- Missing assets: run `docker compose exec app npm install` and `docker compose exec app npm run build`.
+- Storage files not visible: run `docker compose exec app php artisan storage:link`.
+
+## 10. More deployment details
+
+See `DEPLOYMENT.md` for production-safe migration, persistence, backup/restore, reverse proxy, HTTPS, and HTTP 500 troubleshooting guidance.
