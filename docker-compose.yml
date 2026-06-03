@@ -1,81 +1,68 @@
 services:
-  # PHP-FPM Application
   app:
     build:
       context: .
-      dockerfile: .docker/php/Dockerfile
-    container_name: lavasmsid-app
+      dockerfile: Dockerfile
     restart: unless-stopped
     working_dir: /var/www/html
+    env_file:
+      - .env.docker.example
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      CACHE_STORE: ${CACHE_STORE:-database}
+      SESSION_DRIVER: ${SESSION_DRIVER:-database}
+      QUEUE_CONNECTION: ${QUEUE_CONNECTION:-database}
+      REDIS_HOST: redis
     volumes:
       - .:/var/www/html
-      - ./storage:/var/www/html/storage
-      - ./bootstrap/cache:/var/www/html/bootstrap/cache
-    environment:
-      APP_ENV: local
-      APP_DEBUG: "true"
-      DB_CONNECTION: mysql
-      DB_HOST: db
-      DB_PORT: 3306
-      DB_DATABASE: lavasmsid
-      DB_USERNAME: lavasmsid
-      DB_PASSWORD: lavasmsid
-      REDIS_HOST: redis
-      CACHE_STORE: redis
-      SESSION_DRIVER: redis
-      QUEUE_CONNECTION: redis
+      - vendor_data:/var/www/html/vendor
+      - node_modules_data:/var/www/html/node_modules
     depends_on:
-      db:
+      mysql:
         condition: service_healthy
-      redis:
-        condition: service_started
     networks:
       - lavasmsid
 
-  # Nginx Web Server
   nginx:
     image: nginx:alpine
-    container_name: lavasmsid-nginx
     restart: unless-stopped
     ports:
-      - "8080:80"
+      - "${APP_PORT:-8080}:80"
     volumes:
-      - .:/var/www/html
-      - ./.docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - .:/var/www/html:ro
+      - vendor_data:/var/www/html/vendor:ro
+      - node_modules_data:/var/www/html/node_modules:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       - app
     networks:
       - lavasmsid
 
-  # MySQL Database
-  db:
+  mysql:
     image: mysql:8.0
-    container_name: lavasmsid-db
     restart: unless-stopped
     ports:
-      - "3306:3306"
+      - "${MYSQL_PORT:-33066}:3306"
     environment:
-      MYSQL_DATABASE: lavasmsid
-      MYSQL_USER: lavasmsid
-      MYSQL_PASSWORD: lavasmsid
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ${DB_DATABASE:-lavasmsid}
+      MYSQL_USER: ${DB_USERNAME:-lavasmsid}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootsecret}
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD:-rootsecret}"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 30s
     networks:
       - lavasmsid
 
-  # Redis Cache & Session
   redis:
     image: redis:alpine
-    container_name: lavasmsid-redis
     restart: unless-stopped
-    ports:
-      - "6379:6379"
     volumes:
       - redis_data:/data
     healthcheck:
@@ -86,67 +73,61 @@ services:
     networks:
       - lavasmsid
 
-  # Queue Worker
   worker:
     build:
       context: .
-      dockerfile: .docker/php/Dockerfile
-    container_name: lavasmsid-worker
+      dockerfile: Dockerfile
     restart: unless-stopped
     working_dir: /var/www/html
-    command: php artisan queue:work --sleep=3 --tries=3 --timeout=120
+    command: php artisan queue:work --sleep=3 --tries=3
+    env_file:
+      - .env.docker.example
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      QUEUE_CONNECTION: ${QUEUE_CONNECTION:-database}
+      REDIS_HOST: redis
     volumes:
       - .:/var/www/html
-      - ./storage:/var/www/html/storage
-    environment:
-      APP_ENV: local
-      APP_DEBUG: "true"
-      DB_CONNECTION: mysql
-      DB_HOST: db
-      DB_PORT: 3306
-      DB_DATABASE: lavasmsid
-      DB_USERNAME: lavasmsid
-      DB_PASSWORD: lavasmsid
-      REDIS_HOST: redis
-      QUEUE_CONNECTION: redis
+      - vendor_data:/var/www/html/vendor
+      - node_modules_data:/var/www/html/node_modules
     depends_on:
-      - app
-      - db
-      - redis
+      mysql:
+        condition: service_healthy
+      app:
+        condition: service_started
     networks:
       - lavasmsid
 
-  # Laravel Scheduler
   scheduler:
     build:
       context: .
-      dockerfile: .docker/php/Dockerfile
-    container_name: lavasmsid-scheduler
+      dockerfile: Dockerfile
     restart: unless-stopped
     working_dir: /var/www/html
-    command: php artisan schedule:run
+    command: php artisan schedule:work
+    env_file:
+      - .env.docker.example
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
     volumes:
       - .:/var/www/html
-    environment:
-      APP_ENV: local
-      APP_DEBUG: "true"
-      DB_CONNECTION: mysql
-      DB_HOST: db
-      DB_PORT: 3306
-      DB_DATABASE: lavasmsid
-      DB_USERNAME: lavasmsid
-      DB_PASSWORD: lavasmsid
+      - vendor_data:/var/www/html/vendor
+      - node_modules_data:/var/www/html/node_modules
     depends_on:
-      - app
-      - db
+      mysql:
+        condition: service_healthy
+      app:
+        condition: service_started
     networks:
       - lavasmsid
 
 volumes:
   mysql_data:
-    driver: local
   redis_data:
-    driver: local
+  vendor_data:
+  node_modules_data:
 
 networks:
   lavasmsid:
