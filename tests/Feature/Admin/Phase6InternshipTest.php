@@ -479,6 +479,9 @@ class Phase6InternshipTest extends TestCase
 
         $this->actingAs($this->internshipViewer);
         $response = $this->get(route('admin.internships.show', $internship));
+        dump('Status: ' . $response->getStatusCode());
+        dump('Content: ' . substr($response->getContent(), 0, 1000));
+        $response->assertStatus(200);
         $response->assertSeeText('Penilaian');
     }
 
