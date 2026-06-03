@@ -1,0 +1,43 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Class App\\Models\\Student not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Models/Invoice.php
+
+		-
+			message: '#^Call to static method orderBy\(\) on an unknown class App\\Models\\Student\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Modules/Finance/Controllers/InvoiceController.php
+
+		-
+			message: '#^Relation ''department'' is not found in App\\Modules\\PPDB\\Models\\PpdbRegistration model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Modules/PPDB/Controllers/PPDBController.php
+
+		-
+			message: '#^Relation ''department'' is not found in App\\Modules\\PPDB\\Models\\PpdbRegistration model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Modules/PPDB/Controllers/PublicPPDBController.php
+
+		-
+			message: '#^Relation ''department'' is not found in App\\Modules\\PPDB\\Models\\PpdbRegistration model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Modules/Report/Controllers/ReportController.php
+
+		-
+			message: '#^Relation ''department'' is not found in App\\Modules\\Teacher\\Models\\Teacher model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Modules/Report/Controllers/ReportController.php
+
+		-
+			message: '#^Relation ''homeroomTeacher'' is not found in App\\Modules\\Academic\\Models\\Classroom model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Modules/Report/Controllers/ReportController.php
