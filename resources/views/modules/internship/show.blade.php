@@ -174,14 +174,14 @@
             <div class="border-b border-slate-100 p-5 font-bold text-slate-800">Input Penilaian PKL</div>
             <div class="p-5 space-y-4">
                 <div class="grid grid-cols-2 gap-4">
-                    <x-admin.form-input name="discipline_score" label="Kedisiplinan (0-100)" type="number" step="0.01" :value="$internship->score->discipline_score ?? ''" />
-                    <x-admin.form-input name="skill_score" label="Keahlian (0-100)" type="number" step="0.01" :value="$internship->score->skill_score ?? ''" />
-                    <x-admin.form-input name="attitude_score" label="Sikap/Perilaku (0-100)" type="number" step="0.01" :value="$internship->score->attitude_score ?? ''" />
-                    <x-admin.form-input name="report_score" label="Nilai Laporan (0-100)" type="number" step="0.01" :value="$internship->score->report_score ?? ''" />
+                    <x-admin.form-input name="discipline_score" label="Kedisiplinan (0-100)" type="number" step="0.01" :value="$internship->score?->discipline_score ?? ''" />
+                    <x-admin.form-input name="skill_score" label="Keahlian (0-100)" type="number" step="0.01" :value="$internship->score?->skill_score ?? ''" />
+                    <x-admin.form-input name="attitude_score" label="Sikap/Perilaku (0-100)" type="number" step="0.01" :value="$internship->score?->attitude_score ?? ''" />
+                    <x-admin.form-input name="report_score" label="Nilai Laporan (0-100)" type="number" step="0.01" :value="$internship->score?->report_score ?? ''" />
                 </div>
-                <x-admin.form-input name="assessed_by" label="Nama Penilai (dari Industri)" :value="$internship->score->assessed_by ?? ''" />
-                <x-admin.form-input name="assessed_at" label="Tanggal Penilaian" type="date" :value="$internship->score->assessed_at?->format('Y-m-d') ?? date('Y-m-d')" />
-                <x-admin.form-textarea name="notes" label="Catatan Tambahan" rows="2">{{ $internship->score->notes ?? '' }}</x-admin.form-textarea>
+                <x-admin.form-input name="assessed_by" label="Nama Penilai (dari Industri)" :value="$internship->score?->assessed_by ?? ''" />
+                <x-admin.form-input name="assessed_at" label="Tanggal Penilaian" type="date" :value="$internship->score?->assessed_at?->format('Y-m-d') ?? date('Y-m-d')" />
+                <x-admin.form-textarea name="notes" label="Catatan Tambahan" rows="2">{{ $internship->score?->notes ?? '' }}</x-admin.form-textarea>
                 <p class="text-[10px] text-slate-500 italic">* Nilai Akhir & Predikat akan dihitung otomatis oleh sistem.</p>
             </div>
             <div class="flex justify-end gap-3 bg-slate-50 p-5 rounded-b-2xl">
