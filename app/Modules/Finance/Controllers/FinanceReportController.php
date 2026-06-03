@@ -40,7 +40,7 @@ class FinanceReportController extends Controller
 
         $totalInvoices = $query->count();
         $totalBilled = $query->sum('amount');
-        $totalPaid = Invoice::whereIn('id', $query->pluck('id'))->sum('paid_amount');
+        $totalPaid = (clone $query)->sum('paid_amount');
         $outstanding = $totalBilled - $totalPaid;
 
         $unpaidCount = (clone $query)->where('status', 'unpaid')->count();
