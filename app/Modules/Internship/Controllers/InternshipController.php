@@ -105,7 +105,7 @@ class InternshipController extends Controller
             abort(403);
         }
 
-        $internship->load(['student', 'industryPartner', 'user']);
+        $internship->load(['student', 'industryPartner', 'user', 'score']);
 
         return view('modules.internship.show', compact('internship'));
     }
