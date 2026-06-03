@@ -77,9 +77,12 @@ docker compose exec app php artisan migrate --force
 docker compose exec app php artisan storage:link
 docker compose exec app npm install
 docker compose exec app npm run build
+docker compose exec app php artisan config:cache
+docker compose exec app php artisan route:cache
+docker compose exec app php artisan view:cache
 ```
 
-`php artisan migrate --force` is the production-safe migration command.
+`php artisan migrate --force` is the production-safe migration command. Run the cache commands inside the `app` container after production environment variables are final so Laravel writes optimized files under `bootstrap/cache`.
 
 Development-only database reset:
 
@@ -112,6 +115,8 @@ The Compose stack includes separate containers for background work:
 
 - `worker` runs `php artisan queue:work --sleep=3 --tries=3`.
 - `scheduler` runs `php artisan schedule:work`.
+
+For a one-shot scheduler check during troubleshooting, run `docker compose exec app php artisan schedule:run`. Keep the long-running Docker scheduler service on `schedule:work` for normal operation.
 
 Check logs with:
 
@@ -156,6 +161,8 @@ docker compose exec app tail -f storage/logs/laravel.log
 
 ## 10. Backup and restore
 
+Backup database regularly before migrations, upgrades, and any destructive maintenance.
+
 Create a database backup from the MySQL container:
 
 ```bash
@@ -185,6 +192,7 @@ For production with a domain, place a TLS-capable reverse proxy in front of the 
 Production guidance:
 
 - Set `APP_URL=https://your-domain.example` when HTTPS is active.
+- After environment or route changes, refresh Laravel optimization files with `docker compose exec app php artisan config:cache`, `docker compose exec app php artisan route:cache`, and `docker compose exec app php artisan view:cache`; use `docker compose exec app php artisan optimize:clear` first if stale files in `bootstrap/cache` need to be removed.
 - Set secure session/cookie values in the real production environment as needed.
 - Do not expose MySQL publicly unless there is a specific secured operational need.
 - Keep secrets in Portainer environment variables or a protected `.env` file, not in Git.

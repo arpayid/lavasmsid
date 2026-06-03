@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Schema;
 
 class SchoolSetting extends Model
 {
@@ -27,9 +29,16 @@ class SchoolSetting extends Model
 
     public static function firstOrCreateDefault(): self
     {
-        return self::firstOrCreate(
-            ['id' => 1],
-            ['school_name' => config('app.name', 'LavaSMSID')]
-        );
+        $defaults = ['school_name' => config('app.name', 'LavaSMSID')];
+
+        try {
+            if (! Schema::hasTable('school_settings')) {
+                return new self($defaults);
+            }
+
+            return self::firstOrCreate(['id' => 1], $defaults);
+        } catch (QueryException) {
+            return new self($defaults);
+        }
     }
 }
