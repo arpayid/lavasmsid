@@ -3,15 +3,18 @@
 use App\Http\Middleware\SecurityHeaders;
 use App\Providers\AppServiceProvider;
 use App\Providers\ModuleRouteServiceProvider;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Spatie\Permission\Exceptions\UnauthorizedException;
 use Spatie\Permission\Middleware\PermissionMiddleware;
 use Spatie\Permission\Middleware\RoleMiddleware;
 use Spatie\Permission\Middleware\RoleOrPermissionMiddleware;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -66,13 +69,31 @@ return Application::configure(basePath: dirname(__DIR__))
             return response()->view('errors.404', [], 404);
         });
 
+        // Spatie permission middleware denials -> 403 Forbidden
+        $exceptions->render(function (UnauthorizedException $e, Request $request) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Forbidden.'], Response::HTTP_FORBIDDEN);
+            }
+
+            return response()->view('errors.403', [], Response::HTTP_FORBIDDEN);
+        });
+
+        // Laravel authorization denials -> 403 Forbidden
+        $exceptions->render(function (AuthorizationException $e, Request $request) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Forbidden.'], Response::HTTP_FORBIDDEN);
+            }
+
+            return response()->view('errors.403', [], Response::HTTP_FORBIDDEN);
+        });
+
         // 403 Forbidden
         $exceptions->render(function (AccessDeniedHttpException $e, Request $request) {
             if ($request->expectsJson()) {
-                return response()->json(['message' => 'Forbidden.'], 403);
+                return response()->json(['message' => 'Forbidden.'], Response::HTTP_FORBIDDEN);
             }
 
-            return response()->view('errors.403', [], 403);
+            return response()->view('errors.403', [], Response::HTTP_FORBIDDEN);
         });
 
         // 500 Internal Server Error (production only)
