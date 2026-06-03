@@ -24,6 +24,12 @@ Artinya:
 - Tidak memisahkan frontend ke Next.js pada tahap awal.
 - Tetap bisa dikembangkan ke mobile app atau frontend eksternal di masa depan.
 
+Dokumentasi Docker/Portainer development:
+
+```text
+DOCKER_PORTAINER_GUIDE.md
+```
+
 Dokumentasi arsitektur:
 
 ```text
