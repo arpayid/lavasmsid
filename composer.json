@@ -14,6 +14,7 @@
   },
   "require-dev": {
     "fakerphp/faker": "^1.23",
+    "larastan/larastan": "^3.10",
     "laravel/pint": "^1.18",
     "laravel/sail": "^1.33",
     "mockery/mockery": "^1.6",
@@ -46,7 +47,9 @@
       "@php artisan migrate --seed --ansi"
     ],
     "test": "@php artisan test",
-    "lint": "./vendor/bin/pint"
+    "lint": "pint --test",
+    "format": "pint",
+    "analyse": "phpstan analyse"
   },
   "extra": {
     "laravel": {
